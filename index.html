@@ -47,13 +47,6 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .update-info {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
         .tab-container {
             display: flex;
             gap: 10px;
@@ -126,6 +119,12 @@
             font-size: 14px;
         }
 
+        .date-filter input[type="date"]:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
         .date-filter button {
             padding: 8px 16px;
             background: #3498db;
@@ -183,6 +182,10 @@
             background: white;
             cursor: pointer;
             transition: all 0.3s;
+        }
+
+        .sort-controls select:hover {
+            border-color: #3498db;
         }
 
         .stats {
@@ -280,6 +283,10 @@
             background: #f5f7fa;
         }
 
+        tbody tr:nth-child(even):hover {
+            background: #e8ecf1;
+        }
+
         td {
             padding: 12px 15px;
             color: #2c3e50;
@@ -354,13 +361,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .chart-wrapper {
-            position: relative;
-            height: 400px;
-            width: 100%;
-            margin: 20px 0;
-        }
-
         .chart-header {
             display: flex;
             justify-content: space-between;
@@ -391,10 +391,27 @@
             transition: all 0.3s;
         }
 
+        .chart-controls select:hover, .chart-controls button:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+
         .chart-controls button.active {
             background: #3498db;
             color: white;
             border-color: #3498db;
+        }
+
+        /* グラフのサイズを固定 */
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        #individualChart, #overallChart, #overallBarChart {
+            max-width: 100%;
         }
 
         .player-info {
@@ -403,6 +420,32 @@
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
+        }
+
+        .player-info h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .player-info p {
+            margin: 5px 0;
+            opacity: 0.9;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .date-range-indicator {
@@ -427,20 +470,34 @@
                 flex-direction: column;
             }
 
+            .search-box {
+                width: 100%;
+            }
+
+            .date-filter {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
             .chart-wrapper {
                 height: 300px;
             }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>⚔️ ゲームデータ一覧</h1>
-        <div class="update-info">
-            最終更新: <span id="updateDate">-</span> | 
-            データ提供: <span id="dataSource">ゲームデータ管理システム</span>
-        </div>
         
         <!-- タブナビゲーション -->
         <div class="tab-container">
@@ -461,7 +518,7 @@
                     <p id="totalAlliances">-</p>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                    <h3>最終データ日</h3>
+                    <h3>最終更新</h3>
                     <p id="lastUpdate" style="font-size: 16px;">-</p>
                 </div>
             </div>
@@ -472,9 +529,9 @@
                 </div>
                 <div class="date-filter">
                     <label>日付範囲:</label>
-                    <input type="date" id="startDate">
+                    <input type="date" id="startDate" placeholder="開始日">
                     <span>〜</span>
-                    <input type="date" id="endDate">
+                    <input type="date" id="endDate" placeholder="終了日">
                     <button onclick="applyDateFilter()">適用</button>
                     <button class="clear-btn" onclick="clearDateFilter()">クリア</button>
                 </div>
@@ -524,7 +581,9 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td colspan="10" class="loading">データを読み込み中...</td>
+                            <td colspan="10" class="loading">
+                                データを読み込み中...<span class="loading-spinner"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -604,30 +663,6 @@
     </div>
 
     <script>
-        // =====================================
-        // データを直接ここに埋め込みます
-        // =====================================
-        
-        // 【重要】ここにCSVデータをJSON形式で貼り付けてください
-        // サンプルデータ（実際のデータに置き換えてください）
-        const STATIC_DATA = [
-            {
-                "Data": "2025/08/16",
-                "ID": 56436934,
-                "Name": "サンプルプレイヤー1",
-                "Power": "115,102,090",
-                "Alliance": "62Ys",
-                "T4-Kills": "148,724,759",
-                "T5-Kills": "226,882,867",
-                "Total Kill Points": "6,072,828,054",
-                "Dead Troops": "51,541,078",
-                "Troops Power": "54,874,170"
-            },
-            // ここに実際のデータを追加
-            // 注意: 最大で7600件程度まで
-        ];
-
-        // グローバル変数
         let allData = [];
         let filteredData = [];
         let currentPage = 1;
@@ -640,19 +675,56 @@
         let currentPlayer = null;
 
         // ページ読み込み時の処理
-        window.addEventListener('DOMContentLoaded', () => {
-            loadStaticData();
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadData();
             setupEventListeners();
             setupDateInputs();
-            
-            // 更新日を設定
-            document.getElementById('updateDate').textContent = new Date().toLocaleDateString('ja-JP');
         });
 
-        // 静的データの読み込み
-        function loadStaticData() {
-            try {
-                allData = STATIC_DATA;
+        // データの読み込み（GitHub Pages版）
+async function loadData() {
+    try {
+        // ここに実際のデータを貼り付け
+        const staticData = [
+            // ← ここにコピーしたデータを貼り付ける
+        ];
+        
+        allData = staticData;
+        filteredData = [...allData];
+        
+        console.log(`データ読み込み完了: ${allData.length}件`);
+        
+        updateStats();
+        setupDateFilter();
+        displayData();
+        
+    } catch (error) {
+        console.error('データ読み込みエラー:', error);
+        document.getElementById('tableBody').innerHTML = `
+            <tr>
+                <td colspan="10" class="no-data">
+                    <h2>データの読み込みに失敗しました</h2>
+                    <p>${error.message}</p>
+                </td>
+            </tr>
+        `;
+    }
+}
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'データが見つかりません');
+                }
+                
+                // Papaparseで解析
+                const parsed = Papa.parse(result.data, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true,
+                    delimitersToGuess: [',', '\t', '|', ';']
+                });
+
+                allData = parsed.data;
                 filteredData = [...allData];
                 
                 console.log(`データ読み込み完了: ${allData.length}件`);
@@ -660,38 +732,28 @@
                 updateStats();
                 displayData();
                 
-                if (allData.length === 0) {
-                    document.getElementById('tableBody').innerHTML = `
-                        <tr>
-                            <td colspan="10" class="no-data">
-                                <h2>データがありません</h2>
-                                <p>データを追加してください</p>
-                            </td>
-                        </tr>
-                    `;
-                }
             } catch (error) {
                 console.error('データ読み込みエラー:', error);
                 document.getElementById('tableBody').innerHTML = `
                     <tr>
                         <td colspan="10" class="no-data">
                             <h2>データの読み込みに失敗しました</h2>
-                            <p>データ形式を確認してください</p>
+                            <p>${error.message}</p>
+                            <p>管理画面からCSVファイルをアップロードしてください</p>
                         </td>
                     </tr>
                 `;
             }
         }
 
-        // 以下、既存の関数をそのまま使用
-        // （タブ切り替え、検索、ソート、グラフ表示など）
-        
+        // 日付入力の初期設定
         function setupDateInputs() {
             if (allData.length > 0) {
                 const dates = allData.map(row => row.Data).filter(d => d).sort();
                 const minDate = dates[0];
                 const maxDate = dates[dates.length - 1];
                 
+                // 日付をYYYY-MM-DD形式に変換
                 const formatDate = (dateStr) => {
                     const parts = dateStr.split('/');
                     return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
@@ -711,6 +773,7 @@
             }
         }
 
+        // 日付範囲フィルターの適用
         function applyDateFilter() {
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
@@ -720,6 +783,7 @@
                 return;
             }
             
+            // YYYY-MM-DDをYYYY/MM/DD形式に変換
             const formatToSlash = (dateStr) => {
                 if (!dateStr) return null;
                 return dateStr.replace(/-/g, '/');
@@ -732,6 +796,7 @@
                 const rowDate = row.Data;
                 if (!rowDate) return false;
                 
+                // 日付を比較可能な形式に変換
                 const compareDate = new Date(rowDate);
                 const start = startFormatted ? new Date(startFormatted) : new Date('1900/01/01');
                 const end = endFormatted ? new Date(endFormatted) : new Date('2100/12/31');
@@ -739,6 +804,7 @@
                 return compareDate >= start && compareDate <= end;
             });
             
+            // 日付範囲インジケーターを表示
             const indicator = document.getElementById('dateRangeIndicator');
             const rangeText = document.getElementById('dateRangeText');
             
@@ -750,6 +816,7 @@
             updateFilteredStats();
         }
 
+        // 日付フィルターのクリア
         function clearDateFilter() {
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
@@ -761,6 +828,7 @@
             updateStats();
         }
 
+        // タブ切り替え
         function switchTab(tab) {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
@@ -783,9 +851,14 @@
             }
         }
 
+        // イベントリスナーの設定
         function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', filterDataBySearch);
-            
+            // 検索機能
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                filterDataBySearch();
+            });
+
+            // ソート選択
             document.getElementById('sortColumn').addEventListener('change', (e) => {
                 if (e.target.value) {
                     sortData(e.target.value, document.getElementById('sortOrder').value);
@@ -799,6 +872,7 @@
                 }
             });
 
+            // テーブルヘッダーのクリックソート
             document.querySelectorAll('th.sortable').forEach(th => {
                 th.addEventListener('click', () => {
                     const column = th.dataset.column;
@@ -813,15 +887,18 @@
                 });
             });
 
+            // グラフの指標変更
             document.getElementById('individualMetric').addEventListener('change', updateIndividualChart);
             document.getElementById('overallMetric').addEventListener('change', updateOverallChart);
         }
 
+        // 検索によるフィルタリング
         function filterDataBySearch() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
             
+            // まず日付フィルターを適用
             let baseData = allData;
             if (startDate || endDate) {
                 const formatToSlash = (dateStr) => {
@@ -844,6 +921,7 @@
                 });
             }
             
+            // 検索フィルターを適用
             if (searchTerm) {
                 filteredData = baseData.filter(row => {
                     return (
@@ -860,6 +938,7 @@
             displayData();
         }
 
+        // 統計情報を更新
         function updateStats() {
             document.getElementById('totalRecords').textContent = allData.length.toLocaleString();
             
@@ -873,11 +952,13 @@
             }
         }
 
+        // フィルター後の統計情報を更新
         function updateFilteredStats() {
             document.getElementById('totalRecords').textContent = 
                 `${filteredData.length.toLocaleString()} / ${allData.length.toLocaleString()}`;
         }
 
+        // データの表示
         function displayData() {
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
@@ -916,6 +997,7 @@
             displayPagination();
         }
 
+        // ページネーションの表示
         function displayPagination() {
             const totalPages = Math.ceil(filteredData.length / itemsPerPage);
             const pagination = document.getElementById('pagination');
@@ -952,12 +1034,14 @@
             pagination.innerHTML = html;
         }
 
+        // ページ移動
         function goToPage(page) {
             currentPage = page;
             displayData();
             window.scrollTo(0, 0);
         }
 
+        // データのソート
         function sortData(column, order) {
             sortColumn = column;
             sortOrder = order;
@@ -966,11 +1050,13 @@
                 let aVal = a[column] || '';
                 let bVal = b[column] || '';
                 
+                // 数値列の処理（カンマを除去）
                 if (['ID', 'Power', 'T4-Kills', 'T5-Kills', 'Total Kill Points', 'Dead Troops', 'Troops Power'].includes(column)) {
                     aVal = parseInt(aVal.toString().replace(/,/g, '')) || 0;
                     bVal = parseInt(bVal.toString().replace(/,/g, '')) || 0;
                 }
                 
+                // 日付の処理
                 if (column === 'Data') {
                     aVal = new Date(aVal || '1900/01/01');
                     bVal = new Date(bVal || '1900/01/01');
@@ -986,6 +1072,7 @@
             updateSortIndicators();
         }
 
+        // ソートインジケーターの更新
         function updateSortIndicators() {
             document.querySelectorAll('th.sortable').forEach(th => {
                 th.classList.remove('sorted-asc', 'sorted-desc');
@@ -998,6 +1085,7 @@
             document.getElementById('sortOrder').value = sortOrder;
         }
 
+        // プレイヤー検索
         function searchPlayer() {
             const searchTerm = document.getElementById('playerSearch').value.toLowerCase();
             if (!searchTerm) {
@@ -1015,10 +1103,12 @@
                 return;
             }
             
+            // 同じIDまたは名前のデータをグループ化
             const latestData = playerData.sort((a, b) => {
                 return new Date(b.Data) - new Date(a.Data);
             })[0];
             
+            // 同じプレイヤーの全データを取得
             const allPlayerData = allData.filter(row => 
                 row.ID === latestData.ID || row.Name === latestData.Name
             );
@@ -1030,12 +1120,14 @@
                 data: allPlayerData
             };
             
+            // プレイヤー情報を表示
             document.getElementById('playerInfo').style.display = 'block';
             document.getElementById('noPlayerData').style.display = 'none';
             document.getElementById('playerName').textContent = currentPlayer.name;
             document.getElementById('playerId').textContent = currentPlayer.id;
             document.getElementById('playerAlliance').textContent = currentPlayer.alliance || 'なし';
             
+            // データ期間を表示
             const dates = allPlayerData.map(d => d.Data).sort();
             document.getElementById('playerDataRange').textContent = 
                 `${dates[0]} 〜 ${dates[dates.length - 1]}`;
@@ -1043,6 +1135,7 @@
             updateIndividualChart();
         }
 
+        // 個人チャートの更新
         function updateIndividualChart() {
             if (!currentPlayer) return;
             
@@ -1057,6 +1150,7 @@
                 return parseInt(val.toString().replace(/,/g, '')) || 0;
             });
             
+            // トレンド計算
             const trend = values.length > 1 ? 
                 ((values[values.length - 1] - values[0]) / values[0] * 100).toFixed(2) : 0;
             
@@ -1094,6 +1188,20 @@
                         },
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y.toLocaleString();
+                                    const index = context.dataIndex;
+                                    if (index > 0) {
+                                        const prevValue = context.dataset.data[index - 1];
+                                        const change = ((context.parsed.y - prevValue) / prevValue * 100).toFixed(2);
+                                        return [`${metric}: ${value}`, `前日比: ${change > 0 ? '+' : ''}${change}%`];
+                                    }
+                                    return `${metric}: ${value}`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -1115,9 +1223,11 @@
             });
         }
 
+        // 全体チャートの更新
         function updateOverallChart() {
             const metric = document.getElementById('overallMetric').value;
             
+            // 日付ごとにデータをグループ化
             const groupedData = {};
             allData.forEach(row => {
                 const date = row.Data;
@@ -1129,22 +1239,26 @@
                 groupedData[date].push(row);
             });
             
+            // 各日付で上位300人の合計を計算
             const chartData = [];
             Object.keys(groupedData).sort().forEach(date => {
                 const dayData = groupedData[date];
                 
+                // 指定されたメトリックでソート（降順）
                 dayData.sort((a, b) => {
                     const aVal = parseInt((a[metric] || '0').toString().replace(/,/g, '')) || 0;
                     const bVal = parseInt((b[metric] || '0').toString().replace(/,/g, '')) || 0;
                     return bVal - aVal;
                 });
                 
+                // 上位300人の合計
                 const top300 = dayData.slice(0, 300);
                 const total = top300.reduce((sum, row) => {
                     const val = parseInt((row[metric] || '0').toString().replace(/,/g, '')) || 0;
                     return sum + val;
                 }, 0);
                 
+                // 平均値も計算
                 const average = total / top300.length;
                 
                 chartData.push({
@@ -1157,7 +1271,9 @@
             
             const labels = chartData.map(d => d.date);
             const totals = chartData.map(d => d.total);
+            const averages = chartData.map(d => d.average);
             
+            // 折れ線グラフ
             const lineCtx = document.getElementById('overallChart').getContext('2d');
             if (overallChartInstance) {
                 overallChartInstance.destroy();
@@ -1167,18 +1283,35 @@
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label: `上位300人の${metric}合計`,
-                        data: totals,
-                        borderColor: 'rgb(118, 75, 162)',
-                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
-                        tension: 0.1,
-                        fill: true
-                    }]
+                    datasets: [
+                        {
+                            label: `上位300人の${metric}合計`,
+                            data: totals,
+                            borderColor: 'rgb(118, 75, 162)',
+                            backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                            tension: 0.1,
+                            fill: true,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: `上位300人の${metric}平均`,
+                            data: averages,
+                            borderColor: 'rgb(231, 76, 60)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            tension: 0.1,
+                            fill: false,
+                            yAxisID: 'y1',
+                            borderDash: [5, 5]
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     plugins: {
                         title: {
                             display: true,
@@ -1186,11 +1319,37 @@
                             font: {
                                 size: 16
                             }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label;
+                                    const value = context.parsed.y;
+                                    if (label.includes('合計')) {
+                                        if (value >= 1000000000) {
+                                            return `${label}: ${(value / 1000000000).toFixed(2)}B`;
+                                        } else if (value >= 1000000) {
+                                            return `${label}: ${(value / 1000000).toFixed(2)}M`;
+                                        }
+                                    } else {
+                                        if (value >= 1000000) {
+                                            return `${label}: ${(value / 1000000).toFixed(2)}M`;
+                                        }
+                                    }
+                                    return `${label}: ${value.toLocaleString()}`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         y: {
-                            beginAtZero: false,
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '合計値'
+                            },
                             ticks: {
                                 callback: function(value) {
                                     if (value >= 1000000000) {
@@ -1201,11 +1360,32 @@
                                     return value.toLocaleString();
                                 }
                             }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '平均値'
+                            },
+                            grid: {
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(0) + 'M';
+                                    }
+                                    return value.toLocaleString();
+                                }
+                            }
                         }
                     }
                 }
             });
             
+            // 棒グラフ
             const barCtx = document.getElementById('overallBarChart').getContext('2d');
             if (overallBarChartInstance) {
                 overallBarChartInstance.destroy();
@@ -1236,6 +1416,19 @@
                         },
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.parsed.y;
+                                    if (value >= 1000000000) {
+                                        return `合計: ${(value / 1000000000).toFixed(2)}B`;
+                                    } else if (value >= 1000000) {
+                                        return `合計: ${(value / 1000000).toFixed(2)}M`;
+                                    }
+                                    return `合計: ${value.toLocaleString()}`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -1257,6 +1450,7 @@
             });
         }
 
+        // グラフ表示切り替え
         function showLineChart() {
             document.getElementById('overallChart').parentElement.style.display = 'block';
             document.getElementById('overallBarChart').parentElement.style.display = 'none';
@@ -1275,6 +1469,7 @@
             event.target.classList.add('active');
         }
 
+        // HTMLエスケープ
         function escapeHtml(text) {
             const map = {
                 '&': '&amp;',
