@@ -1128,6 +1128,14 @@
                 }
                 loadCSVData();
                 setupEventListeners();
+                
+                // 保存されたタブを復元
+                const savedTab = sessionStorage.getItem('activeTab');
+                if (savedTab && savedTab !== 'data') {
+                    setTimeout(() => {
+                        switchTab(savedTab);
+                    }, 100);
+                }
             } else {
                 // 未認証の場合はパスワード入力画面を表示
                 if (passwordInput) {
@@ -1206,39 +1214,70 @@
         // 日付入力の初期設定
         function setupDateInputs() {
             if (allData.length > 0) {
-                const dates = allData.map(row => row.Data).filter(d => d).sort();
-                const minDate = dates[0];
-                const maxDate = dates[dates.length - 1];
+                // 日付の正規化（YYYY/M/D形式に統一）
+                const normalizeDate = (dateStr) => {
+                    if (!dateStr) return null;
+                    const parts = dateStr.split('/');
+                    if (parts.length === 3) {
+                        const year = parseInt(parts[0], 10);
+                        const month = parseInt(parts[1], 10);
+                        const day = parseInt(parts[2], 10);
+                        return `${year}/${month}/${day}`;
+                    }
+                    return dateStr;
+                };
+
+                const dates = allData.map(row => normalizeDate(row.Data)).filter(d => d).sort();
+                const uniqueDates = [...new Set(dates)];
+                const minDate = uniqueDates[0];
+                const maxDate = uniqueDates[uniqueDates.length - 1];
+                
+                console.log('利用可能な日付範囲:', minDate, '～', maxDate);
                 
                 const formatDate = (dateStr) => {
                     const parts = dateStr.split('/');
-                    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                    const year = parts[0];
+                    const month = parts[1].padStart(2, '0');
+                    const day = parts[2].padStart(2, '0');
+                    return `${year}-${month}-${day}`;
                 };
                 
                 // データ一覧タブの日付入力
                 const dataStartInput = document.getElementById('dataStartDate');
                 const dataEndInput = document.getElementById('dataEndDate');
                 
-                if (minDate) {
-                    dataStartInput.min = formatDate(minDate);
-                    dataEndInput.min = formatDate(minDate);
-                }
-                if (maxDate) {
-                    dataStartInput.max = formatDate(maxDate);
-                    dataEndInput.max = formatDate(maxDate);
+                if (minDate && maxDate) {
+                    const minFormatted = formatDate(minDate);
+                    const maxFormatted = formatDate(maxDate);
+                    
+                    // 最小値と最大値を設定
+                    dataStartInput.min = minFormatted;
+                    dataStartInput.max = maxFormatted;
+                    dataEndInput.min = minFormatted;
+                    dataEndInput.max = maxFormatted;
+                    
+                    // デフォルト値を設定（最新データ）
+                    dataStartInput.value = maxFormatted;
+                    dataEndInput.value = maxFormatted;
                 }
 
-                // 成長ランキングタブの日付入力も同様に設定
+                // 成長ランキングタブの日付入力
                 const growthStartInput = document.getElementById('growthStartDate');
                 const growthEndInput = document.getElementById('growthEndDate');
                 
-                if (minDate) {
-                    growthStartInput.min = formatDate(minDate);
-                    growthEndInput.min = formatDate(minDate);
-                }
-                if (maxDate) {
-                    growthStartInput.max = formatDate(maxDate);
-                    growthEndInput.max = formatDate(maxDate);
+                if (minDate && maxDate) {
+                    const minFormatted = formatDate(minDate);
+                    const maxFormatted = formatDate(maxDate);
+                    
+                    // 最小値と最大値を設定
+                    growthStartInput.min = minFormatted;
+                    growthStartInput.max = maxFormatted;
+                    growthEndInput.min = minFormatted;
+                    growthEndInput.max = maxFormatted;
+                    
+                    // デフォルト値を設定（全期間）
+                    growthStartInput.value = minFormatted;
+                    growthEndInput.value = maxFormatted;
                 }
             }
         }
@@ -1377,7 +1416,13 @@
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // イベントがある場合はそのターゲット、なければタブ名で検索
+            const activeBtn = event && event.target ? event.target : 
+                              document.querySelector(`.tab-btn:nth-child(${getTabIndex(tab)})`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
 
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
@@ -1396,13 +1441,30 @@
                 document.getElementById('growthTab').classList.add('active');
                 initGrowthTab();
             }
+            
+            // タブの状態を保存
+            sessionStorage.setItem('activeTab', tab);
+        }
+        
+        // タブのインデックスを取得
+        function getTabIndex(tab) {
+            const tabs = ['data', 'growth', 'overall', 'individual'];
+            return tabs.indexOf(tab) + 1;
         }
 
         // 成長ランキングタブの初期化
         function initGrowthTab() {
-            if (allData.length > 0 && !document.getElementById('growthStartDate').value) {
-                // デフォルトで直近7日を設定
-                setGrowthPreset('week');
+            if (allData.length > 0) {
+                // 日付が未設定またはおかしい場合は全期間を設定
+                const growthStartInput = document.getElementById('growthStartDate');
+                const growthEndInput = document.getElementById('growthEndDate');
+                
+                if (!growthStartInput.value || !growthEndInput.value || 
+                    growthStartInput.value > growthEndInput.value ||
+                    growthStartInput.value.startsWith('2025')) {
+                    // 全期間を設定
+                    setGrowthPreset('all');
+                }
             }
         }
 
