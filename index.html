@@ -486,6 +486,7 @@
             <button class="tab-btn active" onclick="switchTab('data')">データ一覧</button>
             <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
             <button class="tab-btn" onclick="switchTab('overall')">全体統計</button>
+            <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
         </div>
 
         <!-- データ一覧タブ -->
@@ -640,6 +641,109 @@
                 </div>
                 <div class="chart-wrapper" style="display: none;">
                     <canvas id="overallBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成長ランキングタブ -->
+        <div id="growthTab" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2 class="chart-title">🏆 成長ランキング分析</h2>
+                </div>
+
+                <!-- 期間選択 -->
+                <div class="growth-controls" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-bottom: 15px;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="font-weight: 600;">期間選択:</label>
+                            <input type="date" id="growthStartDate" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            <span>〜</span>
+                            <input type="date" id="growthEndDate" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            <button onclick="applyGrowthFilter()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer;">適用</button>
+                        </div>
+                        
+                        <!-- プリセットボタン -->
+                        <div style="display: flex; gap: 10px;">
+                            <button onclick="setGrowthPreset('week')" style="padding: 8px 16px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer;">直近7日</button>
+                            <button onclick="setGrowthPreset('month')" style="padding: 8px 16px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer;">直近30日</button>
+                            <button onclick="setGrowthPreset('all')" style="padding: 8px 16px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer;">全期間</button>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                        <!-- 表示設定 -->
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label>指標:</label>
+                            <select id="growthMetric" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="Power">Power</option>
+                                <option value="T4-Kills">T4-Kills</option>
+                                <option value="T5-Kills">T5-Kills</option>
+                                <option value="Total Kill Points">Total Kill Points</option>
+                                <option value="Dead Troops">Dead Troops</option>
+                                <option value="Troops Power">Troops Power</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label>表示数:</label>
+                            <select id="growthLimit" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="50">Top 50</option>
+                                <option value="100">Top 100</option>
+                                <option value="300">Top 300</option>
+                                <option value="9999">全員</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label>並び順:</label>
+                            <select id="growthSort" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="amount">増加量順</option>
+                                <option value="rate">成長率順</option>
+                                <option value="current">現在値順</option>
+                            </select>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label>フィルター:</label>
+                            <select id="growthFilter" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="all">全て表示</option>
+                                <option value="growth">成長のみ</option>
+                                <option value="decline">減少のみ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 選択期間の表示 -->
+                <div id="growthPeriodInfo" style="background: #e8f4fd; color: #2980b9; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none;">
+                    分析期間: <span id="growthPeriodText">-</span> | 
+                    データ件数: <span id="growthDataCount">-</span>件
+                </div>
+
+                <!-- ランキングテーブル -->
+                <div class="table-container">
+                    <table id="growthTable">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+                                <th style="padding: 15px; text-align: center;">順位</th>
+                                <th style="padding: 15px;">プレイヤー名</th>
+                                <th style="padding: 15px;">アライアンス</th>
+                                <th style="padding: 15px; text-align: right;">期間開始時</th>
+                                <th style="padding: 15px; text-align: right;">期間終了時</th>
+                                <th style="padding: 15px; text-align: right;">増加量</th>
+                                <th style="padding: 15px; text-align: right;">成長率</th>
+                                <th style="padding: 15px; text-align: right;">日平均</th>
+                            </tr>
+                        </thead>
+                        <tbody id="growthTableBody">
+                            <tr>
+                                <td colspan="8" class="no-data">
+                                    <p>期間を選択して「適用」をクリックしてください</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
