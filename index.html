@@ -483,10 +483,57 @@
                 height: 300px;
             }
         }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script>
+        // パスワード認証関数（HTMLより先に定義）
+        const CORRECT_PASSWORD = '2062data';
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('passwordError');
+            
+            if (input === CORRECT_PASSWORD) {
+                // パスワードが正しい場合
+                document.getElementById('passwordProtection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // セッションストレージに認証状態を保存
+                sessionStorage.setItem('authenticated', 'true');
+                
+                // Chart.jsのdatalabelsプラグインを登録
+                if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+                    Chart.register(ChartDataLabels);
+                    Chart.defaults.plugins.datalabels = {
+                        display: false
+                    };
+                }
+                
+                // データの読み込みを開始
+                loadCSVData();
+                setupEventListeners();
+            } else {
+                // パスワードが間違っている場合
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                
+                // 入力欄を振動させる
+                const inputBox = document.getElementById('passwordInput');
+                inputBox.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    inputBox.style.animation = '';
+                }, 500);
+            }
+        }
+    </script>
 </head>
 <body>
     <!-- パスワード保護画面 -->
@@ -828,16 +875,26 @@
 
         // ページ読み込み時の処理
         window.addEventListener('DOMContentLoaded', () => {
-            // Chart.jsのdatalabelsプラグインを登録
-            if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
-                Chart.register(ChartDataLabels);
-                // デフォルトでは無効化（個別のチャートで有効化）
-                Chart.defaults.plugins.datalabels = {
-                    display: false
-                };
+            // 既に認証済みかチェック
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                // 認証済みの場合は直接メインコンテンツを表示
+                document.getElementById('passwordProtection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // Chart.jsのdatalabelsプラグインを登録
+                if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+                    Chart.register(ChartDataLabels);
+                    // デフォルトでは無効化（個別のチャートで有効化）
+                    Chart.defaults.plugins.datalabels = {
+                        display: false
+                    };
+                }
+                loadCSVData();
+                setupEventListeners();
+            } else {
+                // 未認証の場合はパスワード入力画面を表示
+                document.getElementById('passwordInput').focus();
             }
-            loadCSVData();
-            setupEventListeners();
         });
 
         // CSVファイルを読み込む
