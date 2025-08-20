@@ -812,6 +812,10 @@
             const input = document.getElementById('passwordInput').value;
             const errorMsg = document.getElementById('passwordError');
             
+            console.log('入力されたパスワード:', input);
+            console.log('正しいパスワード:', CORRECT_PASSWORD);
+            console.log('パスワードの比較結果:', input === CORRECT_PASSWORD);
+            
             if (input === CORRECT_PASSWORD) {
                 // パスワードが正しい場合
                 document.getElementById('passwordProtection').style.display = 'none';
@@ -862,17 +866,28 @@
 
         // ページ読み込み時の処理
         window.addEventListener('DOMContentLoaded', () => {
+            console.log('ページ読み込み完了');
+            
             // パスワード認証のイベントリスナーを設定
             const loginButton = document.getElementById('loginButton');
             const passwordInput = document.getElementById('passwordInput');
             
+            console.log('ログインボタン:', loginButton);
+            console.log('パスワード入力欄:', passwordInput);
+            
             if (loginButton) {
-                loginButton.addEventListener('click', checkPassword);
+                loginButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('ログインボタンクリック');
+                    checkPassword();
+                });
             }
             
             if (passwordInput) {
                 passwordInput.addEventListener('keypress', (event) => {
                     if (event.key === 'Enter') {
+                        event.preventDefault();
+                        console.log('Enterキー押下');
                         checkPassword();
                     }
                 });
