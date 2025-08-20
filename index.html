@@ -1128,14 +1128,6 @@
                 }
                 loadCSVData();
                 setupEventListeners();
-                
-                // 保存されたタブを復元
-                const savedTab = sessionStorage.getItem('activeTab');
-                if (savedTab && savedTab !== 'data') {
-                    setTimeout(() => {
-                        switchTab(savedTab);
-                    }, 100);
-                }
             } else {
                 // 未認証の場合はパスワード入力画面を表示
                 if (passwordInput) {
@@ -1214,70 +1206,39 @@
         // 日付入力の初期設定
         function setupDateInputs() {
             if (allData.length > 0) {
-                // 日付の正規化（YYYY/M/D形式に統一）
-                const normalizeDate = (dateStr) => {
-                    if (!dateStr) return null;
-                    const parts = dateStr.split('/');
-                    if (parts.length === 3) {
-                        const year = parseInt(parts[0], 10);
-                        const month = parseInt(parts[1], 10);
-                        const day = parseInt(parts[2], 10);
-                        return `${year}/${month}/${day}`;
-                    }
-                    return dateStr;
-                };
-
-                const dates = allData.map(row => normalizeDate(row.Data)).filter(d => d).sort();
-                const uniqueDates = [...new Set(dates)];
-                const minDate = uniqueDates[0];
-                const maxDate = uniqueDates[uniqueDates.length - 1];
-                
-                console.log('利用可能な日付範囲:', minDate, '～', maxDate);
+                const dates = allData.map(row => row.Data).filter(d => d).sort();
+                const minDate = dates[0];
+                const maxDate = dates[dates.length - 1];
                 
                 const formatDate = (dateStr) => {
                     const parts = dateStr.split('/');
-                    const year = parts[0];
-                    const month = parts[1].padStart(2, '0');
-                    const day = parts[2].padStart(2, '0');
-                    return `${year}-${month}-${day}`;
+                    return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
                 };
                 
                 // データ一覧タブの日付入力
                 const dataStartInput = document.getElementById('dataStartDate');
                 const dataEndInput = document.getElementById('dataEndDate');
                 
-                if (minDate && maxDate) {
-                    const minFormatted = formatDate(minDate);
-                    const maxFormatted = formatDate(maxDate);
-                    
-                    // 最小値と最大値を設定
-                    dataStartInput.min = minFormatted;
-                    dataStartInput.max = maxFormatted;
-                    dataEndInput.min = minFormatted;
-                    dataEndInput.max = maxFormatted;
-                    
-                    // デフォルト値を設定（最新データ）
-                    dataStartInput.value = maxFormatted;
-                    dataEndInput.value = maxFormatted;
+                if (minDate) {
+                    dataStartInput.min = formatDate(minDate);
+                    dataEndInput.min = formatDate(minDate);
+                }
+                if (maxDate) {
+                    dataStartInput.max = formatDate(maxDate);
+                    dataEndInput.max = formatDate(maxDate);
                 }
 
-                // 成長ランキングタブの日付入力
+                // 成長ランキングタブの日付入力も同様に設定
                 const growthStartInput = document.getElementById('growthStartDate');
                 const growthEndInput = document.getElementById('growthEndDate');
                 
-                if (minDate && maxDate) {
-                    const minFormatted = formatDate(minDate);
-                    const maxFormatted = formatDate(maxDate);
-                    
-                    // 最小値と最大値を設定
-                    growthStartInput.min = minFormatted;
-                    growthStartInput.max = maxFormatted;
-                    growthEndInput.min = minFormatted;
-                    growthEndInput.max = maxFormatted;
-                    
-                    // デフォルト値を設定（全期間）
-                    growthStartInput.value = minFormatted;
-                    growthEndInput.value = maxFormatted;
+                if (minDate) {
+                    growthStartInput.min = formatDate(minDate);
+                    growthEndInput.min = formatDate(minDate);
+                }
+                if (maxDate) {
+                    growthStartInput.max = formatDate(maxDate);
+                    growthEndInput.max = formatDate(maxDate);
                 }
             }
         }
@@ -1416,13 +1377,7 @@
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
-            // イベントがある場合はそのターゲット、なければタブ名で検索
-            const activeBtn = event && event.target ? event.target : 
-                              document.querySelector(`.tab-btn:nth-child(${getTabIndex(tab)})`);
-            if (activeBtn) {
-                activeBtn.classList.add('active');
-            }
+            event.target.classList.add('active');
 
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
@@ -1441,30 +1396,13 @@
                 document.getElementById('growthTab').classList.add('active');
                 initGrowthTab();
             }
-            
-            // タブの状態を保存
-            sessionStorage.setItem('activeTab', tab);
-        }
-        
-        // タブのインデックスを取得
-        function getTabIndex(tab) {
-            const tabs = ['data', 'growth', 'overall', 'individual'];
-            return tabs.indexOf(tab) + 1;
         }
 
         // 成長ランキングタブの初期化
         function initGrowthTab() {
-            if (allData.length > 0) {
-                // 日付が未設定またはおかしい場合は全期間を設定
-                const growthStartInput = document.getElementById('growthStartDate');
-                const growthEndInput = document.getElementById('growthEndDate');
-                
-                if (!growthStartInput.value || !growthEndInput.value || 
-                    growthStartInput.value > growthEndInput.value ||
-                    growthStartInput.value.startsWith('2025')) {
-                    // 全期間を設定
-                    setGrowthPreset('all');
-                }
+            if (allData.length > 0 && !document.getElementById('growthStartDate').value) {
+                // デフォルトで直近7日を設定
+                setGrowthPreset('week');
             }
         }
 
@@ -1564,7 +1502,7 @@
             // YYYY-MM-DD を YYYY/M/D 形式に変換（ゼロパディングなし）
             const formatToSlash = (dateStr) => {
                 const parts = dateStr.split('-');
-                const year = parseInt(parts[0], 10);
+                const year = parts[0];
                 const month = parseInt(parts[1], 10);
                 const day = parseInt(parts[2], 10);
                 return `${year}/${month}/${day}`;
@@ -1579,40 +1517,21 @@
 
             console.log('分析期間:', startFormatted, '～', endFormatted);
             console.log('選択指標:', metric);
-            console.log('利用可能な日付サンプル:', allData.slice(0, 5).map(row => row.Data));
 
-            // 日付の正規化関数（比較用）
-            const normalizeDate = (dateStr) => {
-                if (!dateStr) return '';
-                // YYYY/M/D または YYYY/MM/DD を YYYY/M/D に統一
-                const parts = dateStr.split('/');
-                if (parts.length === 3) {
-                    const year = parseInt(parts[0], 10);
-                    const month = parseInt(parts[1], 10);
-                    const day = parseInt(parts[2], 10);
-                    return `${year}/${month}/${day}`;
-                }
-                return dateStr;
-            };
-
-            // 開始日と終了日のデータを取得（正規化して比較）
-            const startData = allData.filter(row => normalizeDate(row.Data) === startFormatted);
-            const endData = allData.filter(row => normalizeDate(row.Data) === endFormatted);
+            // 開始日と終了日のデータを取得
+            const startData = allData.filter(row => row.Data === startFormatted);
+            const endData = allData.filter(row => row.Data === endFormatted);
 
             console.log('開始日データ数:', startData.length);
             console.log('終了日データ数:', endData.length);
 
             if (startData.length === 0 || endData.length === 0) {
-                // 利用可能な一意の日付を取得
-                const availableDates = [...new Set(allData.map(row => normalizeDate(row.Data)))].sort();
-                console.log('利用可能な日付:', availableDates);
-                
                 const noDataHtml = `
                     <h3>選択した期間のデータが見つかりません</h3>
                     <p>開始日: ${startFormatted} (${startData.length}件)</p>
                     <p>終了日: ${endFormatted} (${endData.length}件)</p>
-                    <p style="margin-top: 20px;">利用可能な日付（最初の10件）:</p>
-                    <p style="font-size: 12px;">${availableDates.slice(0, 10).join(', ')}${availableDates.length > 10 ? '...' : ''}</p>
+                    <p style="margin-top: 20px;">利用可能な日付:</p>
+                    <p>${[...new Set(allData.map(row => row.Data))].sort().slice(0, 10).join(', ')}...</p>
                 `;
                 
                 document.getElementById('growthTableBody').innerHTML = `
@@ -1626,15 +1545,11 @@
                 const mobileCards = document.getElementById('growthMobileCards');
                 if (mobileCards) {
                     mobileCards.innerHTML = `
-                        <div style="text-align: center; padding: 60px 20px; color: #7f8c8d; background: white; border-radius: 10px; margin: 10px 0;">
+                        <div style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
                             ${noDataHtml}
                         </div>
                     `;
                 }
-                
-                // 統計情報をリセット
-                document.getElementById('growthAnalysisCount').textContent = '0';
-                document.getElementById('growthTopPlayer').textContent = '-';
                 return;
             }
 
@@ -1655,6 +1570,7 @@
                 
                 const endRow = endDataMap[startRow.ID];
                 if (!endRow) {
+                    console.log('終了日にデータなし:', startRow.Name, startRow.ID);
                     return;
                 }
 
@@ -1668,8 +1584,8 @@
                 if (filterType === 'decline' && difference >= 0) return;
 
                 // 期間の日数を計算
-                const startDateObj = new Date(startFormatted.replace(/\//g, '-'));
-                const endDateObj = new Date(endFormatted.replace(/\//g, '-'));
+                const startDateObj = new Date(startFormatted);
+                const endDateObj = new Date(endFormatted);
                 const days = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24)) || 1;
                 const dailyAverage = difference / days;
 
@@ -1688,34 +1604,6 @@
 
             console.log('成長データ数:', growthData.length);
 
-            if (growthData.length === 0) {
-                const noDataHtml = `
-                    <h3>分析可能なデータがありません</h3>
-                    <p>選択した期間で共通のプレイヤーが見つかりませんでした</p>
-                `;
-                
-                document.getElementById('growthTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
-                            ${noDataHtml}
-                        </td>
-                    </tr>
-                `;
-                
-                const mobileCards = document.getElementById('growthMobileCards');
-                if (mobileCards) {
-                    mobileCards.innerHTML = `
-                        <div style="text-align: center; padding: 60px 20px; color: #7f8c8d; background: white; border-radius: 10px; margin: 10px 0;">
-                            ${noDataHtml}
-                        </div>
-                    `;
-                }
-                
-                document.getElementById('growthAnalysisCount').textContent = '0';
-                document.getElementById('growthTopPlayer').textContent = '-';
-                return;
-            }
-
             // ソート
             if (sortBy === 'amount') {
                 growthData.sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference));
@@ -1727,7 +1615,7 @@
 
             // 表示数制限
             const displayData = growthData.slice(0, limit);
-            currentGrowthData = displayData;
+            currentGrowthData = displayData;  // 保存しておく
 
             // データ件数を更新
             document.getElementById('growthAnalysisCount').textContent = displayData.length;
