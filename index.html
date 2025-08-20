@@ -508,7 +508,7 @@
 
             <div class="controls">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、アライアンスで検索...">
+                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索...">
                 </div>
                 <div class="date-filter">
                     <label>日付範囲:</label>
@@ -554,7 +554,7 @@
                             <th class="sortable" data-column="ID">ID</th>
                             <th class="sortable" data-column="Name">名前</th>
                             <th class="sortable" data-column="Power">Power</th>
-                            <th class="sortable" data-column="Alliance">アライアンス</th>
+                            <th class="sortable" data-column="Alliance">同盟</th>
                             <th class="sortable" data-column="T4-Kills">T4-Kills</th>
                             <th class="sortable" data-column="T5-Kills">T5-Kills</th>
                             <th class="sortable" data-column="Total Kill Points">Total Kill Points</th>
@@ -665,8 +665,9 @@
                         <thead>
                             <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
                                 <th style="padding: 15px; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">順位</th>
-                                <th style="padding: 15px; border-right: 1px solid rgba(255,255,255,0.1);">プレイヤー名</th>
-                                <th style="padding: 15px; border-right: 1px solid rgba(255,255,255,0.1);">アライアンス</th>
+                                <th style="padding: 15px; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">ID</th>
+                                <th style="padding: 15px; border-right: 1px solid rgba(255,255,255,0.1);">名前</th>
+                                <th style="padding: 15px; border-right: 1px solid rgba(255,255,255,0.1);">同盟</th>
                                 <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">期間開始時</th>
                                 <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">期間終了時</th>
                                 <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">増加量</th>
@@ -676,7 +677,7 @@
                         </thead>
                         <tbody id="growthTableBody">
                             <tr>
-                                <td colspan="8" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                                <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
                                     <h3>期間を選択して「適用」をクリックしてください</h3>
                                     <p>またはプリセットボタンから期間を選択できます</p>
                                 </td>
@@ -729,7 +730,7 @@
                 <div id="playerInfo" class="player-info" style="display: none;">
                     <h3 id="playerName">-</h3>
                     <p>ID: <span id="playerId">-</span></p>
-                    <p>アライアンス: <span id="playerAlliance">-</span></p>
+                    <p>同盟: <span id="playerAlliance">-</span></p>
                     <p>データ期間: <span id="playerDataRange">-</span></p>
                 </div>
 
@@ -1136,7 +1137,7 @@
             if (displayData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                        <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
                             <h3>条件に一致するデータがありません</h3>
                             <p>フィルター設定を確認してください</p>
                         </td>
@@ -1166,6 +1167,7 @@
                 return `
                     <tr style="border-bottom: 1px solid #e0e0e0;">
                         <td style="padding: 12px; text-align: center;">${rankBadge}</td>
+                        <td style="padding: 12px; text-align: center; font-family: monospace;">${row.id}</td>
                         <td style="padding: 12px; font-weight: 600;">${escapeHtml(row.name)}</td>
                         <td style="padding: 12px;">
                             ${row.alliance ? `<span class="alliance-badge">${escapeHtml(row.alliance)}</span>` : '-'}
