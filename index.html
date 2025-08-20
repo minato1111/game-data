@@ -70,6 +70,7 @@
             gap: 10px;
             margin-bottom: 20px;
             border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -482,6 +483,15 @@
             .chart-wrapper {
                 height: 300px;
             }
+
+            .tab-container {
+                justify-content: center;
+            }
+
+            .tab-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
         }
 
         @keyframes shake {
@@ -498,7 +508,7 @@
     <!-- パスワード保護画面 -->
     <div id="passwordProtection" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); text-align: center; max-width: 400px; width: 90%;">
-            <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 28px;">🔐 パスワード認証</h2>
+            <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 28px;">🔒 パスワード認証</h2>
             <p style="color: #7f8c8d; margin-bottom: 30px;">このサイトを閲覧するにはパスワードが必要です</p>
             <input type="password" id="passwordInput" placeholder="パスワードを入力" style="width: 100%; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 20px;">
             <button id="loginButton" style="width: 100%; padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">ログイン</button>
@@ -521,6 +531,7 @@
             <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
             <button class="tab-btn" onclick="switchTab('overall')">全体統計</button>
             <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
+            <button class="tab-btn" onclick="switchTab('contact')">問い合わせ先</button>
         </div>
 
         <!-- データ一覧タブ -->
@@ -548,7 +559,7 @@
                     <span>～</span>
                     <input type="date" id="dataEndDate">
                     <button onclick="applyDataFilter()">適用</button>
-                    <button class="preset-btn" onclick="setDataPreset('latest')">最新データー</button>
+                    <button class="preset-btn" onclick="setDataPreset('latest')">最新データ</button>
                     <button class="preset-btn" onclick="setDataPreset('week')">直近7日</button>
                     <button class="preset-btn" onclick="setDataPreset('month')">直近30日</button>
                     <button class="preset-btn" onclick="setDataPreset('all')">全期間</button>
@@ -664,7 +675,7 @@
                     <span>～</span>
                     <input type="date" id="growthEndDate">
                     <button onclick="applyGrowthFilter()">適用</button>
-                    <button class="preset-btn" onclick="setGrowthPreset('latest')">最新データー</button>
+                    <button class="preset-btn" onclick="setGrowthPreset('latest')">最新データ</button>
                     <button class="preset-btn" onclick="setGrowthPreset('week')">直近7日</button>
                     <button class="preset-btn" onclick="setGrowthPreset('month')">直近30日</button>
                     <button class="preset-btn" onclick="setGrowthPreset('all')">全期間</button>
@@ -808,6 +819,76 @@
                 <div id="noPlayerData" class="no-data">
                     <h2>プレイヤーを検索してください</h2>
                     <p>上の検索ボックスにプレイヤー名またはIDを入力してください</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 問い合わせ先タブ -->
+        <div id="contactTab" class="tab-content">
+            <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">📧 問い合わせ先</h2>
+                    <p style="color: #7f8c8d; font-size: 16px;">ご質問・ご要望がございましたら、お気軽にお問い合わせください</p>
+                </div>
+
+                <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <!-- VaziBooプロフィール画像 -->
+                        <div style="width: 150px; height: 150px; margin: 0 auto 20px; border-radius: 50%; overflow: hidden; box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); border: 3px solid #fff;">
+                            <img src="lJOc64cA_400x400.jpg" alt="VaziBoo" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <h3 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">制作者</h3>
+                        <p style="color: #3498db; font-size: 24px; font-weight: 600;">VaziBoo</p>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <!-- Twitter -->
+                        <a href="https://x.com/boo_vazi" target="_blank" style="text-decoration: none;">
+                            <div style="background: linear-gradient(135deg, #1DA1F2 0%, #0088cc 100%); color: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px rgba(29, 161, 242, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 24px;">🐦</span>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 18px; font-weight: 600;">VaziBoo Twitter</h4>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">@boo_vazi</p>
+                                    </div>
+                                </div>
+                                <div style="font-size: 24px;">→</div>
+                            </div>
+                        </a>
+
+                        <!-- Discord -->
+                        <a href="https://discord.gg/kfrPJ2F2cf" target="_blank" style="text-decoration: none;">
+                            <div style="background: linear-gradient(135deg, #7289DA 0%, #5865F2 100%); color: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 15px 30px rgba(114, 137, 218, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                        <span style="font-size: 24px;">💬</span>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin: 0; font-size: 18px; font-weight: 600;">Discord Server</h4>
+                                        <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">コミュニティに参加</p>
+                                    </div>
+                                </div>
+                                <div style="font-size: 24px;">→</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div style="background: #f8f9fa; border-radius: 15px; padding: 30px; text-align: center;">
+                    <h3 style="color: #2c3e50; margin-bottom: 15px;">🎮 About This Tool</h3>
+                    <p style="color: #7f8c8d; line-height: 1.8;">
+                        このツールは Rise of Kingdoms のゲームデータを分析・可視化するために作成されました。<br>
+                        プレイヤーの成長追跡、ランキング分析、統計データの確認などが可能です。<br>
+                        ご利用いただきありがとうございます！
+                    </p>
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                        <p style="color: #95a5a6; font-size: 14px;">
+                            © 2024 VaziBoo - ROK Kingdom Data Tool<br>
+                            Version 1.0.0
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1023,7 +1104,7 @@
             let startDate = dates[0];
 
             if (preset === 'latest') {
-                // 最新データーのみ（最新日付の1日分）
+                // 最新データのみ（最新日付の1日分）
                 startDate = latestDate;
             } else if (preset === 'week') {
                 // 7日前を計算
@@ -1155,6 +1236,8 @@
             } else if (tab === 'growth') {
                 document.getElementById('growthTab').classList.add('active');
                 initGrowthTab();
+            } else if (tab === 'contact') {
+                document.getElementById('contactTab').classList.add('active');
             }
         }
 
@@ -1175,7 +1258,7 @@
             let startDate = dates[0];
 
             if (preset === 'latest') {
-                // 最新データー（最新日と前回のデータ日を比較）
+                // 最新データ（最新日と前回のデータ日を比較）
                 if (dates.length >= 2) {
                     // 重複を除いた一意の日付を取得
                     const uniqueDates = [...new Set(dates)].sort();
