@@ -496,8 +496,8 @@
                     <p id="totalRecords">読み込み中...</p>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                    <h3>アライアンス数</h3>
-                    <p id="totalAlliances">-</p>
+                    <h3>Power上位300位合計</h3>
+                    <p id="top300Power">計算中...</p>
                 </div>
                 <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                     <h3>最終データ日</h3>
@@ -904,13 +904,45 @@
         function updateStats() {
             document.getElementById('totalRecords').textContent = allData.length.toLocaleString();
             
-            const uniqueAlliances = new Set(allData.map(row => row.Alliance).filter(a => a));
-            document.getElementById('totalAlliances').textContent = uniqueAlliances.size;
-            
+            // 最終データ日を取得
             const dates = allData.map(row => row.Data).filter(d => d);
+            let latestDate = '';
             if (dates.length > 0) {
-                const latestDate = dates.sort().reverse()[0];
+                latestDate = dates.sort().reverse()[0];
                 document.getElementById('lastUpdate').textContent = latestDate;
+            }
+            
+            // 最終データ日のPower上位300位の合計を計算
+            if (latestDate) {
+                const latestDateData = allData.filter(row => row.Data === latestDate);
+                
+                // Powerでソート（降順）
+                latestDateData.sort((a, b) => {
+                    const aPower = parseInt((a.Power || '0').toString().replace(/,/g, '')) || 0;
+                    const bPower = parseInt((b.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return bPower - aPower;
+                });
+                
+                // 上位300人を取得
+                const top300 = latestDateData.slice(0, 300);
+                
+                // 合計を計算
+                const totalPower = top300.reduce((sum, row) => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return sum + power;
+                }, 0);
+                
+                // 表示形式を整える（B = Billion, M = Million）
+                let displayValue = '';
+                if (totalPower >= 1000000000) {
+                    displayValue = (totalPower / 1000000000).toFixed(2) + 'B';
+                } else if (totalPower >= 1000000) {
+                    displayValue = (totalPower / 1000000).toFixed(1) + 'M';
+                } else {
+                    displayValue = totalPower.toLocaleString();
+                }
+                
+                document.getElementById('top300Power').textContent = displayValue;
             }
         }
 
