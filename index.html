@@ -661,21 +661,21 @@
 
                 <!-- ランキングテーブル -->
                 <div class="table-container">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
-                                <th style="padding: 15px; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">順位</th>
-                                <th style="padding: 15px; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">ID</th>
-                                <th style="padding: 15px; border-right: 1px solid rgba(255,255,255,0.1);">名前</th>
-                                <th style="padding: 15px; border-right: 1px solid rgba(255,255,255,0.1);">同盟</th>
-                                <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">期間開始時</th>
-                                <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">期間終了時</th>
-                                <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">増加量</th>
-                                <th style="padding: 15px; text-align: right; border-right: 1px solid rgba(255,255,255,0.1);">成長率</th>
-                                <th style="padding: 15px; text-align: right;">日平均</th>
+                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                        <thead style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+                            <tr>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10;">順位</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10;">ID</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10;">名前</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10;">同盟</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">期間開始時</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">期間終了時</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">増加量</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">成長率</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">日平均</th>
                             </tr>
                         </thead>
-                        <tbody id="growthTableBody">
+                        <tbody id="growthTableBody" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                             <tr>
                                 <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
                                     <h3>期間を選択して「適用」をクリックしてください</h3>
@@ -1165,22 +1165,22 @@
                 const rateSymbol = row.growthRate > 0 ? '+' : '';
 
                 return `
-                    <tr style="border-bottom: 1px solid #e0e0e0;">
-                        <td style="padding: 12px; text-align: center;">${rankBadge}</td>
-                        <td style="padding: 12px; text-align: center; font-family: monospace;">${row.id}</td>
-                        <td style="padding: 12px; font-weight: 600;">${escapeHtml(row.name)}</td>
-                        <td style="padding: 12px;">
+                    <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;">
+                        <td style="padding: 12px 15px; text-align: center; color: #2c3e50;">${rankBadge}</td>
+                        <td style="padding: 12px 15px; text-align: center; color: #2c3e50;">${row.id}</td>
+                        <td style="padding: 12px 15px; color: #2c3e50;">${escapeHtml(row.name)}</td>
+                        <td style="padding: 12px 15px; color: #2c3e50;">
                             ${row.alliance ? `<span class="alliance-badge">${escapeHtml(row.alliance)}</span>` : '-'}
                         </td>
-                        <td style="padding: 12px; text-align: right;">${formatValue(row.startValue)}</td>
-                        <td style="padding: 12px; text-align: right;">${formatValue(row.endValue)}</td>
-                        <td style="padding: 12px; text-align: right; color: ${diffColor}; font-weight: 600;">
+                        <td style="padding: 12px 15px; text-align: right; color: #2c3e50;">${formatValue(row.startValue)}</td>
+                        <td style="padding: 12px 15px; text-align: right; color: #2c3e50;">${formatValue(row.endValue)}</td>
+                        <td style="padding: 12px 15px; text-align: right; color: ${diffColor}; font-weight: 600;">
                             ${diffSymbol} ${formatValue(Math.abs(row.difference))}
                         </td>
-                        <td style="padding: 12px; text-align: right; color: ${diffColor};">
+                        <td style="padding: 12px 15px; text-align: right; color: ${diffColor};">
                             ${rateSymbol}${row.growthRate.toFixed(1)}%
                         </td>
-                        <td style="padding: 12px; text-align: right; color: #7f8c8d;">
+                        <td style="padding: 12px 15px; text-align: right; color: #7f8c8d;">
                             ${formatValue(Math.abs(row.dailyAverage))}/日
                         </td>
                     </tr>
