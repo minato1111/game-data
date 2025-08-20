@@ -468,19 +468,232 @@
 
         @media (max-width: 768px) {
             .container {
-                padding: 20px;
+                padding: 15px;
+                border-radius: 10px;
             }
 
             h1 {
                 font-size: 24px;
             }
 
+            .subtitle {
+                font-size: 12px;
+            }
+
+            .update-info {
+                font-size: 11px;
+            }
+
+            /* タブナビゲーション */
+            .tab-container {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 5px;
+            }
+
+            .tab-btn {
+                padding: 10px 16px;
+                font-size: 14px;
+                min-width: auto;
+            }
+
+            /* 統計カード */
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .stat-card {
+                min-width: 100%;
+            }
+
+            /* フィルターセクション */
+            .filter-section {
+                padding: 15px;
+            }
+
+            .date-filter {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .date-filter input[type="date"] {
+                width: 100%;
+            }
+
+            .date-filter button,
+            .preset-btn {
+                width: 100%;
+                padding: 10px;
+            }
+
+            /* 検索ボックス */
+            .search-box {
+                min-width: 100%;
+            }
+
             .controls {
                 flex-direction: column;
             }
 
+            /* セレクトボックス */
+            .filter-section select {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            /* テーブルをカード形式で表示 */
+            .table-container {
+                display: none;
+            }
+
+            /* モバイル用カード表示 */
+            .mobile-cards {
+                display: block;
+            }
+
+            .mobile-card {
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .mobile-card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .mobile-card-name {
+                font-size: 16px;
+                font-weight: 600;
+                color: #2c3e50;
+            }
+
+            .mobile-card-date {
+                font-size: 12px;
+                color: #7f8c8d;
+            }
+
+            .mobile-card-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 5px 0;
+                font-size: 14px;
+            }
+
+            .mobile-card-label {
+                color: #7f8c8d;
+                font-weight: 500;
+            }
+
+            .mobile-card-value {
+                color: #2c3e50;
+                font-weight: 600;
+            }
+
+            /* グラフサイズ調整 */
             .chart-wrapper {
-                height: 300px;
+                height: 250px;
+            }
+
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .chart-controls {
+                width: 100%;
+                margin-top: 10px;
+            }
+
+            .chart-controls select,
+            .chart-controls button,
+            .chart-controls input {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            /* ページネーション */
+            .pagination {
+                flex-wrap: wrap;
+            }
+
+            .pagination button {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+
+            .page-info {
+                width: 100%;
+                text-align: center;
+                margin-top: 10px;
+            }
+
+            /* 成長ランキングテーブルもカード形式に */
+            #growthTab .table-container {
+                display: none;
+            }
+
+            .growth-mobile-cards {
+                display: block;
+            }
+
+            .growth-mobile-card {
+                background: white;
+                border: 1px solid #e0e0e0;
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 10px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                position: relative;
+            }
+
+            .growth-rank-badge {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
+            /* パスワード画面の調整 */
+            #passwordProtection > div {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            #passwordProtection h2 {
+                font-size: 24px;
+            }
+
+            #passwordProtection p {
+                font-size: 14px;
+            }
+        }
+
+        /* デスクトップでは通常のテーブル表示 */
+        .mobile-cards,
+        .growth-mobile-cards {
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .table-container {
+                display: block !important;
             }
         }
 
@@ -635,6 +848,9 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- モバイル用カード表示エリア -->
+            <div class="mobile-cards" id="mobileCards"></div>
 
             <div class="pagination" id="pagination"></div>
         </div>
@@ -1623,20 +1839,20 @@
             const pageData = filteredData.slice(startIndex, endIndex);
             
             const tbody = document.getElementById('tableBody');
+            const mobileCards = document.getElementById('mobileCards');
             
             if (pageData.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="10" class="no-data">
-                            <h2>データが見つかりません</h2>
-                            <p>検索条件を変更してください</p>
-                        </td>
-                    </tr>
+                const noDataHtml = `
+                    <h2>データが見つかりません</h2>
+                    <p>検索条件を変更してください</p>
                 `;
+                tbody.innerHTML = `<tr><td colspan="10" class="no-data">${noDataHtml}</td></tr>`;
+                mobileCards.innerHTML = `<div class="no-data">${noDataHtml}</div>`;
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
             
+            // テーブル表示（デスクトップ）
             tbody.innerHTML = pageData.map(row => `
                 <tr>
                     <td>${escapeHtml(row.Data || '')}</td>
@@ -1650,6 +1866,48 @@
                     <td>${escapeHtml(row['Dead Troops'] || '')}</td>
                     <td>${escapeHtml(row['Troops Power'] || '')}</td>
                 </tr>
+            `).join('');
+            
+            // カード表示（モバイル）
+            mobileCards.innerHTML = pageData.map(row => `
+                <div class="mobile-card">
+                    <div class="mobile-card-header">
+                        <div class="mobile-card-name">${escapeHtml(row.Name || 'Unknown')}</div>
+                        <div class="mobile-card-date">${escapeHtml(row.Data || '')}</div>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">ID:</span>
+                        <span class="mobile-card-value">${escapeHtml(row.ID || '')}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">同盟:</span>
+                        <span class="mobile-card-value"><span class="alliance-badge">${escapeHtml(row.Alliance || '')}</span></span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Power:</span>
+                        <span class="mobile-card-value" style="color: #e74c3c; font-size: 16px;">${escapeHtml(row.Power || '0')}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">T4-Kills:</span>
+                        <span class="mobile-card-value">${escapeHtml(row['T4-Kills'] || '0')}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">T5-Kills:</span>
+                        <span class="mobile-card-value">${escapeHtml(row['T5-Kills'] || '0')}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Total Kill Points:</span>
+                        <span class="mobile-card-value">${escapeHtml(row['Total Kill Points'] || '0')}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Dead Troops:</span>
+                        <span class="mobile-card-value">${escapeHtml(row['Dead Troops'] || '0')}</span>
+                    </div>
+                    <div class="mobile-card-row">
+                        <span class="mobile-card-label">Troops Power:</span>
+                        <span class="mobile-card-value">${escapeHtml(row['Troops Power'] || '0')}</span>
+                    </div>
+                </div>
             `).join('');
             
             displayPagination();
