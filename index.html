@@ -484,9 +484,9 @@
         <!-- タブナビゲーション -->
         <div class="tab-container">
             <button class="tab-btn active" onclick="switchTab('data')">データ一覧</button>
-            <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
-            <button class="tab-btn" onclick="switchTab('overall')">全体統計</button>
             <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
+            <button class="tab-btn" onclick="switchTab('overall')">全体統計</button>
+            <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
         </div>
 
         <!-- データ一覧タブ -->
@@ -574,75 +574,6 @@
             </div>
 
             <div class="pagination" id="pagination"></div>
-        </div>
-
-        <!-- 個人分析タブ -->
-        <div id="individualTab" class="tab-content">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h2 class="chart-title">個人データ分析</h2>
-                    <div class="chart-controls">
-                        <input type="text" id="playerSearch" placeholder="プレイヤー名またはIDを入力">
-                        <button onclick="searchPlayer()">検索</button>
-                    </div>
-                </div>
-                
-                <div id="playerInfo" class="player-info" style="display: none;">
-                    <h3 id="playerName">-</h3>
-                    <p>ID: <span id="playerId">-</span></p>
-                    <p>アライアンス: <span id="playerAlliance">-</span></p>
-                    <p>データ期間: <span id="playerDataRange">-</span></p>
-                </div>
-
-                <div class="chart-controls" style="margin: 20px 0;">
-                    <select id="individualMetric">
-                        <option value="Power">Power</option>
-                        <option value="T4-Kills">T4-Kills</option>
-                        <option value="T5-Kills">T5-Kills</option>
-                        <option value="Total Kill Points">Total Kill Points</option>
-                        <option value="Dead Troops">Dead Troops</option>
-                        <option value="Troops Power">Troops Power</option>
-                    </select>
-                    <button onclick="updateIndividualChart()">更新</button>
-                </div>
-
-                <div class="chart-wrapper">
-                    <canvas id="individualChart"></canvas>
-                </div>
-                
-                <div id="noPlayerData" class="no-data">
-                    <h2>プレイヤーを検索してください</h2>
-                    <p>上の検索ボックスにプレイヤー名またはIDを入力してください</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 全体統計タブ -->
-        <div id="overallTab" class="tab-content">
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h2 class="chart-title">上位300人の統計</h2>
-                    <div class="chart-controls">
-                        <select id="overallMetric">
-                            <option value="Power">Power</option>
-                            <option value="T4-Kills">T4-Kills</option>
-                            <option value="T5-Kills">T5-Kills</option>
-                            <option value="Total Kill Points">Total Kill Points</option>
-                            <option value="Dead Troops">Dead Troops</option>
-                            <option value="Troops Power">Troops Power</option>
-                        </select>
-                        <button class="active" onclick="showLineChart()">折れ線グラフ</button>
-                        <button onclick="showBarChart()">棒グラフ</button>
-                    </div>
-                </div>
-
-                <div class="chart-wrapper">
-                    <canvas id="overallChart"></canvas>
-                </div>
-                <div class="chart-wrapper" style="display: none;">
-                    <canvas id="overallBarChart"></canvas>
-                </div>
-            </div>
         </div>
 
         <!-- 成長ランキングタブ -->
@@ -752,6 +683,75 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 全体統計タブ -->
+        <div id="overallTab" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2 class="chart-title">上位300人の統計</h2>
+                    <div class="chart-controls">
+                        <select id="overallMetric">
+                            <option value="Power">Power</option>
+                            <option value="T4-Kills">T4-Kills</option>
+                            <option value="T5-Kills">T5-Kills</option>
+                            <option value="Total Kill Points">Total Kill Points</option>
+                            <option value="Dead Troops">Dead Troops</option>
+                            <option value="Troops Power">Troops Power</option>
+                        </select>
+                        <button class="active" onclick="showLineChart()">折れ線グラフ</button>
+                        <button onclick="showBarChart()">棒グラフ</button>
+                    </div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="overallChart"></canvas>
+                </div>
+                <div class="chart-wrapper" style="display: none;">
+                    <canvas id="overallBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 個人分析タブ -->
+        <div id="individualTab" class="tab-content">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2 class="chart-title">個人データ分析</h2>
+                    <div class="chart-controls">
+                        <input type="text" id="playerSearch" placeholder="プレイヤー名またはIDを入力">
+                        <button onclick="searchPlayer()">検索</button>
+                    </div>
+                </div>
+                
+                <div id="playerInfo" class="player-info" style="display: none;">
+                    <h3 id="playerName">-</h3>
+                    <p>ID: <span id="playerId">-</span></p>
+                    <p>アライアンス: <span id="playerAlliance">-</span></p>
+                    <p>データ期間: <span id="playerDataRange">-</span></p>
+                </div>
+
+                <div class="chart-controls" style="margin: 20px 0;">
+                    <select id="individualMetric">
+                        <option value="Power">Power</option>
+                        <option value="T4-Kills">T4-Kills</option>
+                        <option value="T5-Kills">T5-Kills</option>
+                        <option value="Total Kill Points">Total Kill Points</option>
+                        <option value="Dead Troops">Dead Troops</option>
+                        <option value="Troops Power">Troops Power</option>
+                    </select>
+                    <button onclick="updateIndividualChart()">更新</button>
+                </div>
+
+                <div class="chart-wrapper">
+                    <canvas id="individualChart"></canvas>
+                </div>
+                
+                <div id="noPlayerData" class="no-data">
+                    <h2>プレイヤーを検索してください</h2>
+                    <p>上の検索ボックスにプレイヤー名またはIDを入力してください</p>
                 </div>
             </div>
         </div>
@@ -1004,8 +1004,7 @@
             const startFormatted = startDate.replace(/-/g, '/');
             const endFormatted = endDate.replace(/-/g, '/');
             
-            document.getElementById('growthPeriodInfo').style.display = 'block';
-            document.getElementById('growthPeriodText').textContent = `${startFormatted} 〜 ${endFormatted}`;
+            document.getElementById('growthPeriodDisplay').textContent = `${startFormatted} 〜 ${endFormatted}`;
 
             updateGrowthRanking();
         }
@@ -1016,6 +1015,7 @@
             const endDate = document.getElementById('growthEndDate').value;
 
             if (!startDate || !endDate) {
+                console.log('日付が選択されていません');
                 return;
             }
 
@@ -1026,15 +1026,25 @@
             const sortBy = document.getElementById('growthSort').value;
             const filterType = document.getElementById('growthFilter').value;
 
+            console.log('分析期間:', startFormatted, '〜', endFormatted);
+            console.log('選択指標:', metric);
+
             // 開始日と終了日のデータを取得
             const startData = allData.filter(row => row.Data === startFormatted);
             const endData = allData.filter(row => row.Data === endFormatted);
 
+            console.log('開始日データ数:', startData.length);
+            console.log('終了日データ数:', endData.length);
+
             if (startData.length === 0 || endData.length === 0) {
                 document.getElementById('growthTableBody').innerHTML = `
                     <tr>
-                        <td colspan="8" class="no-data">
-                            <p>選択した期間のデータが見つかりません</p>
+                        <td colspan="8" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                            <h3>選択した期間のデータが見つかりません</h3>
+                            <p>開始日: ${startFormatted} (${startData.length}件)</p>
+                            <p>終了日: ${endFormatted} (${endData.length}件)</p>
+                            <p style="margin-top: 20px;">利用可能な日付:</p>
+                            <p>${[...new Set(allData.map(row => row.Data))].sort().join(', ')}</p>
                         </td>
                     </tr>
                 `;
@@ -1044,13 +1054,23 @@
             // プレイヤーごとの成長を計算
             const growthData = [];
             const endDataMap = {};
+            
+            // 終了日のデータをIDでマッピング
             endData.forEach(row => {
-                endDataMap[row.ID] = row;
+                if (row.ID) {
+                    endDataMap[row.ID] = row;
+                }
             });
 
+            // 開始日のデータを基準に成長を計算
             startData.forEach(startRow => {
+                if (!startRow.ID) return;
+                
                 const endRow = endDataMap[startRow.ID];
-                if (!endRow) return;
+                if (!endRow) {
+                    console.log('終了日にデータなし:', startRow.Name, startRow.ID);
+                    return;
+                }
 
                 const startValue = parseInt((startRow[metric] || '0').toString().replace(/,/g, '')) || 0;
                 const endValue = parseInt((endRow[metric] || '0').toString().replace(/,/g, '')) || 0;
@@ -1062,12 +1082,14 @@
                 if (filterType === 'decline' && difference >= 0) return;
 
                 // 期間の日数を計算
-                const days = Math.ceil((new Date(endFormatted) - new Date(startFormatted)) / (1000 * 60 * 60 * 24)) || 1;
+                const startDateObj = new Date(startFormatted);
+                const endDateObj = new Date(endFormatted);
+                const days = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24)) || 1;
                 const dailyAverage = difference / days;
 
                 growthData.push({
                     id: startRow.ID,
-                    name: endRow.Name || startRow.Name,
+                    name: endRow.Name || startRow.Name || 'Unknown',
                     alliance: endRow.Alliance || startRow.Alliance || '',
                     startValue: startValue,
                     endValue: endValue,
@@ -1078,11 +1100,13 @@
                 });
             });
 
+            console.log('成長データ数:', growthData.length);
+
             // ソート
             if (sortBy === 'amount') {
-                growthData.sort((a, b) => b.difference - a.difference);
+                growthData.sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference));
             } else if (sortBy === 'rate') {
-                growthData.sort((a, b) => b.growthRate - a.growthRate);
+                growthData.sort((a, b) => Math.abs(b.growthRate) - Math.abs(a.growthRate));
             } else if (sortBy === 'current') {
                 growthData.sort((a, b) => b.endValue - a.endValue);
             }
@@ -1091,15 +1115,30 @@
             const displayData = growthData.slice(0, limit);
 
             // データ件数を更新
-            document.getElementById('growthDataCount').textContent = displayData.length;
+            document.getElementById('growthAnalysisCount').textContent = displayData.length;
+
+            // 最大成長者を表示
+            if (displayData.length > 0 && sortBy === 'amount') {
+                const topPlayer = displayData[0];
+                const formatValue = (value) => {
+                    if (Math.abs(value) >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
+                    if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                    if (Math.abs(value) >= 1000) return (value / 1000).toFixed(1) + 'K';
+                    return value.toLocaleString();
+                };
+                const symbol = topPlayer.difference > 0 ? '+' : '';
+                document.getElementById('growthTopPlayer').textContent = 
+                    `${topPlayer.name} (${symbol}${formatValue(topPlayer.difference)})`;
+            }
 
             // テーブルに表示
             const tbody = document.getElementById('growthTableBody');
             if (displayData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="no-data">
-                            <p>条件に一致するデータがありません</p>
+                        <td colspan="8" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                            <h3>条件に一致するデータがありません</h3>
+                            <p>フィルター設定を確認してください</p>
                         </td>
                     </tr>
                 `;
@@ -1110,12 +1149,13 @@
                 const rank = index + 1;
                 const rankBadge = rank <= 3 ? 
                     `<span style="display: inline-block; width: 24px; height: 24px; background: ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : '#cd7f32'}; color: white; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold;">${rank}</span>` :
-                    rank;
+                    `<span style="font-weight: bold;">${rank}</span>`;
 
                 const formatValue = (value) => {
-                    if (value >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
-                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                    if (value >= 1000) return (value / 1000).toFixed(1) + 'K';
+                    const absValue = Math.abs(value);
+                    if (absValue >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
+                    if (absValue >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                    if (absValue >= 1000) return (value / 1000).toFixed(1) + 'K';
                     return value.toLocaleString();
                 };
 
@@ -1128,7 +1168,7 @@
                         <td style="padding: 12px; text-align: center;">${rankBadge}</td>
                         <td style="padding: 12px; font-weight: 600;">${escapeHtml(row.name)}</td>
                         <td style="padding: 12px;">
-                            <span class="alliance-badge">${escapeHtml(row.alliance)}</span>
+                            ${row.alliance ? `<span class="alliance-badge">${escapeHtml(row.alliance)}</span>` : '-'}
                         </td>
                         <td style="padding: 12px; text-align: right;">${formatValue(row.startValue)}</td>
                         <td style="padding: 12px; text-align: right;">${formatValue(row.endValue)}</td>
@@ -1144,6 +1184,8 @@
                     </tr>
                 `;
             }).join('');
+
+            console.log('テーブル更新完了');
         }
 
         function setupEventListeners() {
