@@ -724,6 +724,13 @@
                         </select>
                     </div>
                 </div>
+
+                <!-- 検索機能を追加 -->
+                <div style="margin-top: 15px;">
+                    <div class="search-box">
+                        <input type="text" id="growthSearchInput" placeholder="🔍 名前、ID、同盟で検索..." oninput="filterGrowthBySearch()">
+                    </div>
+                </div>
             </div>
 
             <!-- ランキングテーブル -->
@@ -954,6 +961,7 @@
         let overallBarChartInstance = null;
         let currentPlayer = null;
         let currentGrowthData = [];  // 成長ランキングのデータを保存
+        let filteredGrowthData = []; // フィルター適用後の成長データ
         let growthSortColumn = '';   // 成長ランキングのソート列
         let growthSortOrder = 'desc'; // 成長ランキングのソート順
 
@@ -1448,6 +1456,7 @@
             // 表示数制限
             const displayData = growthData.slice(0, limit);
             currentGrowthData = displayData;  // 保存しておく
+            filteredGrowthData = displayData; // フィルター用にも保存
 
             // データ件数を更新
             document.getElementById('growthAnalysisCount').textContent = displayData.length;
@@ -1570,6 +1579,29 @@
                     </tr>
                 `;
             }).join('');
+        }
+
+        // 成長ランキングの検索フィルター
+        function filterGrowthBySearch() {
+            const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                filteredGrowthData = currentGrowthData;
+            } else {
+                filteredGrowthData = currentGrowthData.filter(row => {
+                    return (
+                        (row.name && row.name.toLowerCase().includes(searchTerm)) ||
+                        (row.id && row.id.toString().toLowerCase().includes(searchTerm)) ||
+                        (row.alliance && row.alliance.toLowerCase().includes(searchTerm))
+                    );
+                });
+            }
+            
+            // 検索結果の件数を更新
+            document.getElementById('growthAnalysisCount').textContent = filteredGrowthData.length;
+            
+            // テーブルを再表示
+            displayGrowthTable(filteredGrowthData);
         }
 
         function setupEventListeners() {
