@@ -485,6 +485,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
@@ -1702,7 +1703,10 @@
                         tension: 0.1,
                         fill: true,
                         pointRadius: 4,
-                        pointHoverRadius: 6
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: 'rgb(102, 126, 234)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
@@ -1718,6 +1722,29 @@
                         },
                         legend: {
                             display: false
+                        },
+                        datalabels: {
+                            display: true,
+                            align: 'top',
+                            backgroundColor: 'rgba(102, 126, 234, 0.9)',
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size: 10
+                            },
+                            formatter: function(value) {
+                                if (value >= 1000000000) {
+                                    return (value / 1000000000).toFixed(1) + 'B';
+                                } else if (value >= 1000000) {
+                                    return (value / 1000000).toFixed(1) + 'M';
+                                } else if (value >= 1000) {
+                                    return (value / 1000).toFixed(0) + 'K';
+                                }
+                                return value.toLocaleString();
+                            },
+                            padding: 4,
+                            offset: 8
                         }
                     },
                     scales: {
