@@ -121,13 +121,18 @@
             align-items: center;
         }
 
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
         .date-filter {
             display: flex;
             gap: 10px;
             align-items: center;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 10px;
+            flex-wrap: wrap;
         }
 
         .date-filter input[type="date"] {
@@ -137,7 +142,7 @@
             font-size: 14px;
         }
 
-        .date-filter button {
+        .date-filter button, .preset-btn {
             padding: 8px 16px;
             background: #3498db;
             color: white;
@@ -148,7 +153,17 @@
             transition: all 0.3s;
         }
 
-        .date-filter button:hover {
+        .date-filter button:hover, .preset-btn:hover {
+            background: #2980b9;
+        }
+
+        .preset-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+        }
+
+        .preset-btn:hover {
             background: #2980b9;
         }
 
@@ -506,40 +521,68 @@
                 </div>
             </div>
 
-            <div class="controls">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索...">
+            <!-- 拡張フィルター機能 -->
+            <div class="filter-section">
+                <div class="date-filter" style="margin-bottom: 15px;">
+                    <label style="font-weight: 600;">期間選択:</label>
+                    <input type="date" id="dataStartDate">
+                    <span>～</span>
+                    <input type="date" id="dataEndDate">
+                    <button onclick="applyDataFilter()">適用</button>
+                    <button class="preset-btn" onclick="setDataPreset('week')">直近7日</button>
+                    <button class="preset-btn" onclick="setDataPreset('month')">直近30日</button>
+                    <button class="preset-btn" onclick="setDataPreset('all')">全期間</button>
+                    <button class="clear-btn" onclick="clearDataFilter()">クリア</button>
                 </div>
-                <div class="date-filter">
-                    <label>日付範囲:</label>
-                    <input type="date" id="startDate">
-                    <span>〜</span>
-                    <input type="date" id="endDate">
-                    <button onclick="applyDateFilter()">適用</button>
-                    <button class="clear-btn" onclick="clearDateFilter()">クリア</button>
+
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>指標:</label>
+                        <select id="dataMetric" onchange="updateDataDisplay()">
+                            <option value="">全て表示</option>
+                            <option value="Power">Power</option>
+                            <option value="T4-Kills">T4-Kills</option>
+                            <option value="T5-Kills">T5-Kills</option>
+                            <option value="Total Kill Points">Total Kill Points</option>
+                            <option value="Dead Troops">Dead Troops</option>
+                            <option value="Troops Power">Troops Power</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>表示数:</label>
+                        <select id="dataLimit" onchange="updateItemsPerPage()">
+                            <option value="50">50件</option>
+                            <option value="100">100件</option>
+                            <option value="300">300件</option>
+                            <option value="500">500件</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>並び順:</label>
+                        <select id="dataSortColumn">
+                            <option value="">選択してください</option>
+                            <option value="Data">日付</option>
+                            <option value="ID">ID</option>
+                            <option value="Name">名前</option>
+                            <option value="Power">Power</option>
+                            <option value="Alliance">アライアンス</option>
+                            <option value="T4-Kills">T4-Kills</option>
+                            <option value="T5-Kills">T5-Kills</option>
+                            <option value="Total Kill Points">Total Kill Points</option>
+                        </select>
+                        <select id="dataSortOrder">
+                            <option value="desc">降順</option>
+                            <option value="asc">昇順</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <div class="controls">
-                <div class="sort-controls">
-                    <label>ソート:</label>
-                    <select id="sortColumn">
-                        <option value="">選択してください</option>
-                        <option value="Data">日付</option>
-                        <option value="ID">ID</option>
-                        <option value="Name">名前</option>
-                        <option value="Power">Power</option>
-                        <option value="Alliance">アライアンス</option>
-                        <option value="T4-Kills">T4-Kills</option>
-                        <option value="T5-Kills">T5-Kills</option>
-                        <option value="Total Kill Points">Total Kill Points</option>
-                        <option value="Dead Troops">Dead Troops</option>
-                        <option value="Troops Power">Troops Power</option>
-                    </select>
-                    <select id="sortOrder">
-                        <option value="asc">昇順</option>
-                        <option value="desc">降順</option>
-                    </select>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索...">
                 </div>
                 <div class="date-range-indicator" id="dateRangeIndicator" style="display: none;">
                     期間: <span id="dateRangeText">-</span>
@@ -578,7 +621,7 @@
 
         <!-- 成長ランキングタブ -->
         <div id="growthTab" class="tab-content">
-            <div class="stats" style="margin-bottom: 20px;">
+            <div class="stats">
                 <div class="stat-card" style="background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);">
                     <h3>分析期間</h3>
                     <p id="growthPeriodDisplay">未選択</p>
@@ -593,98 +636,89 @@
                 </div>
             </div>
 
-            <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">
-                <h2 style="color: #2c3e50; margin-bottom: 20px;">🏆 成長ランキング分析</h2>
-
-                <!-- 期間選択 -->
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center; margin-bottom: 15px;">
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label style="font-weight: 600;">期間選択:</label>
-                            <input type="date" id="growthStartDate" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                            <span>〜</span>
-                            <input type="date" id="growthEndDate" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                            <button onclick="applyGrowthFilter()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer;">適用</button>
-                        </div>
-                        
-                        <!-- プリセットボタン -->
-                        <div style="display: flex; gap: 10px;">
-                            <button onclick="setGrowthPreset('week')" style="padding: 8px 16px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer;">直近7日</button>
-                            <button onclick="setGrowthPreset('month')" style="padding: 8px 16px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer;">直近30日</button>
-                            <button onclick="setGrowthPreset('all')" style="padding: 8px 16px; background: white; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer;">全期間</button>
-                        </div>
-                    </div>
-
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
-                        <!-- 表示設定 -->
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label>指標:</label>
-                            <select id="growthMetric" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                                <option value="Power">Power</option>
-                                <option value="T4-Kills">T4-Kills</option>
-                                <option value="T5-Kills">T5-Kills</option>
-                                <option value="Total Kill Points">Total Kill Points</option>
-                                <option value="Dead Troops">Dead Troops</option>
-                                <option value="Troops Power">Troops Power</option>
-                            </select>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label>表示数:</label>
-                            <select id="growthLimit" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                                <option value="50">Top 50</option>
-                                <option value="100">Top 100</option>
-                                <option value="300">Top 300</option>
-                                <option value="9999">全員</option>
-                            </select>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label>並び順:</label>
-                            <select id="growthSort" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                                <option value="amount">増加量順</option>
-                                <option value="rate">成長率順</option>
-                                <option value="current">現在値順</option>
-                            </select>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label>フィルター:</label>
-                            <select id="growthFilter" onchange="updateGrowthRanking()" style="padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px;">
-                                <option value="all">全て表示</option>
-                                <option value="growth">成長のみ</option>
-                                <option value="decline">減少のみ</option>
-                            </select>
-                        </div>
-                    </div>
+            <!-- 期間選択とフィルター -->
+            <div class="filter-section">
+                <div class="date-filter" style="margin-bottom: 15px;">
+                    <label style="font-weight: 600;">期間選択:</label>
+                    <input type="date" id="growthStartDate">
+                    <span>～</span>
+                    <input type="date" id="growthEndDate">
+                    <button onclick="applyGrowthFilter()">適用</button>
+                    <button class="preset-btn" onclick="setGrowthPreset('week')">直近7日</button>
+                    <button class="preset-btn" onclick="setGrowthPreset('month')">直近30日</button>
+                    <button class="preset-btn" onclick="setGrowthPreset('all')">全期間</button>
+                    <button class="clear-btn" onclick="clearGrowthFilter()">クリア</button>
                 </div>
 
-                <!-- ランキングテーブル -->
-                <div class="table-container">
-                    <table style="width: 100%; border-collapse: collapse; background: white;">
-                        <thead style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
-                            <tr>
-                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10;">順位</th>
-                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10;">ID</th>
-                                <th style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10;">名前</th>
-                                <th style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10;">同盟</th>
-                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">期間開始時</th>
-                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">期間終了時</th>
-                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">増加量</th>
-                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">成長率</th>
-                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10;">日平均</th>
-                            </tr>
-                        </thead>
-                        <tbody id="growthTableBody" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-                            <tr>
-                                <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
-                                    <h3>期間を選択して「適用」をクリックしてください</h3>
-                                    <p>またはプリセットボタンから期間を選択できます</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                    <!-- 表示設定 -->
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>指標:</label>
+                        <select id="growthMetric" onchange="updateGrowthRanking()">
+                            <option value="Power">Power</option>
+                            <option value="T4-Kills">T4-Kills</option>
+                            <option value="T5-Kills">T5-Kills</option>
+                            <option value="Total Kill Points">Total Kill Points</option>
+                            <option value="Dead Troops">Dead Troops</option>
+                            <option value="Troops Power">Troops Power</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>表示数:</label>
+                        <select id="growthLimit" onchange="updateGrowthRanking()">
+                            <option value="50">Top 50</option>
+                            <option value="100">Top 100</option>
+                            <option value="300">Top 300</option>
+                            <option value="9999">全員</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>並び順:</label>
+                        <select id="growthSort" onchange="updateGrowthRanking()">
+                            <option value="amount">増加量順</option>
+                            <option value="rate">成長率順</option>
+                            <option value="current">現在値順</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <label>フィルター:</label>
+                        <select id="growthFilter" onchange="updateGrowthRanking()">
+                            <option value="all">全て表示</option>
+                            <option value="growth">成長のみ</option>
+                            <option value="decline">減少のみ</option>
+                        </select>
+                    </div>
                 </div>
+            </div>
+
+            <!-- ランキングテーブル -->
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; background: white;">
+                    <thead style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+                        <tr>
+                            <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10;">順位</th>
+                            <th class="sortable" style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('id')">ID</th>
+                            <th class="sortable" style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('name')">名前</th>
+                            <th class="sortable" style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('alliance')">同盟</th>
+                            <th class="sortable" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('startValue')">期間開始時</th>
+                            <th class="sortable" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('endValue')">期間終了時</th>
+                            <th class="sortable" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('difference')">増加量</th>
+                            <th class="sortable" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('growthRate')">成長率</th>
+                            <th class="sortable" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; cursor: pointer; user-select: none;" onclick="sortGrowthTable('dailyAverage')">日平均</th>
+                        </tr>
+                    </thead>
+                    <tbody id="growthTableBody" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                        <tr>
+                            <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                                <h3>期間を選択して「適用」をクリックしてください</h3>
+                                <p>またはプリセットボタンから期間を選択できます</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -768,13 +802,16 @@
         let allData = [];
         let filteredData = [];
         let currentPage = 1;
-        const itemsPerPage = 50;
+        let itemsPerPage = 50;
         let sortColumn = '';
         let sortOrder = 'asc';
         let individualChartInstance = null;
         let overallChartInstance = null;
         let overallBarChartInstance = null;
         let currentPlayer = null;
+        let currentGrowthData = [];  // 成長ランキングのデータを保存
+        let growthSortColumn = '';   // 成長ランキングのソート列
+        let growthSortOrder = 'desc'; // 成長ランキングのソート順
 
         // ページ読み込み時の処理
         window.addEventListener('DOMContentLoaded', () => {
@@ -850,24 +887,79 @@
                     return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
                 };
                 
-                const startInput = document.getElementById('startDate');
-                const endInput = document.getElementById('endDate');
+                // データ一覧タブの日付入力
+                const dataStartInput = document.getElementById('dataStartDate');
+                const dataEndInput = document.getElementById('dataEndDate');
                 
                 if (minDate) {
-                    startInput.min = formatDate(minDate);
-                    endInput.min = formatDate(minDate);
+                    dataStartInput.min = formatDate(minDate);
+                    dataEndInput.min = formatDate(minDate);
                 }
                 if (maxDate) {
-                    startInput.max = formatDate(maxDate);
-                    endInput.max = formatDate(maxDate);
+                    dataStartInput.max = formatDate(maxDate);
+                    dataEndInput.max = formatDate(maxDate);
+                }
+
+                // 成長ランキングタブの日付入力も同様に設定
+                const growthStartInput = document.getElementById('growthStartDate');
+                const growthEndInput = document.getElementById('growthEndDate');
+                
+                if (minDate) {
+                    growthStartInput.min = formatDate(minDate);
+                    growthEndInput.min = formatDate(minDate);
+                }
+                if (maxDate) {
+                    growthStartInput.max = formatDate(maxDate);
+                    growthEndInput.max = formatDate(maxDate);
                 }
             }
         }
 
-        // 以下、既存の関数をそのまま使用
-        function applyDateFilter() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
+        // データ一覧タブの期間プリセット
+        function setDataPreset(preset) {
+            const dates = allData.map(row => row.Data).filter(d => d).sort();
+            if (dates.length === 0) return;
+
+            const latestDate = dates[dates.length - 1];
+            let startDate = dates[0];
+
+            if (preset === 'week') {
+                // 7日前を計算
+                const latest = new Date(latestDate);
+                const weekAgo = new Date(latest);
+                weekAgo.setDate(latest.getDate() - 7);
+                
+                // 実際のデータで最も近い日付を探す
+                startDate = dates.reduce((prev, curr) => {
+                    return Math.abs(new Date(curr) - weekAgo) < Math.abs(new Date(prev) - weekAgo) ? curr : prev;
+                });
+            } else if (preset === 'month') {
+                // 30日前を計算
+                const latest = new Date(latestDate);
+                const monthAgo = new Date(latest);
+                monthAgo.setDate(latest.getDate() - 30);
+                
+                startDate = dates.reduce((prev, curr) => {
+                    return Math.abs(new Date(curr) - monthAgo) < Math.abs(new Date(prev) - monthAgo) ? curr : prev;
+                });
+            }
+
+            // 日付フォーマットを変換 (YYYY/MM/DD → YYYY-MM-DD)
+            const formatDate = (dateStr) => {
+                const parts = dateStr.split('/');
+                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+            };
+
+            document.getElementById('dataStartDate').value = formatDate(startDate);
+            document.getElementById('dataEndDate').value = formatDate(latestDate);
+            
+            applyDataFilter();
+        }
+
+        // データ一覧の日付フィルター適用
+        function applyDataFilter() {
+            const startDate = document.getElementById('dataStartDate').value;
+            const endDate = document.getElementById('dataEndDate').value;
             
             if (!startDate && !endDate) {
                 alert('開始日または終了日を選択してください');
@@ -897,22 +989,46 @@
             const rangeText = document.getElementById('dateRangeText');
             
             indicator.style.display = 'block';
-            rangeText.textContent = `${startFormatted || '開始'} 〜 ${endFormatted || '終了'}`;
+            rangeText.textContent = `${startFormatted || '開始'} ～ ${endFormatted || '終了'}`;
             
             currentPage = 1;
             displayData();
             updateFilteredStats();
         }
 
-        function clearDateFilter() {
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
+        function clearDataFilter() {
+            document.getElementById('dataStartDate').value = '';
+            document.getElementById('dataEndDate').value = '';
             document.getElementById('dateRangeIndicator').style.display = 'none';
             
             filteredData = [...allData];
             currentPage = 1;
             displayData();
             updateStats();
+        }
+
+        // 表示件数の更新
+        function updateItemsPerPage() {
+            itemsPerPage = parseInt(document.getElementById('dataLimit').value);
+            currentPage = 1;
+            displayData();
+        }
+
+        // データ表示の更新
+        function updateDataDisplay() {
+            const metric = document.getElementById('dataMetric').value;
+            
+            if (metric) {
+                // 指定された指標で上位のデータのみ表示
+                filteredData.sort((a, b) => {
+                    const aVal = parseInt((a[metric] || '0').toString().replace(/,/g, '')) || 0;
+                    const bVal = parseInt((b[metric] || '0').toString().replace(/,/g, '')) || 0;
+                    return bVal - aVal;
+                });
+            }
+            
+            currentPage = 1;
+            displayData();
         }
 
         function switchTab(tab) {
@@ -1005,9 +1121,28 @@
             const startFormatted = startDate.replace(/-/g, '/');
             const endFormatted = endDate.replace(/-/g, '/');
             
-            document.getElementById('growthPeriodDisplay').textContent = `${startFormatted} 〜 ${endFormatted}`;
+            document.getElementById('growthPeriodDisplay').textContent = `${startFormatted} ～ ${endFormatted}`;
 
             updateGrowthRanking();
+        }
+
+        // 成長フィルターのクリア
+        function clearGrowthFilter() {
+            document.getElementById('growthStartDate').value = '';
+            document.getElementById('growthEndDate').value = '';
+            document.getElementById('growthPeriodDisplay').textContent = '未選択';
+            document.getElementById('growthAnalysisCount').textContent = '0';
+            document.getElementById('growthTopPlayer').textContent = '-';
+            
+            // テーブルを初期状態に戻す
+            document.getElementById('growthTableBody').innerHTML = `
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                        <h3>期間を選択して「適用」をクリックしてください</h3>
+                        <p>またはプリセットボタンから期間を選択できます</p>
+                    </td>
+                </tr>
+            `;
         }
 
         // 成長ランキングの更新
@@ -1027,7 +1162,7 @@
             const sortBy = document.getElementById('growthSort').value;
             const filterType = document.getElementById('growthFilter').value;
 
-            console.log('分析期間:', startFormatted, '〜', endFormatted);
+            console.log('分析期間:', startFormatted, '～', endFormatted);
             console.log('選択指標:', metric);
 
             // 開始日と終了日のデータを取得
@@ -1040,7 +1175,7 @@
             if (startData.length === 0 || endData.length === 0) {
                 document.getElementById('growthTableBody').innerHTML = `
                     <tr>
-                        <td colspan="8" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                        <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
                             <h3>選択した期間のデータが見つかりません</h3>
                             <p>開始日: ${startFormatted} (${startData.length}件)</p>
                             <p>終了日: ${endFormatted} (${endData.length}件)</p>
@@ -1114,6 +1249,7 @@
 
             // 表示数制限
             const displayData = growthData.slice(0, limit);
+            currentGrowthData = displayData;  // 保存しておく
 
             // データ件数を更新
             document.getElementById('growthAnalysisCount').textContent = displayData.length;
@@ -1133,74 +1269,123 @@
             }
 
             // テーブルに表示
+            displayGrowthTable(displayData);
+            console.log('テーブル更新完了');
+        }
+
+        // 成長ランキングテーブルのソート
+        function sortGrowthTable(column) {
+            if (!currentGrowthData || currentGrowthData.length === 0) return;
+            
+            // ソート順を切り替え
+            if (growthSortColumn === column) {
+                growthSortOrder = growthSortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                growthSortColumn = column;
+                growthSortOrder = column === 'difference' || column === 'growthRate' || column === 'endValue' ? 'desc' : 'asc';
+            }
+            
+            // データをソート
+            currentGrowthData.sort((a, b) => {
+                let aVal = a[column];
+                let bVal = b[column];
+                
+                // 文字列の場合は小文字で比較
+                if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+                if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+                
+                if (aVal < bVal) return growthSortOrder === 'asc' ? -1 : 1;
+                if (aVal > bVal) return growthSortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // テーブルを再表示
+            displayGrowthTable(currentGrowthData);
+            
+            // ソートインジケーターを更新
+            updateGrowthSortIndicators();
+        }
+
+        // 成長ランキングのソートインジケーター更新
+        function updateGrowthSortIndicators() {
+            const headers = document.querySelectorAll('#growthTab th.sortable');
+            headers.forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                const thColumn = th.getAttribute('onclick').match(/sortGrowthTable\('(.+?)'\)/)[1];
+                if (thColumn === growthSortColumn) {
+                    th.classList.add(`sorted-${growthSortOrder}`);
+                }
+            });
+        }
+
+        // 成長ランキングテーブルの表示
+        function displayGrowthTable(data) {
             const tbody = document.getElementById('growthTableBody');
-            if (displayData.length === 0) {
+            
+            if (data.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
-                            <h3>条件に一致するデータがありません</h3>
-                            <p>フィルター設定を確認してください</p>
+                            <h3>データが見つかりません</h3>
+                            <p>フィルター条件を変更してください</p>
                         </td>
                     </tr>
                 `;
                 return;
             }
-
-            tbody.innerHTML = displayData.map((row, index) => {
-                const rank = index + 1;
-                const rankBadge = rank <= 3 ? 
-                    `<span style="display: inline-block; width: 24px; height: 24px; background: ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : '#cd7f32'}; color: white; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold;">${rank}</span>` :
-                    `<span style="font-weight: bold;">${rank}</span>`;
-
-                const formatValue = (value) => {
-                    const absValue = Math.abs(value);
-                    if (absValue >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
-                    if (absValue >= 1000000) return (value / 1000000).toFixed(1) + 'M';
-                    if (absValue >= 1000) return (value / 1000).toFixed(1) + 'K';
-                    return value.toLocaleString();
-                };
-
-                const diffColor = row.difference > 0 ? '#27ae60' : row.difference < 0 ? '#e74c3c' : '#95a5a6';
-                const diffSymbol = row.difference > 0 ? '↑' : row.difference < 0 ? '↓' : '→';
-                const rateSymbol = row.growthRate > 0 ? '+' : '';
-
+            
+            const formatValue = (value) => {
+                if (Math.abs(value) >= 1000000000) return (value / 1000000000).toFixed(2) + 'B';
+                if (Math.abs(value) >= 1000000) return (value / 1000000).toFixed(1) + 'M';
+                if (Math.abs(value) >= 1000) return (value / 1000).toFixed(1) + 'K';
+                return value.toLocaleString();
+            };
+            
+            tbody.innerHTML = data.map((row, index) => {
+                const rankBadgeColor = index === 0 ? '#ffd700' : index === 1 ? '#c0c0c0' : index === 2 ? '#cd7f32' : '#e0e0e0';
+                const differenceColor = row.difference > 0 ? '#27ae60' : row.difference < 0 ? '#e74c3c' : '#95a5a6';
+                const rateColor = row.growthRate > 0 ? '#27ae60' : row.growthRate < 0 ? '#e74c3c' : '#95a5a6';
+                
                 return `
                     <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;">
-                        <td style="padding: 12px 15px; text-align: center; color: #2c3e50;">${rankBadge}</td>
-                        <td style="padding: 12px 15px; text-align: center; color: #2c3e50;">${row.id}</td>
-                        <td style="padding: 12px 15px; color: #2c3e50;">${escapeHtml(row.name)}</td>
+                        <td style="padding: 12px 15px; text-align: center; font-weight: 600;">
+                            <span style="display: inline-block; width: 30px; height: 30px; line-height: 30px; border-radius: 50%; background: ${rankBadgeColor}; color: ${index < 3 ? '#2c3e50' : '#7f8c8d'};">
+                                ${index + 1}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 15px; text-align: center; color: #2c3e50;">${escapeHtml(row.id || '')}</td>
+                        <td style="padding: 12px 15px; color: #2c3e50; font-weight: 500;">${escapeHtml(row.name)}</td>
                         <td style="padding: 12px 15px; color: #2c3e50;">
                             ${row.alliance ? `<span class="alliance-badge">${escapeHtml(row.alliance)}</span>` : '-'}
                         </td>
-                        <td style="padding: 12px 15px; text-align: right; color: #2c3e50;">${formatValue(row.startValue)}</td>
-                        <td style="padding: 12px 15px; text-align: right; color: #2c3e50;">${formatValue(row.endValue)}</td>
-                        <td style="padding: 12px 15px; text-align: right; color: ${diffColor}; font-weight: 600;">
-                            ${diffSymbol} ${formatValue(Math.abs(row.difference))}
+                        <td style="padding: 12px 15px; text-align: right; color: #7f8c8d;">${formatValue(row.startValue)}</td>
+                        <td style="padding: 12px 15px; text-align: right; color: #2c3e50; font-weight: 500;">${formatValue(row.endValue)}</td>
+                        <td style="padding: 12px 15px; text-align: right; color: ${differenceColor}; font-weight: 600;">
+                            ${row.difference > 0 ? '+' : ''}${formatValue(row.difference)}
                         </td>
-                        <td style="padding: 12px 15px; text-align: right; color: ${diffColor};">
-                            ${rateSymbol}${row.growthRate.toFixed(1)}%
+                        <td style="padding: 12px 15px; text-align: right; color: ${rateColor}; font-weight: 500;">
+                            ${row.growthRate > 0 ? '+' : ''}${row.growthRate.toFixed(2)}%
                         </td>
                         <td style="padding: 12px 15px; text-align: right; color: #7f8c8d;">
-                            ${formatValue(Math.abs(row.dailyAverage))}/日
+                            ${row.dailyAverage > 0 ? '+' : ''}${formatValue(row.dailyAverage)}
                         </td>
                     </tr>
                 `;
             }).join('');
-
-            console.log('テーブル更新完了');
         }
 
         function setupEventListeners() {
             document.getElementById('searchInput').addEventListener('input', filterDataBySearch);
             
-            document.getElementById('sortColumn').addEventListener('change', (e) => {
+            // データ一覧タブのソート設定
+            document.getElementById('dataSortColumn').addEventListener('change', (e) => {
                 if (e.target.value) {
-                    sortData(e.target.value, document.getElementById('sortOrder').value);
+                    sortData(e.target.value, document.getElementById('dataSortOrder').value);
                 }
             });
 
-            document.getElementById('sortOrder').addEventListener('change', (e) => {
-                const column = document.getElementById('sortColumn').value;
+            document.getElementById('dataSortOrder').addEventListener('change', (e) => {
+                const column = document.getElementById('dataSortColumn').value;
                 if (column) {
                     sortData(column, e.target.value);
                 }
@@ -1226,8 +1411,8 @@
 
         function filterDataBySearch() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
+            const startDate = document.getElementById('dataStartDate').value;
+            const endDate = document.getElementById('dataEndDate').value;
             
             let baseData = allData;
             if (startDate || endDate) {
@@ -1433,8 +1618,8 @@
                 }
             });
             
-            document.getElementById('sortColumn').value = sortColumn;
-            document.getElementById('sortOrder').value = sortOrder;
+            document.getElementById('dataSortColumn').value = sortColumn;
+            document.getElementById('dataSortOrder').value = sortOrder;
         }
 
         function searchPlayer() {
@@ -1477,7 +1662,7 @@
             
             const dates = allPlayerData.map(d => d.Data).sort();
             document.getElementById('playerDataRange').textContent = 
-                `${dates[0]} 〜 ${dates[dates.length - 1]}`;
+                `${dates[0]} ～ ${dates[dates.length - 1]}`;
             
             updateIndividualChart();
         }
