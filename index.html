@@ -493,47 +493,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script>
-        // パスワード認証関数（HTMLより先に定義）
-        const CORRECT_PASSWORD = '2062data';
-        
-        function checkPassword() {
-            const input = document.getElementById('passwordInput').value;
-            const errorMsg = document.getElementById('passwordError');
-            
-            if (input === CORRECT_PASSWORD) {
-                // パスワードが正しい場合
-                document.getElementById('passwordProtection').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                
-                // セッションストレージに認証状態を保存
-                sessionStorage.setItem('authenticated', 'true');
-                
-                // Chart.jsのdatalabelsプラグインを登録
-                if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
-                    Chart.register(ChartDataLabels);
-                    Chart.defaults.plugins.datalabels = {
-                        display: false
-                    };
-                }
-                
-                // データの読み込みを開始
-                loadCSVData();
-                setupEventListeners();
-            } else {
-                // パスワードが間違っている場合
-                errorMsg.style.display = 'block';
-                document.getElementById('passwordInput').value = '';
-                
-                // 入力欄を振動させる
-                const inputBox = document.getElementById('passwordInput');
-                inputBox.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    inputBox.style.animation = '';
-                }, 500);
-            }
-        }
-    </script>
 </head>
 <body>
     <!-- パスワード保護画面 -->
@@ -541,8 +500,8 @@
         <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); text-align: center; max-width: 400px; width: 90%;">
             <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 28px;">🔐 パスワード認証</h2>
             <p style="color: #7f8c8d; margin-bottom: 30px;">このサイトを閲覧するにはパスワードが必要です</p>
-            <input type="password" id="passwordInput" placeholder="パスワードを入力" style="width: 100%; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 20px;" onkeypress="if(event.key === 'Enter') checkPassword()">
-            <button onclick="checkPassword()" style="width: 100%; padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">ログイン</button>
+            <input type="password" id="passwordInput" placeholder="パスワードを入力" style="width: 100%; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 20px;">
+            <button id="loginButton" style="width: 100%; padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">ログイン</button>
             <div id="passwordError" style="color: #e74c3c; margin-top: 15px; display: none;">パスワードが正しくありません</div>
         </div>
     </div>
@@ -589,6 +548,7 @@
                     <span>～</span>
                     <input type="date" id="dataEndDate">
                     <button onclick="applyDataFilter()">適用</button>
+                    <button class="preset-btn" onclick="setDataPreset('latest')">最新データー</button>
                     <button class="preset-btn" onclick="setDataPreset('week')">直近7日</button>
                     <button class="preset-btn" onclick="setDataPreset('month')">直近30日</button>
                     <button class="preset-btn" onclick="setDataPreset('all')">全期間</button>
@@ -704,6 +664,7 @@
                     <span>～</span>
                     <input type="date" id="growthEndDate">
                     <button onclick="applyGrowthFilter()">適用</button>
+                    <button class="preset-btn" onclick="setGrowthPreset('latest')">最新データー</button>
                     <button class="preset-btn" onclick="setGrowthPreset('week')">直近7日</button>
                     <button class="preset-btn" onclick="setGrowthPreset('month')">直近30日</button>
                     <button class="preset-btn" onclick="setGrowthPreset('all')">全期間</button>
@@ -858,6 +819,48 @@
         // =====================================
         const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
         
+        // =====================================
+        // パスワード保護機能
+        // =====================================
+        const CORRECT_PASSWORD = '2062data';
+        
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            const errorMsg = document.getElementById('passwordError');
+            
+            if (input === CORRECT_PASSWORD) {
+                // パスワードが正しい場合
+                document.getElementById('passwordProtection').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                
+                // セッションストレージに認証状態を保存
+                sessionStorage.setItem('authenticated', 'true');
+                
+                // Chart.jsのdatalabelsプラグインを登録
+                if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+                    Chart.register(ChartDataLabels);
+                    Chart.defaults.plugins.datalabels = {
+                        display: false
+                    };
+                }
+                
+                // データの読み込みを開始
+                loadCSVData();
+                setupEventListeners();
+            } else {
+                // パスワードが間違っている場合
+                errorMsg.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+                
+                // 入力欄を振動させる
+                const inputBox = document.getElementById('passwordInput');
+                inputBox.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    inputBox.style.animation = '';
+                }, 500);
+            }
+        }
+        
         // グローバル変数
         let allData = [];
         let filteredData = [];
@@ -875,6 +878,22 @@
 
         // ページ読み込み時の処理
         window.addEventListener('DOMContentLoaded', () => {
+            // パスワード認証のイベントリスナーを設定
+            const loginButton = document.getElementById('loginButton');
+            const passwordInput = document.getElementById('passwordInput');
+            
+            if (loginButton) {
+                loginButton.addEventListener('click', checkPassword);
+            }
+            
+            if (passwordInput) {
+                passwordInput.addEventListener('keypress', (event) => {
+                    if (event.key === 'Enter') {
+                        checkPassword();
+                    }
+                });
+            }
+            
             // 既に認証済みかチェック
             if (sessionStorage.getItem('authenticated') === 'true') {
                 // 認証済みの場合は直接メインコンテンツを表示
@@ -893,7 +912,9 @@
                 setupEventListeners();
             } else {
                 // 未認証の場合はパスワード入力画面を表示
-                document.getElementById('passwordInput').focus();
+                if (passwordInput) {
+                    passwordInput.focus();
+                }
             }
         });
 
@@ -1001,7 +1022,10 @@
             const latestDate = dates[dates.length - 1];
             let startDate = dates[0];
 
-            if (preset === 'week') {
+            if (preset === 'latest') {
+                // 最新データーのみ（最新日付の1日分）
+                startDate = latestDate;
+            } else if (preset === 'week') {
                 // 7日前を計算
                 const latest = new Date(latestDate);
                 const weekAgo = new Date(latest);
@@ -1150,7 +1174,20 @@
             const latestDate = dates[dates.length - 1];
             let startDate = dates[0];
 
-            if (preset === 'week') {
+            if (preset === 'latest') {
+                // 最新データー（最新日と前回のデータ日を比較）
+                if (dates.length >= 2) {
+                    // 重複を除いた一意の日付を取得
+                    const uniqueDates = [...new Set(dates)].sort();
+                    if (uniqueDates.length >= 2) {
+                        startDate = uniqueDates[uniqueDates.length - 2];  // 前回のデータ日
+                    } else {
+                        startDate = uniqueDates[0];
+                    }
+                } else {
+                    startDate = latestDate;
+                }
+            } else if (preset === 'week') {
                 // 7日前を計算
                 const latest = new Date(latestDate);
                 const weekAgo = new Date(latest);
