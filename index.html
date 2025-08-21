@@ -176,6 +176,14 @@
             background: #c0392b;
         }
 
+        .date-filter .csv-btn {
+            background: #27ae60;
+        }
+
+        .date-filter .csv-btn:hover {
+            background: #229954;
+        }
+
         .search-box {
             flex: 1;
             min-width: 250px;
@@ -529,7 +537,7 @@
         <div class="tab-container">
             <button class="tab-btn active" onclick="switchTab('data')">データ一覧</button>
             <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
-            <button class="tab-btn" onclick="switchTab('overall')">全体統計</button>
+            <button class="tab-btn" onclick="switchTab('overall')">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
             <button class="tab-btn" onclick="switchTab('contact')">問い合わせ先</button>
         </div>
@@ -564,6 +572,7 @@
                     <button class="preset-btn" onclick="setDataPreset('month')">直近30日</button>
                     <button class="preset-btn" onclick="setDataPreset('all')">全期間</button>
                     <button class="clear-btn" onclick="clearDataFilter()">クリア</button>
+                    <button class="csv-btn" onclick="exportDataToCSV()">CSV出力</button>
                 </div>
 
                 <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
@@ -681,6 +690,7 @@
                     <button class="preset-btn" onclick="setGrowthPreset('month')">直近30日</button>
                     <button class="preset-btn" onclick="setGrowthPreset('all')">全期間</button>
                     <button class="clear-btn" onclick="clearGrowthFilter()">クリア</button>
+                    <button class="csv-btn" onclick="exportGrowthToCSV()">CSV出力</button>
                 </div>
 
                 <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
@@ -762,7 +772,7 @@
             </div>
         </div>
 
-        <!-- 全体統計タブ -->
+        <!-- 上位300人統計タブ -->
         <div id="overallTab" class="tab-content">
             <div class="chart-container">
                 <div class="chart-header">
@@ -2553,6 +2563,59 @@
                 "'": '&#039;'
             };
             return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // CSV出力関数
+        function exportDataToCSV() {
+            if (!filteredData || filteredData.length === 0) {
+                alert('出力するデータがありません。まずデータを読み込んでください。');
+                return;
+            }
+
+            const csvData = filteredData.map(row => ({
+                'プレイヤー名': row['Player Name'] || '',
+                '日付': row['Date'] || '',
+                'Power': row['Power'] || '',
+                'T4-Kills': row['T4-Kills'] || '',
+                'T5-Kills': row['T5-Kills'] || '',
+                'Total Kill Points': row['Total Kill Points'] || '',
+                'Dead Troops': row['Dead Troops'] || ''
+            }));
+
+            const csv = Papa.unparse(csvData);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            const currentDate = new Date().toISOString().split('T')[0];
+            link.href = URL.createObjectURL(blob);
+            link.download = `ROK_データ一覧_${currentDate}.csv`;
+            link.click();
+        }
+
+        function exportGrowthToCSV() {
+            if (!currentGrowthData || currentGrowthData.length === 0) {
+                alert('出力するデータがありません。まず成長ランキングを生成してください。');
+                return;
+            }
+
+            const csvData = currentGrowthData.map((row, index) => ({
+                '順位': index + 1,
+                'プレイヤー名': row.playerName || '',
+                '開始値': row.startValue || '',
+                '終了値': row.endValue || '',
+                '成長量': row.growth || '',
+                '成長率': row.growthRate ? `${row.growthRate}%` : ''
+            }));
+
+            const csv = Papa.unparse(csvData);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            const currentDate = new Date().toISOString().split('T')[0];
+            const metric = document.getElementById('growthMetric').value;
+            link.href = URL.createObjectURL(blob);
+            link.download = `ROK_成長ランキング_${metric}_${currentDate}.csv`;
+            link.click();
         }
     </script>
 </body>
