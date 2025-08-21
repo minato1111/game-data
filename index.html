@@ -17,6 +17,8 @@
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
+            will-change: scroll-position;
         }
 
         .container {
@@ -27,6 +29,8 @@
             padding: 30px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             animation: fadeIn 0.6s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         @keyframes fadeIn {
@@ -213,25 +217,41 @@
         }
 
         .stats {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
         .stat-card {
-            flex: 1;
-            min-width: 200px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
         }
 
         .stat-card h3 {
@@ -249,6 +269,9 @@
             overflow-x: auto;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            contain: layout style paint;
+            will-change: scroll-position;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
@@ -499,12 +522,196 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
+
+        /* ダークモードサポート */
+        :root {
+            --primary-bg: #ffffff;
+            --secondary-bg: #f8f9fa;
+            --text-primary: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --card-bg: #ffffff;
+            --hover-bg: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #404040;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --gradient-primary: linear-gradient(135deg, #2d1b69 0%, #11998e 100%);
+            --card-bg: #2d2d2d;
+            --hover-bg: #404040;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px var(--shadow-color);
+        }
+
+        .container {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+        }
+
+        .filter-section {
+            background: var(--secondary-bg);
+        }
+
+        .search-box input {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--secondary-bg);
+        }
+
+        tbody tr:hover {
+            background: var(--hover-bg);
+        }
+
+        /* スムーズスクロール */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* パフォーマンス向上のためのCSS */
+        * {
+            backface-visibility: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 新しいローディングアニメーション */
+        .loading-dots {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 20px;
+        }
+
+        .loading-dots div {
+            position: absolute;
+            top: 8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3498db;
+            animation: loading-dots 1.2s linear infinite;
+        }
+
+        .loading-dots div:nth-child(1) { left: 8px; animation-delay: -0.24s; }
+        .loading-dots div:nth-child(2) { left: 32px; animation-delay: -0.12s; }
+        .loading-dots div:nth-child(3) { left: 56px; animation-delay: 0; }
+
+        @keyframes loading-dots {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* アクセシビリティ改善 */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* フォーカス表示の改善 */
+        button:focus,
+        input:focus,
+        select:focus {
+            outline: 2px solid #3498db;
+            outline-offset: 2px;
+        }
+
+        .tab-btn:focus {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* 高コントラストモード対応 */
+        @media (prefers-contrast: high) {
+            .tab-btn {
+                border: 2px solid currentColor;
+            }
+            
+            .stat-card {
+                border: 2px solid #333;
+            }
+        }
+
+        /* motion減らした設定への対応 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
+        /* より良いフォーカス管理 */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: #000;
+            color: #fff;
+            padding: 8px;
+            z-index: 100;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
+    <!-- スキップリンク -->
+    <a href="#mainContent" class="skip-link">メインコンテンツへスキップ</a>
+
     <!-- パスワード保護画面 -->
     <div id="passwordProtection" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); display: flex; align-items: center; justify-content: center; z-index: 9999;">
         <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); text-align: center; max-width: 400px; width: 90%;">
@@ -514,6 +721,11 @@
             <button id="loginButton" style="width: 100%; padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">ログイン</button>
             <div id="passwordError" style="color: #e74c3c; margin-top: 15px; display: none;">パスワードが正しくありません</div>
         </div>
+    </div>
+
+    <!-- ダークモード切り替えボタン -->
+    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="テーマを切り替える">
+        <span id="themeIcon">🌙</span>
     </div>
 
     <!-- メインコンテンツ（初期状態では非表示） -->
@@ -526,12 +738,12 @@
         </div>
         
         <!-- タブナビゲーション -->
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="switchTab('data')">データ一覧</button>
-            <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
-            <button class="tab-btn" onclick="switchTab('overall')">全体統計</button>
-            <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
-            <button class="tab-btn" onclick="switchTab('contact')">問い合わせ先</button>
+        <div class="tab-container" role="tablist" aria-label="データ表示タブ">
+            <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="dataTab" tabindex="0" onclick="switchTab('data')" onkeydown="handleTabKeydown(event, 'data')">データ一覧</button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="growthTab" tabindex="-1" onclick="switchTab('growth')" onkeydown="handleTabKeydown(event, 'growth')">成長ランキング</button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="overallTab" tabindex="-1" onclick="switchTab('overall')" onkeydown="handleTabKeydown(event, 'overall')">全体統計</button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="individualTab" tabindex="-1" onclick="switchTab('individual')" onkeydown="handleTabKeydown(event, 'individual')">個人分析</button>
+            <button class="tab-btn" role="tab" aria-selected="false" aria-controls="contactTab" tabindex="-1" onclick="switchTab('contact')" onkeydown="handleTabKeydown(event, 'contact')">問い合わせ先</button>
         </div>
 
         <!-- データ一覧タブ -->
@@ -613,9 +825,10 @@
 
             <div class="controls">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索...">
+                    <label for="searchInput" class="sr-only">名前、ID、同盟で検索</label>
+                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索..." aria-label="検索フィールド" role="searchbox">
                 </div>
-                <div class="date-range-indicator" id="dateRangeIndicator" style="display: none;">
+                <div class="date-range-indicator" id="dateRangeIndicator" style="display: none;" aria-live="polite">
                     期間: <span id="dateRangeText">-</span>
                 </div>
             </div>
@@ -640,7 +853,11 @@
                     <tbody id="tableBody">
                         <tr>
                             <td colspan="11" class="loading">
-                                <div class="loading-spinner"></div>
+                                <div class="loading-dots">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
                                 <p>CSVファイルを読み込み中...</p>
                             </td>
                         </tr>
@@ -763,12 +980,12 @@
         </div>
 
         <!-- 全体統計タブ -->
-        <div id="overallTab" class="tab-content">
+        <div id="overallTab" class="tab-content" role="tabpanel" aria-labelledby="overallTab">
             <div class="chart-container">
                 <div class="chart-header">
                     <h2 class="chart-title">上位300人の統計</h2>
                     <div class="chart-controls">
-                        <select id="overallMetric">
+                        <select id="overallMetric" aria-label="統計指標を選択">
                             <option value="Power">Power</option>
                             <option value="T4-Kills">T4-Kills</option>
                             <option value="T5-Kills">T5-Kills</option>
@@ -776,16 +993,44 @@
                             <option value="Dead Troops">Dead Troops</option>
                             <option value="Troops Power">Troops Power</option>
                         </select>
-                        <button class="active" onclick="showLineChart()">折れ線グラフ</button>
-                        <button onclick="showBarChart()">棒グラフ</button>
+                        <button class="active" onclick="showLineChart()" aria-pressed="true">📈 折れ線グラフ</button>
+                        <button onclick="showBarChart()" aria-pressed="false">📊 棒グラフ</button>
+                        <button onclick="showPieChart()" aria-pressed="false">🥧 円グラフ</button>
+                        <button onclick="showRadarChart()" aria-pressed="false">🕸️ レーダーチャート</button>
                     </div>
                 </div>
 
                 <div class="chart-wrapper">
-                    <canvas id="overallChart"></canvas>
+                    <canvas id="overallChart" role="img" aria-label="統計チャート"></canvas>
                 </div>
                 <div class="chart-wrapper" style="display: none;">
-                    <canvas id="overallBarChart"></canvas>
+                    <canvas id="overallBarChart" role="img" aria-label="棒グラフ"></canvas>
+                </div>
+                <div class="chart-wrapper" style="display: none;">
+                    <canvas id="overallPieChart" role="img" aria-label="円グラフ"></canvas>
+                </div>
+                <div class="chart-wrapper" style="display: none;">
+                    <canvas id="overallRadarChart" role="img" aria-label="レーダーチャート"></canvas>
+                </div>
+            </div>
+
+            <!-- 新しい統計情報カード -->
+            <div class="stats" style="margin-top: 30px;">
+                <div class="stat-card" style="background: linear-gradient(135deg, #8360c3 0%, #2ebf91 100%);">
+                    <h3>平均値</h3>
+                    <p id="averageValue">-</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                    <h3>中央値</h3>
+                    <p id="medianValue">-</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                    <h3>標準偏差</h3>
+                    <p id="stdDevValue">-</p>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);">
+                    <h3>最大値</h3>
+                    <p id="maxValue">-</p>
                 </div>
             </div>
         </div>
@@ -965,9 +1210,94 @@
         let filteredGrowthData = []; // フィルター適用後の成長データ
         let growthSortColumn = '';   // 成長ランキングのソート列
         let growthSortOrder = 'desc'; // 成長ランキングのソート順
+        let currentTheme = localStorage.getItem('theme') || 'light'; // テーマ設定
+
+        // テーマ切り替え機能
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (currentTheme === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                currentTheme = 'dark';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                currentTheme = 'light';
+            }
+            
+            localStorage.setItem('theme', currentTheme);
+            
+            // チャートを再描画（ダークモード対応）
+            if (overallChartInstance) {
+                updateChartTheme(overallChartInstance);
+            }
+            if (individualChartInstance) {
+                updateChartTheme(individualChartInstance);
+            }
+        }
+
+        // チャートのテーマを更新
+        function updateChartTheme(chart) {
+            const isDark = currentTheme === 'dark';
+            const textColor = isDark ? '#ffffff' : '#2c3e50';
+            const gridColor = isDark ? '#404040' : '#e0e0e0';
+            
+            if (chart.options.scales) {
+                Object.keys(chart.options.scales).forEach(scaleKey => {
+                    chart.options.scales[scaleKey].ticks.color = textColor;
+                    chart.options.scales[scaleKey].grid.color = gridColor;
+                });
+            }
+            
+            if (chart.options.plugins && chart.options.plugins.legend) {
+                chart.options.plugins.legend.labels.color = textColor;
+            }
+            
+            chart.update();
+        }
+
+        // タブナビゲーションのキーボード対応
+        function handleTabKeydown(event, tabName) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            let currentIndex = Array.from(tabs).findIndex(tab => tab.getAttribute('aria-controls') === tabName + 'Tab');
+            
+            switch(event.key) {
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    currentIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+                    tabs[currentIndex].focus();
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    currentIndex = (currentIndex + 1) % tabs.length;
+                    tabs[currentIndex].focus();
+                    break;
+                case 'Home':
+                    event.preventDefault();
+                    tabs[0].focus();
+                    break;
+                case 'End':
+                    event.preventDefault();
+                    tabs[tabs.length - 1].focus();
+                    break;
+                case 'Enter':
+                case ' ':
+                    event.preventDefault();
+                    switchTab(tabName);
+                    break;
+            }
+        }
 
         // ページ読み込み時の処理
         window.addEventListener('DOMContentLoaded', () => {
+            // テーマの初期設定
+            if (currentTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
+            
             // パスワード認証のイベントリスナーを設定
             const loginButton = document.getElementById('loginButton');
             const passwordInput = document.getElementById('passwordInput');
@@ -1224,29 +1554,44 @@
         }
 
         function switchTab(tab) {
+            // タブボタンの状態を更新
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
+                btn.setAttribute('tabindex', '-1');
             });
-            event.target.classList.add('active');
+            
+            const activeTab = document.querySelector(`[aria-controls="${tab}Tab"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                activeTab.setAttribute('aria-selected', 'true');
+                activeTab.setAttribute('tabindex', '0');
+            }
 
+            // タブコンテンツの状態を更新
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
+                content.setAttribute('aria-hidden', 'true');
             });
 
-            if (tab === 'data') {
-                document.getElementById('dataTab').classList.add('active');
-            } else if (tab === 'individual') {
-                document.getElementById('individualTab').classList.add('active');
+            const targetTab = document.getElementById(`${tab}Tab`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+                targetTab.setAttribute('aria-hidden', 'false');
+                
+                // スクリーンリーダー用にフォーカスを移動
+                targetTab.focus();
+            }
+
+            // タブ固有の処理
+            if (tab === 'individual') {
+                // 個人分析タブが開かれた時の処理
             } else if (tab === 'overall') {
-                document.getElementById('overallTab').classList.add('active');
                 if (allData.length > 0) {
                     updateOverallChart();
                 }
             } else if (tab === 'growth') {
-                document.getElementById('growthTab').classList.add('active');
                 initGrowthTab();
-            } else if (tab === 'contact') {
-                document.getElementById('contactTab').classList.add('active');
             }
         }
 
@@ -2536,12 +2881,62 @@
         }
 
         function showBarChart() {
-            document.getElementById('overallChart').parentElement.style.display = 'none';
+            hideAllCharts();
             document.getElementById('overallBarChart').parentElement.style.display = 'block';
-            
+            updateChartButtons(event.target);
+        }
+
+        function showPieChart() {
+            hideAllCharts();
+            document.getElementById('overallPieChart').parentElement.style.display = 'block';
+            updateChartButtons(event.target);
+        }
+
+        function showRadarChart() {
+            hideAllCharts();
+            document.getElementById('overallRadarChart').parentElement.style.display = 'block';
+            updateChartButtons(event.target);
+        }
+
+        function hideAllCharts() {
+            document.getElementById('overallChart').parentElement.style.display = 'none';
+            document.getElementById('overallBarChart').parentElement.style.display = 'none';
+            document.getElementById('overallPieChart').parentElement.style.display = 'none';
+            document.getElementById('overallRadarChart').parentElement.style.display = 'none';
+        }
+
+        function updateChartButtons(activeButton) {
             const buttons = document.querySelectorAll('#overallTab .chart-controls button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                btn.setAttribute('aria-pressed', 'false');
+            });
+            activeButton.classList.add('active');
+            activeButton.setAttribute('aria-pressed', 'true');
+        }
+
+        // 統計計算関数
+        function calculateStatistics(data, metric) {
+            const values = data.map(item => parseFloat(item[metric]) || 0);
+            const sorted = values.sort((a, b) => a - b);
+            
+            const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+            const median = sorted[Math.floor(sorted.length / 2)];
+            const max = Math.max(...values);
+            const variance = values.reduce((sum, val) => sum + Math.pow(val - average, 2), 0) / values.length;
+            const stdDev = Math.sqrt(variance);
+
+            return { average, median, max, stdDev };
+        }
+
+        // 統計情報を更新
+        function updateStatistics(metric) {
+            const stats = calculateStatistics(allData, metric);
+            
+            document.getElementById('averageValue').textContent = formatNumber(stats.average);
+            document.getElementById('medianValue').textContent = formatNumber(stats.median);
+            document.getElementById('stdDevValue').textContent = formatNumber(stats.stdDev);
+            document.getElementById('maxValue').textContent = formatNumber(stats.max);
         }
 
         function escapeHtml(text) {
