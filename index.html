@@ -500,6 +500,155 @@
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
+        /* プレイヤー比較のスタイル */
+        .suggestions-dropdown {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            width: 200px;
+        }
+
+        .suggestion-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .comparison-container {
+            margin-top: 20px;
+        }
+
+        .player-comparison {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .player-card {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .vs-divider {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            background: #ecf0f1;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .player-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .player-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .comparison-charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .player-comparison {
+                flex-direction: column;
+            }
+            
+            .comparison-charts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 仮想スクロールのスタイル */
+        .virtual-scroll-container {
+            height: 600px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .virtual-scroll-content {
+            position: relative;
+        }
+
+        .virtual-scroll-item {
+            position: absolute;
+            width: 100%;
+            box-sizing: border-box;
+            border-bottom: 1px solid #eee;
+        }
+
+        .scroll-enable-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 14px;
+        }
+
+        .scroll-enable-btn:hover {
+            background: #219a52;
+        }
+
+        .scroll-disable-btn {
+            background: #e74c3c;
+        }
+
+        .scroll-disable-btn:hover {
+            background: #c0392b;
+        }
+        
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -532,6 +681,7 @@
             <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
             <button class="tab-btn" onclick="switchTab('overall')">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
+            <button class="tab-btn" onclick="switchTab('compare')">プレイヤー比較</button>
             <button class="tab-btn" onclick="switchTab('contact')">問い合わせ先</button>
         </div>
 
@@ -589,6 +739,7 @@
                             <option value="300">300件</option>
                             <option value="500">500件</option>
                         </select>
+                        <button id="virtualScrollToggle" onclick="toggleVirtualScroll()" class="btn scroll-enable-btn">仮想スクロール有効</button>
                     </div>
 
                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -832,6 +983,49 @@
             </div>
         </div>
 
+        <!-- プレイヤー比較タブ -->
+        <div id="compareTab" class="tab-content">
+            <div class="filter-section">
+                <h2>🔄 プレイヤー比較</h2>
+                
+                <div class="filter-row" style="display: flex; gap: 20px; align-items: flex-end; margin-bottom: 20px;">
+                    <div class="filter-group">
+                        <label for="player1Search">プレイヤー1:</label>
+                        <input type="text" id="player1Search" placeholder="プレイヤー名で検索" style="width: 200px;">
+                        <div id="player1Suggestions" class="suggestions-dropdown"></div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="player2Search">プレイヤー2:</label>
+                        <input type="text" id="player2Search" placeholder="プレイヤー名で検索" style="width: 200px;">
+                        <div id="player2Suggestions" class="suggestions-dropdown"></div>
+                    </div>
+                    
+                    <button onclick="compareSelectedPlayers()" class="btn">比較実行</button>
+                    <button onclick="clearComparison()" class="btn btn-secondary">クリア</button>
+                </div>
+            </div>
+            
+            <div id="comparisonResults" style="display: none;">
+                <div class="comparison-container">
+                    <div class="player-comparison">
+                        <div class="player-card" id="player1Card"></div>
+                        <div class="vs-divider">VS</div>
+                        <div class="player-card" id="player2Card"></div>
+                    </div>
+                    
+                    <div class="comparison-charts">
+                        <div class="chart-container">
+                            <canvas id="comparisonRadarChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="comparisonBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 問い合わせ先タブ -->
         <div id="contactTab" class="tab-content">
             <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
@@ -967,6 +1161,50 @@
         let growthSortColumn = '';   // 成長ランキングのソート列
         let growthSortOrder = 'desc'; // 成長ランキングのソート順
 
+        // ローディング表示関数
+        function showLoading(message = '読み込み中...') {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>${message}</p>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // ローディング非表示関数
+        function hideLoading() {
+            // ローディングを非表示にしてデータ表示を更新
+            if (allData.length > 0) {
+                displayData();
+            }
+        }
+
+        // エラー表示関数
+        function showError(title, message, suggestions = []) {
+            const tbody = document.getElementById('tableBody');
+            let suggestionsHtml = '';
+            if (suggestions.length > 0) {
+                suggestionsHtml = `
+                    <br>
+                    <p><strong>解決方法:</strong></p>
+                    ${suggestions.map((s, i) => `<p>${i + 1}. ${s}</p>`).join('')}
+                `;
+            }
+            
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="error-message">
+                        <h2>⚠️ ${title}</h2>
+                        <p>${message}</p>
+                        ${suggestionsHtml}
+                    </td>
+                </tr>
+            `;
+        }
+
         // ページ読み込み時の処理
         window.addEventListener('DOMContentLoaded', () => {
             // パスワード認証のイベントリスナーを設定
@@ -1011,6 +1249,9 @@
 
         // CSVファイルを読み込む
         async function loadCSVData() {
+            // ローディング表示を開始
+            showLoading('CSVファイルを読み込み中...');
+            
             try {
                 // CSVファイルを取得
                 const response = await fetch(CSV_FILE_PATH);
@@ -1036,6 +1277,9 @@
                 allData = parsed.data;
                 filteredData = [...allData];
                 
+                // データ更新時にキャッシュをクリア
+                dataCache.clear();
+                
                 console.log(`データ読み込み完了: ${allData.length}件`);
                 
                 // 更新日時を設定
@@ -1045,23 +1289,20 @@
                 
                 updateStats();
                 setupDateInputs();
-                displayData();
+                hideLoading(); // ローディングを非表示
                 
             } catch (error) {
                 console.error('CSVファイル読み込みエラー:', error);
-                document.getElementById('tableBody').innerHTML = `
-                    <tr>
-                        <td colspan="10" class="error-message">
-                            <h2>⚠️ CSVファイルの読み込みに失敗しました</h2>
-                            <p>${error.message}</p>
-                            <br>
-                            <p><strong>解決方法:</strong></p>
-                            <p>1. CSVファイル（Master_Data.csv）が同じフォルダにあることを確認</p>
-                            <p>2. ファイル名が正しいことを確認</p>
-                            <p>3. GitHubにアップロード済みの場合は、ファイルが公開されているか確認</p>
-                        </td>
-                    </tr>
-                `;
+                showError(
+                    'CSVファイルの読み込みに失敗しました',
+                    error.message,
+                    [
+                        'CSVファイル（Master_Data.csv）が同じフォルダにあることを確認',
+                        'ファイル名が正しいことを確認',
+                        'GitHubにアップロード済みの場合は、ファイルが公開されているか確認',
+                        'ブラウザのデベロッパーツールでネットワークエラーを確認'
+                    ]
+                );
             }
         }
 
@@ -1246,6 +1487,9 @@
             } else if (tab === 'growth') {
                 document.getElementById('growthTab').classList.add('active');
                 initGrowthTab();
+            } else if (tab === 'compare') {
+                document.getElementById('compareTab').classList.add('active');
+                setupPlayerSearch();
             } else if (tab === 'contact') {
                 document.getElementById('contactTab').classList.add('active');
             }
@@ -1709,6 +1953,17 @@
         function updateStats() {
             document.getElementById('totalRecords').textContent = allData.length.toLocaleString();
             
+            // 統計情報をキャッシュから取得または計算
+            const statsKey = dataCache.generateKey('stats', allData.length, JSON.stringify(allData.slice(0, 10)));
+            let cachedStats = dataCache.get(statsKey);
+            
+            if (cachedStats) {
+                // キャッシュから結果を使用
+                document.getElementById('lastUpdate').textContent = cachedStats.latestDate;
+                document.getElementById('top300Power').textContent = cachedStats.totalPower.toLocaleString();
+                return;
+            }
+            
             // 最終データ日を取得
             const dates = allData.map(row => row.Data).filter(d => d);
             let latestDate = '';
@@ -1748,6 +2003,12 @@
                 }
                 
                 document.getElementById('top300Power').textContent = displayValue;
+                
+                // 結果をキャッシュに保存
+                dataCache.set(statsKey, {
+                    latestDate: latestDate,
+                    totalPower: displayValue
+                });
             }
         }
 
@@ -1757,6 +2018,13 @@
         }
 
         function displayData() {
+            // 仮想スクロールが有効な場合
+            if (virtualScrollEnabled && virtualScroll) {
+                virtualScroll.setData(filteredData);
+                return;
+            }
+            
+            // 通常のページネーション表示
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
             const pageData = filteredData.slice(startIndex, endIndex);
@@ -1848,7 +2116,23 @@
             sortColumn = column;
             sortOrder = order;
             
-            filteredData.sort((a, b) => {
+            // ソート結果をキャッシュから取得
+            const sortKey = dataCache.generateKey('sort', filteredData.length, column, order, JSON.stringify(filteredData.slice(0, 5)));
+            let cachedSort = dataCache.get(sortKey);
+            
+            if (cachedSort) {
+                filteredData = cachedSort;
+                currentPage = 1;
+                displayData();
+                displayPagination();
+                updateSortIndicators();
+                return;
+            }
+            
+            // ソート実行前のデータをコピー（キャッシュ用）
+            const sortedData = [...filteredData];
+            
+            sortedData.sort((a, b) => {
                 let aVal = a[column] || '';
                 let bVal = b[column] || '';
                 
@@ -1867,8 +2151,13 @@
                 return 0;
             });
             
+            // ソート結果をキャッシュに保存
+            filteredData = sortedData;
+            dataCache.set(sortKey, [...filteredData]);
+            
             currentPage = 1;
             displayData();
+            displayPagination();
             updateSortIndicators();
         }
 
@@ -2334,34 +2623,61 @@
             });
         }
 
-        function updateOverallChart() {
-            const metric = document.getElementById('overallMetric').value;
+        // 統計データの処理関数
+        function processOverallChartData(metric) {
+            // キャッシュキーでチェック
+            const cacheKey = dataCache.generateKey('overallChart', metric, allData.length);
+            const cached = dataCache.get(cacheKey);
+            if (cached) {
+                return cached;
+            }
             
-            const groupedData = {};
-            allData.forEach(row => {
+            const groupedData = groupDataByDate(allData);
+            const chartData = calculateChartData(groupedData, metric);
+            
+            const result = {
+                labels: chartData.map(d => d.date),
+                totals: chartData.map(d => d.total),
+                chartData: chartData
+            };
+            
+            // キャッシュに保存
+            dataCache.set(cacheKey, result);
+            
+            return result;
+        }
+
+        // 日付でデータをグループ化
+        function groupDataByDate(data) {
+            const grouped = {};
+            data.forEach(row => {
                 const date = row.Data;
                 if (!date) return;
                 
-                if (!groupedData[date]) {
-                    groupedData[date] = [];
+                if (!grouped[date]) {
+                    grouped[date] = [];
                 }
-                groupedData[date].push(row);
+                grouped[date].push(row);
             });
-            
+            return grouped;
+        }
+
+        // チャートデータを計算
+        function calculateChartData(groupedData, metric) {
             const chartData = [];
             Object.keys(groupedData).sort().forEach(date => {
                 const dayData = groupedData[date];
                 
+                // メトリクスでソート
                 dayData.sort((a, b) => {
-                    const aVal = parseInt((a[metric] || '0').toString().replace(/,/g, '')) || 0;
-                    const bVal = parseInt((b[metric] || '0').toString().replace(/,/g, '')) || 0;
+                    const aVal = parseNumberValue(a[metric]);
+                    const bVal = parseNumberValue(b[metric]);
                     return bVal - aVal;
                 });
                 
                 const top300 = dayData.slice(0, 300);
                 const total = top300.reduce((sum, row) => {
-                    const val = parseInt((row[metric] || '0').toString().replace(/,/g, '')) || 0;
-                    return sum + val;
+                    return sum + parseNumberValue(row[metric]);
                 }, 0);
                 
                 const average = total / top300.length;
@@ -2373,9 +2689,17 @@
                     count: top300.length
                 });
             });
-            
-            const labels = chartData.map(d => d.date);
-            const totals = chartData.map(d => d.total);
+            return chartData;
+        }
+
+        // 数値パースユーティリティ関数
+        function parseNumberValue(value) {
+            return parseInt((value || '0').toString().replace(/,/g, '')) || 0;
+        }
+
+        function updateOverallChart() {
+            const metric = document.getElementById('overallMetric').value;
+            const { labels, totals } = processOverallChartData(metric);
             
             const lineCtx = document.getElementById('overallChart').getContext('2d');
             if (overallChartInstance) {
@@ -2554,6 +2878,505 @@
                 "'": '&#039;'
             };
             return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // プレイヤー比較機能
+        let selectedPlayers = { player1: null, player2: null };
+        let comparisonRadarChart = null;
+        let comparisonBarChart = null;
+
+        // キャッシュシステム
+        class DataCache {
+            constructor() {
+                this.cache = new Map();
+                this.maxSize = 100; // キャッシュの最大サイズ
+                this.ttl = 10 * 60 * 1000; // 10分のTTL
+            }
+
+            generateKey(...args) {
+                return JSON.stringify(args);
+            }
+
+            set(key, value) {
+                if (this.cache.size >= this.maxSize) {
+                    // LRU: 最も古いエントリを削除
+                    const firstKey = this.cache.keys().next().value;
+                    this.cache.delete(firstKey);
+                }
+                
+                this.cache.set(key, {
+                    value,
+                    timestamp: Date.now()
+                });
+            }
+
+            get(key) {
+                const entry = this.cache.get(key);
+                if (!entry) return null;
+                
+                // TTLチェック
+                if (Date.now() - entry.timestamp > this.ttl) {
+                    this.cache.delete(key);
+                    return null;
+                }
+                
+                // LRU: アクセスしたアイテムを末尾に移動
+                this.cache.delete(key);
+                this.cache.set(key, entry);
+                
+                return entry.value;
+            }
+
+            clear() {
+                this.cache.clear();
+            }
+
+            has(key) {
+                const entry = this.cache.get(key);
+                if (!entry) return false;
+                
+                // TTLチェック
+                if (Date.now() - entry.timestamp > this.ttl) {
+                    this.cache.delete(key);
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        const dataCache = new DataCache();
+
+        // 仮想スクロールシステム
+        class VirtualScroll {
+            constructor(container, itemHeight = 50) {
+                this.container = container;
+                this.itemHeight = itemHeight;
+                this.data = [];
+                this.visibleStart = 0;
+                this.visibleEnd = 0;
+                this.viewportHeight = 0;
+                this.totalHeight = 0;
+                this.enabled = false;
+                
+                this.setupContainer();
+                this.bindEvents();
+            }
+
+            setupContainer() {
+                this.container.innerHTML = `
+                    <div class="virtual-scroll-content"></div>
+                `;
+                this.content = this.container.querySelector('.virtual-scroll-content');
+            }
+
+            bindEvents() {
+                this.container.addEventListener('scroll', () => {
+                    if (this.enabled) {
+                        this.render();
+                    }
+                });
+            }
+
+            setData(data) {
+                this.data = data;
+                this.totalHeight = data.length * this.itemHeight;
+                this.content.style.height = `${this.totalHeight}px`;
+                
+                if (this.enabled) {
+                    this.render();
+                } else {
+                    this.renderAll();
+                }
+            }
+
+            enable() {
+                this.enabled = true;
+                this.viewportHeight = this.container.clientHeight;
+                this.render();
+            }
+
+            disable() {
+                this.enabled = false;
+                this.renderAll();
+            }
+
+            render() {
+                const scrollTop = this.container.scrollTop;
+                const containerHeight = this.container.clientHeight;
+                
+                this.visibleStart = Math.floor(scrollTop / this.itemHeight);
+                this.visibleEnd = Math.min(
+                    this.visibleStart + Math.ceil(containerHeight / this.itemHeight) + 5,
+                    this.data.length
+                );
+                
+                this.renderVisibleItems();
+            }
+
+            renderVisibleItems() {
+                const fragment = document.createDocumentFragment();
+                
+                for (let i = this.visibleStart; i < this.visibleEnd; i++) {
+                    const item = this.data[i];
+                    if (!item) continue;
+                    
+                    const element = this.createItemElement(item, i);
+                    element.style.transform = `translateY(${i * this.itemHeight}px)`;
+                    element.classList.add('virtual-scroll-item');
+                    fragment.appendChild(element);
+                }
+                
+                this.content.innerHTML = '';
+                this.content.appendChild(fragment);
+            }
+
+            renderAll() {
+                const tbody = document.getElementById('tableBody');
+                const fragment = document.createDocumentFragment();
+                
+                this.data.forEach((item, index) => {
+                    const element = this.createItemElement(item, index, true);
+                    fragment.appendChild(element);
+                });
+                
+                tbody.innerHTML = '';
+                tbody.appendChild(fragment);
+            }
+
+            createItemElement(row, index, isTableRow = false) {
+                const rowNumber = index + 1;
+                
+                if (isTableRow) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="text-align: center; font-weight: 600; color: #7f8c8d; background: #f8f9fa;">${rowNumber}</td>
+                        <td>${escapeHtml(row.Data || '')}</td>
+                        <td>${escapeHtml(row.ID || '')}</td>
+                        <td>
+                            <a href="#" onclick="navigateToPlayer('${escapeHtml(row.Name || '')}', '${escapeHtml(row.ID || '')}'); return false;" style="color: #3498db; text-decoration: none; cursor: pointer; transition: color 0.3s;">
+                                ${escapeHtml(row.Name || '')}
+                            </a>
+                        </td>
+                        <td>${escapeHtml(row.Alliance || '')}</td>
+                        <td style="text-align: right;">${parseInt(row.Power || 0).toLocaleString()}</td>
+                        <td style="text-align: right;">${parseInt(row.Kills || 0).toLocaleString()}</td>
+                        <td style="text-align: right;">${parseInt(row.Deads || 0).toLocaleString()}</td>
+                        <td style="text-align: right;">${parseInt(row['T4-Kills'] || 0).toLocaleString()}</td>
+                        <td style="text-align: right;">${parseInt(row['T5-Kills'] || 0).toLocaleString()}</td>
+                        <td style="text-align: right;">${parseInt(row['Total Kill Points'] || 0).toLocaleString()}</td>
+                    `;
+                    return tr;
+                } else {
+                    const div = document.createElement('div');
+                    div.style.height = `${this.itemHeight}px`;
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center';
+                    div.style.padding = '0 10px';
+                    div.style.borderBottom = '1px solid #eee';
+                    div.innerHTML = `
+                        <div style="width: 50px; text-align: center;">${rowNumber}</div>
+                        <div style="flex: 1; padding: 0 10px;">${escapeHtml(row.Name || '')}</div>
+                        <div style="width: 100px; text-align: right;">${parseInt(row.Power || 0).toLocaleString()}</div>
+                    `;
+                    return div;
+                }
+            }
+        }
+
+        let virtualScroll = null;
+        let virtualScrollEnabled = false;
+
+        // 仮想スクロールの初期化
+        function initVirtualScroll() {
+            const tableContainer = document.querySelector('.table-container');
+            if (!virtualScroll) {
+                // 仮想スクロールコンテナを作成
+                const virtualContainer = document.createElement('div');
+                virtualContainer.className = 'virtual-scroll-container';
+                virtualContainer.style.display = 'none';
+                tableContainer.appendChild(virtualContainer);
+                
+                virtualScroll = new VirtualScroll(virtualContainer);
+            }
+        }
+
+        // 仮想スクロールの有効/無効切り替え
+        function toggleVirtualScroll() {
+            if (!virtualScroll) {
+                initVirtualScroll();
+            }
+            
+            const table = document.querySelector('.table-container table');
+            const virtualContainer = document.querySelector('.virtual-scroll-container');
+            const toggleBtn = document.getElementById('virtualScrollToggle');
+            
+            if (virtualScrollEnabled) {
+                // 仮想スクロールを無効化
+                virtualScrollEnabled = false;
+                virtualScroll.disable();
+                
+                table.style.display = 'table';
+                virtualContainer.style.display = 'none';
+                
+                toggleBtn.textContent = '仮想スクロール有効';
+                toggleBtn.classList.remove('scroll-disable-btn');
+                toggleBtn.classList.add('scroll-enable-btn');
+                
+                // ページネーションを表示
+                document.getElementById('pagination').style.display = 'flex';
+                
+            } else {
+                // 仮想スクロールを有効化
+                virtualScrollEnabled = true;
+                virtualScroll.enable();
+                
+                table.style.display = 'none';
+                virtualContainer.style.display = 'block';
+                
+                toggleBtn.textContent = '仮想スクロール無効';
+                toggleBtn.classList.remove('scroll-enable-btn');
+                toggleBtn.classList.add('scroll-disable-btn');
+                
+                // ページネーションを非表示
+                document.getElementById('pagination').style.display = 'none';
+            }
+            
+            displayData();
+        }
+
+        // プレイヤー検索のオートコンプリート
+        function setupPlayerSearch() {
+            const player1Input = document.getElementById('player1Search');
+            const player2Input = document.getElementById('player2Search');
+            
+            [player1Input, player2Input].forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    showPlayerSuggestions(e.target.value, index + 1);
+                });
+                
+                input.addEventListener('blur', (e) => {
+                    setTimeout(() => {
+                        document.getElementById(`player${index + 1}Suggestions`).style.display = 'none';
+                    }, 200);
+                });
+            });
+        }
+
+        function showPlayerSuggestions(query, playerNum) {
+            const dropdown = document.getElementById(`player${playerNum}Suggestions`);
+            
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            const matches = allData.filter(player => 
+                player.Name && player.Name.toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 10);
+            
+            if (matches.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
+            
+            dropdown.innerHTML = matches.map(player => 
+                `<div class="suggestion-item" onclick="selectPlayer('${escapeHtml(player.Name)}', ${player.ID}, ${playerNum})">
+                    ${escapeHtml(player.Name)} (ID: ${player.ID})
+                </div>`
+            ).join('');
+            
+            dropdown.style.display = 'block';
+        }
+
+        function selectPlayer(playerName, playerId, playerNum) {
+            document.getElementById(`player${playerNum}Search`).value = playerName;
+            document.getElementById(`player${playerNum}Suggestions`).style.display = 'none';
+            
+            selectedPlayers[`player${playerNum}`] = { name: playerName, id: playerId };
+        }
+
+        function compareSelectedPlayers() {
+            if (!selectedPlayers.player1 || !selectedPlayers.player2) {
+                alert('比較する2人のプレイヤーを選択してください。');
+                return;
+            }
+            
+            const player1Data = getLatestPlayerData(selectedPlayers.player1.id);
+            const player2Data = getLatestPlayerData(selectedPlayers.player2.id);
+            
+            if (!player1Data || !player2Data) {
+                alert('選択されたプレイヤーのデータが見つかりません。');
+                return;
+            }
+            
+            displayComparison(player1Data, player2Data);
+        }
+
+        function getLatestPlayerData(playerId) {
+            const playerData = allData.filter(row => row.ID == playerId);
+            if (playerData.length === 0) return null;
+            
+            // 最新のデータを取得
+            return playerData.sort((a, b) => new Date(b.Data) - new Date(a.Data))[0];
+        }
+
+        function displayComparison(player1, player2) {
+            // プレイヤーカードの表示
+            document.getElementById('player1Card').innerHTML = createPlayerCard(player1);
+            document.getElementById('player2Card').innerHTML = createPlayerCard(player2);
+            
+            // グラフの表示
+            createComparisonCharts(player1, player2);
+            
+            // 結果表示
+            document.getElementById('comparisonResults').style.display = 'block';
+        }
+
+        function createPlayerCard(player) {
+            return `
+                <div class="player-name">${escapeHtml(player.Name)}</div>
+                <div class="player-stats">
+                    <div class="stat-item">
+                        <strong>パワー:</strong><br>
+                        ${parseInt(player.Power || 0).toLocaleString()}
+                    </div>
+                    <div class="stat-item">
+                        <strong>キル数:</strong><br>
+                        ${parseInt(player.Kills || 0).toLocaleString()}
+                    </div>
+                    <div class="stat-item">
+                        <strong>デッド:</strong><br>
+                        ${parseInt(player.Deads || 0).toLocaleString()}
+                    </div>
+                    <div class="stat-item">
+                        <strong>アライアンス:</strong><br>
+                        ${escapeHtml(player.Alliance || '無所属')}
+                    </div>
+                    <div class="stat-item">
+                        <strong>更新日:</strong><br>
+                        ${player.Data}
+                    </div>
+                    <div class="stat-item">
+                        <strong>ID:</strong><br>
+                        ${player.ID}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createComparisonCharts(player1, player2) {
+            const metrics = ['Power', 'Kills', 'Deads'];
+            
+            // レーダーチャート
+            const ctx1 = document.getElementById('comparisonRadarChart').getContext('2d');
+            if (comparisonRadarChart) comparisonRadarChart.destroy();
+            
+            const maxValues = {
+                Power: Math.max(parseInt(player1.Power || 0), parseInt(player2.Power || 0)) * 1.2,
+                Kills: Math.max(parseInt(player1.Kills || 0), parseInt(player2.Kills || 0)) * 1.2,
+                Deads: Math.max(parseInt(player1.Deads || 0), parseInt(player2.Deads || 0)) * 1.2
+            };
+            
+            comparisonRadarChart = new Chart(ctx1, {
+                type: 'radar',
+                data: {
+                    labels: ['パワー', 'キル数', 'デッド'],
+                    datasets: [{
+                        label: escapeHtml(player1.Name),
+                        data: [
+                            parseInt(player1.Power || 0) / maxValues.Power * 100,
+                            parseInt(player1.Kills || 0) / maxValues.Kills * 100,
+                            parseInt(player1.Deads || 0) / maxValues.Deads * 100
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                    }, {
+                        label: escapeHtml(player2.Name),
+                        data: [
+                            parseInt(player2.Power || 0) / maxValues.Power * 100,
+                            parseInt(player2.Kills || 0) / maxValues.Kills * 100,
+                            parseInt(player2.Deads || 0) / maxValues.Deads * 100
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'プレイヤーステータス比較 (相対値)'
+                        }
+                    },
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+            
+            // 棒グラフ
+            const ctx2 = document.getElementById('comparisonBarChart').getContext('2d');
+            if (comparisonBarChart) comparisonBarChart.destroy();
+            
+            comparisonBarChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['パワー', 'キル数', 'デッド'],
+                    datasets: [{
+                        label: escapeHtml(player1.Name),
+                        data: [
+                            parseInt(player1.Power || 0),
+                            parseInt(player1.Kills || 0),
+                            parseInt(player1.Deads || 0)
+                        ],
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                    }, {
+                        label: escapeHtml(player2.Name),
+                        data: [
+                            parseInt(player2.Power || 0),
+                            parseInt(player2.Kills || 0),
+                            parseInt(player2.Deads || 0)
+                        ],
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'プレイヤーステータス比較 (絶対値)'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function clearComparison() {
+            selectedPlayers = { player1: null, player2: null };
+            document.getElementById('player1Search').value = '';
+            document.getElementById('player2Search').value = '';
+            document.getElementById('comparisonResults').style.display = 'none';
+            
+            if (comparisonRadarChart) comparisonRadarChart.destroy();
+            if (comparisonBarChart) comparisonBarChart.destroy();
         }
 
     </script>
