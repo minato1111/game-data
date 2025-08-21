@@ -823,6 +823,25 @@
                     <canvas id="individualChart"></canvas>
                 </div>
                 
+                <!-- 箱ひげ図を追加 -->
+                <div class="chart-container" style="margin-top: 30px;">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Power帯別 Total Kill Points 分析</h2>
+                        <div class="chart-controls">
+                            <button onclick="updateBoxPlot()">データ更新</button>
+                        </div>
+                    </div>
+                    <div id="boxPlotInfo" style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: none;">
+                        <h4 style="color: #2c3e50; margin-bottom: 10px;">現在のプレイヤー情報</h4>
+                        <p style="color: #7f8c8d; margin: 5px 0;">Power帯: <span id="playerPowerBand" style="color: #3498db; font-weight: 600;">-</span></p>
+                        <p style="color: #7f8c8d; margin: 5px 0;">Total Kill Points: <span id="playerTKP" style="color: #3498db; font-weight: 600;">-</span></p>
+                        <p style="color: #7f8c8d; margin: 5px 0;">Power帯内での位置: <span id="playerPosition" style="font-weight: 600;">-</span></p>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="boxPlotChart"></canvas>
+                    </div>
+                </div>
+                
                 <div id="noPlayerData" class="no-data">
                     <h2>プレイヤーを検索してください</h2>
                     <p>上の検索ボックスにプレイヤー名またはIDを入力してください</p>
@@ -1482,7 +1501,7 @@
 
         // 成長ランキングテーブルのソート
         function sortGrowthTable(column) {
-            if (!currentGrowthData || currentGrowthData.length === 0) return;
+            if (!filteredGrowthData || filteredGrowthData.length === 0) return;
             
             // ソート順を切り替え
             if (growthSortColumn === column) {
@@ -1493,7 +1512,7 @@
             }
             
             // データをソート
-            currentGrowthData.sort((a, b) => {
+            filteredGrowthData.sort((a, b) => {
                 let aVal = a[column];
                 let bVal = b[column];
                 
@@ -1507,7 +1526,7 @@
             });
             
             // テーブルを再表示
-            displayGrowthTable(currentGrowthData);
+            displayGrowthTable(filteredGrowthData);
             
             // ソートインジケーターを更新
             updateGrowthSortIndicators();
@@ -1561,7 +1580,11 @@
                             </span>
                         </td>
                         <td style="padding: 12px 15px; text-align: center; color: #2c3e50;">${escapeHtml(row.id || '')}</td>
-                        <td style="padding: 12px 15px; color: #2c3e50; font-weight: 500;">${escapeHtml(row.name)}</td>
+                        <td style="padding: 12px 15px; color: #2c3e50; font-weight: 500;">
+                            <a href="#" onclick="navigateToPlayer('${escapeHtml(row.name)}', '${escapeHtml(row.id || '')}'); return false;" style="color: #3498db; text-decoration: none; cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='#2980b9'" onmouseout="this.style.color='#3498db'">
+                                ${escapeHtml(row.name)}
+                            </a>
+                        </td>
                         <td style="padding: 12px 15px; color: #2c3e50;">
                             ${row.alliance ? `<span class="alliance-badge">${escapeHtml(row.alliance)}</span>` : '-'}
                         </td>
