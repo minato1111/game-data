@@ -502,6 +502,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://unpkg.com/@sgratzl/chartjs-chart-boxplot@4.2.2/build/index.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
@@ -624,6 +625,7 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
+                            <th style="width: 60px; text-align: center;">No.</th>
                             <th class="sortable" data-column="Data">日付</th>
                             <th class="sortable" data-column="ID">ID</th>
                             <th class="sortable" data-column="Name">名前</th>
@@ -638,7 +640,7 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td colspan="10" class="loading">
+                            <td colspan="11" class="loading">
                                 <div class="loading-spinner"></div>
                                 <p>CSVファイルを読み込み中...</p>
                             </td>
@@ -978,6 +980,7 @@
         let individualChartInstance = null;
         let overallChartInstance = null;
         let overallBarChartInstance = null;
+        let boxPlotChartInstance = null; // 箱ひげ図用
         let currentPlayer = null;
         let currentGrowthData = [];  // 成長ランキングのデータを保存
         let filteredGrowthData = []; // フィルター適用後の成長データ
@@ -1765,7 +1768,7 @@
             if (pageData.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="10" class="no-data">
+                        <td colspan="11" class="no-data">
                             <h2>データが見つかりません</h2>
                             <p>検索条件を変更してください</p>
                         </td>
@@ -1775,20 +1778,24 @@
                 return;
             }
             
-            tbody.innerHTML = pageData.map(row => `
-                <tr>
-                    <td>${escapeHtml(row.Data || '')}</td>
-                    <td>${escapeHtml(row.ID || '')}</td>
-                    <td>${escapeHtml(row.Name || '')}</td>
-                    <td>${escapeHtml(row.Power || '')}</td>
-                    <td><span class="alliance-badge">${escapeHtml(row.Alliance || '')}</span></td>
-                    <td>${escapeHtml(row['T4-Kills'] || '')}</td>
-                    <td>${escapeHtml(row['T5-Kills'] || '')}</td>
-                    <td>${escapeHtml(row['Total Kill Points'] || '')}</td>
-                    <td>${escapeHtml(row['Dead Troops'] || '')}</td>
-                    <td>${escapeHtml(row['Troops Power'] || '')}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = pageData.map((row, index) => {
+                const rowNumber = (currentPage - 1) * itemsPerPage + index + 1;
+                return `
+                    <tr>
+                        <td style="text-align: center; font-weight: 600; color: #7f8c8d; background: #f8f9fa;">${rowNumber}</td>
+                        <td>${escapeHtml(row.Data || '')}</td>
+                        <td>${escapeHtml(row.ID || '')}</td>
+                        <td>${escapeHtml(row.Name || '')}</td>
+                        <td>${escapeHtml(row.Power || '')}</td>
+                        <td><span class="alliance-badge">${escapeHtml(row.Alliance || '')}</span></td>
+                        <td>${escapeHtml(row['T4-Kills'] || '')}</td>
+                        <td>${escapeHtml(row['T5-Kills'] || '')}</td>
+                        <td>${escapeHtml(row['Total Kill Points'] || '')}</td>
+                        <td>${escapeHtml(row['Dead Troops'] || '')}</td>
+                        <td>${escapeHtml(row['Troops Power'] || '')}</td>
+                    </tr>
+                `;
+            }).join('');
             
             displayPagination();
         }
@@ -1918,6 +1925,275 @@
                 `${dates[0]} ～ ${dates[dates.length - 1]}`;
             
             updateIndividualChart();
+        }
+
+        // 名前クリックで個人分析へ遷移
+        function navigateToPlayer(playerName, playerId) {
+            // 個人分析タブに切り替え
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn')[3].classList.add('active'); // 個人分析タブ（4番目）
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('individualTab').classList.add('active');
+            
+            // 検索ボックスに名前を設定して検索実行
+            document.getElementById('playerSearch').value = playerName;
+            searchPlayer();
+        }
+
+        // 箱ひげ図の更新
+        function updateBoxPlot() {
+            if (!currentPlayer) return;
+            
+            // 最新データを取得
+            const latestDate = [...new Set(allData.map(row => row.Data))].sort().reverse()[0];
+            const latestData = allData.filter(row => row.Data === latestDate);
+            
+            // 現在のプレイヤーの最新データを取得
+            const currentPlayerLatest = latestData.find(row => 
+                row.ID === currentPlayer.id || row.Name === currentPlayer.name
+            );
+            
+            if (!currentPlayerLatest) {
+                alert('最新データが見つかりません');
+                return;
+            }
+            
+            const playerPower = parseInt((currentPlayerLatest.Power || '0').toString().replace(/,/g, '')) || 0;
+            const playerTKP = parseInt((currentPlayerLatest['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
+            
+            // Power帯を判定
+            let powerBand = '';
+            let powerBandData = [];
+            
+            if (playerPower >= 100000000) {
+                powerBand = '1億以上';
+                powerBandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power >= 100000000;
+                });
+            } else if (playerPower >= 85000000) {
+                powerBand = '8500万～1億';
+                powerBandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power >= 85000000 && power < 100000000;
+                });
+            } else if (playerPower >= 75000000) {
+                powerBand = '7500万～8500万';
+                powerBandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power >= 75000000 && power < 85000000;
+                });
+            } else if (playerPower >= 65000000) {
+                powerBand = '6500万～7500万';
+                powerBandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power >= 65000000 && power < 75000000;
+                });
+            } else if (playerPower >= 55000000) {
+                powerBand = '5500万～6500万';
+                powerBandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power >= 55000000 && power < 65000000;
+                });
+            } else {
+                powerBand = '5500万未満';
+                powerBandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power < 55000000;
+                });
+            }
+            
+            // TKPデータを抽出してソート
+            const tkpValues = powerBandData.map(row => 
+                parseInt((row['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0
+            ).sort((a, b) => a - b);
+            
+            if (tkpValues.length === 0) {
+                alert('該当するPower帯のデータがありません');
+                return;
+            }
+            
+            // 統計値を計算
+            const q1Index = Math.floor(tkpValues.length * 0.25);
+            const q2Index = Math.floor(tkpValues.length * 0.5);
+            const q3Index = Math.floor(tkpValues.length * 0.75);
+            
+            const min = tkpValues[0];
+            const q1 = tkpValues[q1Index];
+            const median = tkpValues[q2Index];
+            const q3 = tkpValues[q3Index];
+            const max = tkpValues[tkpValues.length - 1];
+            const mean = tkpValues.reduce((a, b) => a + b, 0) / tkpValues.length;
+            
+            // プレイヤーの位置を判定
+            let position = '';
+            let positionColor = '';
+            const playerRank = tkpValues.filter(v => v <= playerTKP).length;
+            const percentile = (playerRank / tkpValues.length) * 100;
+            
+            if (percentile >= 75) {
+                position = `上位 ${(100 - percentile).toFixed(1)}% (優秀)`;
+                positionColor = '#27ae60';
+            } else if (percentile >= 50) {
+                position = `上位 ${(100 - percentile).toFixed(1)}% (平均以上)`;
+                positionColor = '#3498db';
+            } else if (percentile >= 25) {
+                position = `上位 ${(100 - percentile).toFixed(1)}% (平均以下)`;
+                positionColor = '#f39c12';
+            } else {
+                position = `下位 ${percentile.toFixed(1)}% (要改善)`;
+                positionColor = '#e74c3c';
+            }
+            
+            // 情報を表示
+            document.getElementById('boxPlotInfo').style.display = 'block';
+            document.getElementById('playerPowerBand').textContent = powerBand;
+            document.getElementById('playerTKP').textContent = playerTKP.toLocaleString();
+            document.getElementById('playerPosition').textContent = position;
+            document.getElementById('playerPosition').style.color = positionColor;
+            
+            // 箱ひげ図を描画
+            const ctx = document.getElementById('boxPlotChart').getContext('2d');
+            
+            if (boxPlotChartInstance) {
+                boxPlotChartInstance.destroy();
+            }
+            
+            // 全Power帯のデータを準備
+            const allBands = [
+                { label: '1億以上', min: 100000000, max: Infinity },
+                { label: '8500万～1億', min: 85000000, max: 100000000 },
+                { label: '7500万～8500万', min: 75000000, max: 85000000 },
+                { label: '6500万～7500万', min: 65000000, max: 75000000 },
+                { label: '5500万～6500万', min: 55000000, max: 65000000 }
+            ];
+            
+            const boxPlotData = allBands.map(band => {
+                const bandData = latestData.filter(row => {
+                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
+                    return power >= band.min && (band.max === Infinity ? true : power < band.max);
+                });
+                
+                const tkpVals = bandData.map(row => 
+                    parseInt((row['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0
+                ).sort((a, b) => a - b);
+                
+                if (tkpVals.length === 0) {
+                    return { min: 0, q1: 0, median: 0, q3: 0, max: 0, outliers: [], count: 0 };
+                }
+                
+                const q1Idx = Math.floor(tkpVals.length * 0.25);
+                const q2Idx = Math.floor(tkpVals.length * 0.5);
+                const q3Idx = Math.floor(tkpVals.length * 0.75);
+                
+                const q1Val = tkpVals[q1Idx];
+                const q3Val = tkpVals[q3Idx];
+                const iqr = q3Val - q1Val;
+                const lowerBound = q1Val - 1.5 * iqr;
+                const upperBound = q3Val + 1.5 * iqr;
+                
+                const filteredVals = tkpVals.filter(v => v >= lowerBound && v <= upperBound);
+                const outliers = tkpVals.filter(v => v < lowerBound || v > upperBound);
+                
+                return {
+                    min: filteredVals[0] || 0,
+                    q1: q1Val,
+                    median: tkpVals[q2Idx],
+                    q3: q3Val,
+                    max: filteredVals[filteredVals.length - 1] || 0,
+                    outliers: outliers,
+                    count: tkpVals.length,
+                    isCurrentBand: band.label === powerBand
+                };
+            });
+            
+            boxPlotChartInstance = new Chart(ctx, {
+                type: 'boxplot',
+                data: {
+                    labels: allBands.map(b => b.label),
+                    datasets: [{
+                        label: 'Total Kill Points分布',
+                        backgroundColor: boxPlotData.map(d => d.isCurrentBand ? 'rgba(52, 152, 219, 0.5)' : 'rgba(149, 165, 166, 0.5)'),
+                        borderColor: boxPlotData.map(d => d.isCurrentBand ? 'rgb(52, 152, 219)' : 'rgb(149, 165, 166)'),
+                        borderWidth: 2,
+                        outlierColor: '#e74c3c',
+                        data: boxPlotData.map(d => ({
+                            min: d.min,
+                            q1: d.q1,
+                            median: d.median,
+                            q3: d.q3,
+                            max: d.max,
+                            outliers: d.outliers
+                        }))
+                    }, {
+                        type: 'scatter',
+                        label: '現在のプレイヤー',
+                        data: boxPlotData.map((d, i) => d.isCurrentBand ? { x: i, y: playerTKP } : null).filter(d => d !== null),
+                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                        borderColor: 'rgb(231, 76, 60)',
+                        borderWidth: 2,
+                        pointRadius: 8,
+                        pointHoverRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Power帯別 Total Kill Points 分布 (${latestDate}時点)`,
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.dataset.type === 'scatter') {
+                                        return `${currentPlayer.name}: ${context.parsed.y.toLocaleString()}`;
+                                    }
+                                    const data = context.parsed;
+                                    return [
+                                        `最小値: ${data.min.toLocaleString()}`,
+                                        `第1四分位: ${data.q1.toLocaleString()}`,
+                                        `中央値: ${data.median.toLocaleString()}`,
+                                        `第3四分位: ${data.q3.toLocaleString()}`,
+                                        `最大値: ${data.max.toLocaleString()}`,
+                                        `データ数: ${boxPlotData[context.dataIndex].count}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000000) {
+                                        return (value / 1000000000).toFixed(1) + 'B';
+                                    } else if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(1) + 'M';
+                                    }
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 箱ひげ図も更新
+            updateBoxPlot();
         }
 
         function updateIndividualChart() {
