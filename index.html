@@ -502,7 +502,6 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-    <script src="https://unpkg.com/@sgratzl/chartjs-chart-boxplot@4.2.2/build/index.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
@@ -1783,7 +1782,11 @@
                         <td style="text-align: center; font-weight: 600; color: #7f8c8d; background: #f8f9fa;">${rowNumber}</td>
                         <td>${escapeHtml(row.Data || '')}</td>
                         <td>${escapeHtml(row.ID || '')}</td>
-                        <td>${escapeHtml(row.Name || '')}</td>
+                        <td>
+                            <a href="#" onclick="navigateToPlayer('${escapeHtml(row.Name || '')}', '${escapeHtml(row.ID || '')}'); return false;" style="color: #3498db; text-decoration: none; cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='#2980b9'" onmouseout="this.style.color='#3498db'">
+                                ${escapeHtml(row.Name || '')}
+                            </a>
+                        </td>
                         <td>${escapeHtml(row.Power || '')}</td>
                         <td><span class="alliance-badge">${escapeHtml(row.Alliance || '')}</span></td>
                         <td>${escapeHtml(row['T4-Kills'] || '')}</td>
@@ -1923,10 +1926,6 @@
                 `${dates[0]} ～ ${dates[dates.length - 1]}`;
             
             updateIndividualChart();
-            // 箱ひげ図も更新（個人チャート更新後に呼び出し）
-            setTimeout(() => {
-                updateBoxPlot();
-            }, 100);
         }
 
         // 名前クリックで個人分析へ遷移
@@ -2268,14 +2267,30 @@
                             display: false
                         },
                         datalabels: {
-                            display: true,
-                            align: 'top',
+                            display: function(context) {
+                                // データポイントが多い場合は間引いて表示
+                                const dataLength = context.dataset.data.length;
+                                if (dataLength > 20) {
+                                    // 20個以上の場合は5個ごとに表示
+                                    return context.dataIndex % 5 === 0;
+                                } else if (dataLength > 10) {
+                                    // 10-20個の場合は3個ごとに表示
+                                    return context.dataIndex % 3 === 0;
+                                } else {
+                                    // 10個以下の場合は全て表示
+                                    return true;
+                                }
+                            },
+                            align: function(context) {
+                                // ジグザグに配置して重ならないようにする
+                                return context.dataIndex % 2 === 0 ? 'top' : 'bottom';
+                            },
                             backgroundColor: 'rgba(102, 126, 234, 0.9)',
                             borderRadius: 4,
                             color: 'white',
                             font: {
                                 weight: 'bold',
-                                size: 10
+                                size: 9
                             },
                             formatter: function(value) {
                                 if (value >= 1000000000) {
@@ -2287,11 +2302,19 @@
                                 }
                                 return value.toLocaleString();
                             },
-                            padding: 4,
+                            padding: 3,
                             offset: 8
                         }
                     },
                     scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45,
+                                autoSkip: true,
+                                maxTicksLimit: 15
+                            }
+                        },
                         y: {
                             beginAtZero: false,
                             ticks: {
