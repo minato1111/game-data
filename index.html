@@ -1943,6 +1943,10 @@
                 `${dates[0]} ～ ${dates[dates.length - 1]}`;
             
             updateIndividualChart();
+            // 箱ひげ図も更新（個人チャート更新後に呼び出し）
+            setTimeout(() => {
+                updateBoxPlot();
+            }, 100);
         }
 
         // 名前クリックで個人分析へ遷移
@@ -2080,7 +2084,17 @@
             
             if (boxPlotChartInstance) {
                 boxPlotChartInstance.destroy();
+                boxPlotChartInstance = null;
             }
+            
+            // canvas要素をリセット
+            const canvas = document.getElementById('boxPlotChart');
+            const parent = canvas.parentNode;
+            parent.removeChild(canvas);
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = 'boxPlotChart';
+            parent.appendChild(newCanvas);
+            const newCtx = newCanvas.getContext('2d');
             
             // 全Power帯のデータを準備
             const allBands = [
@@ -2130,7 +2144,7 @@
                 };
             });
             
-            boxPlotChartInstance = new Chart(ctx, {
+            boxPlotChartInstance = new Chart(newCtx, {
                 type: 'boxplot',
                 data: {
                     labels: allBands.map(b => b.label),
@@ -2140,23 +2154,7 @@
                         borderColor: boxPlotData.map(d => d.isCurrentBand ? 'rgb(52, 152, 219)' : 'rgb(149, 165, 166)'),
                         borderWidth: 2,
                         outlierColor: '#e74c3c',
-                        data: boxPlotData.map(d => ({
-                            min: d.min,
-                            q1: d.q1,
-                            median: d.median,
-                            q3: d.q3,
-                            max: d.max,
-                            outliers: d.outliers
-                        }))
-                    }, {
-                        type: 'scatter',
-                        label: '現在のプレイヤー',
-                        data: boxPlotData.map((d, i) => d.isCurrentBand ? { x: i, y: playerTKP } : null).filter(d => d !== null),
-                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
-                        borderColor: 'rgb(231, 76, 60)',
-                        borderWidth: 2,
-                        pointRadius: 8,
-                        pointHoverRadius: 10
+                        data: boxPlotData.map(d => [d.min, d.q1, d.median, d.q3, d.max])
                     }]
                 },
                 options: {
@@ -2176,20 +2174,40 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    if (context.dataset.type === 'scatter') {
-                                        return `${currentPlayer.name}: ${context.parsed.y.toLocaleString()}`;
-                                    }
                                     const data = context.parsed;
+                                    const bandData = boxPlotData[context.dataIndex];
                                     return [
-                                        `最小値: ${data.min.toLocaleString()}`,
-                                        `第1四分位: ${data.q1.toLocaleString()}`,
-                                        `中央値: ${data.median.toLocaleString()}`,
-                                        `第3四分位: ${data.q3.toLocaleString()}`,
-                                        `最大値: ${data.max.toLocaleString()}`,
-                                        `データ数: ${boxPlotData[context.dataIndex].count}`
-                                    ];
+                                        `最小値: ${data.min ? data.min.toLocaleString() : '0'}`,
+                                        `第1四分位: ${data.q1 ? data.q1.toLocaleString() : '0'}`,
+                                        `中央値: ${data.median ? data.median.toLocaleString() : '0'}`,
+                                        `第3四分位: ${data.q3 ? data.q3.toLocaleString() : '0'}`,
+                                        `最大値: ${data.max ? data.max.toLocaleString() : '0'}`,
+                                        `データ数: ${bandData.count}`,
+                                        bandData.isCurrentBand ? `現在のプレイヤー: ${playerTKP.toLocaleString()}` : ''
+                                    ].filter(s => s);
                                 }
                             }
+                        },
+                        annotation: {
+                            annotations: boxPlotData.map((d, i) => {
+                                if (d.isCurrentBand) {
+                                    return {
+                                        type: 'point',
+                                        xValue: i,
+                                        yValue: playerTKP,
+                                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                                        borderColor: 'rgb(231, 76, 60)',
+                                        borderWidth: 2,
+                                        radius: 8,
+                                        label: {
+                                            display: true,
+                                            content: currentPlayer.name,
+                                            position: 'top'
+                                        }
+                                    };
+                                }
+                                return null;
+                            }).filter(a => a !== null)
                         }
                     },
                     scales: {
