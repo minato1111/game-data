@@ -1630,6 +1630,24 @@
             displayGrowthTable(filteredGrowthData);
         }
 
+        // 名前クリックで個人分析へ遷移
+        function navigateToPlayer(playerName, playerId) {
+            // 個人分析タブに切り替え
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn')[3].classList.add('active'); // 個人分析タブ（4番目）
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('individualTab').classList.add('active');
+            
+            // 検索ボックスに名前を設定して検索実行
+            document.getElementById('playerSearch').value = playerName;
+            searchPlayer();
+        }
+
         function setupEventListeners() {
             document.getElementById('searchInput').addEventListener('input', filterDataBySearch);
             
