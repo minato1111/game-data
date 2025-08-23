@@ -158,16 +158,6 @@
             background: #2980b9;
         }
 
-        .preset-btn {
-            background: #3498db;
-            color: white;
-            border: none;
-        }
-
-        .preset-btn:hover {
-            background: #2980b9;
-        }
-
         .date-filter .clear-btn {
             background: #e74c3c;
         }
@@ -468,6 +458,18 @@
             text-align: center;
         }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -503,9 +505,9 @@
 
         
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js" defer></script>
 </head>
 <body>
     <!-- パスワード保護画面 -->
@@ -529,14 +531,14 @@
         </div>
         
         <!-- タブナビゲーション -->
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="switchTab('data')">データ一覧</button>
-            <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
-            <button class="tab-btn" onclick="switchTab('overall')">上位300人統計</button>
-            <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
-            <button class="tab-btn" onclick="switchTab('kvk')">KVKノルマ</button>
-            <button class="tab-btn" onclick="switchTab('contact')">問い合わせ先</button>
-        </div>
+        <nav class="tab-container" role="tablist" aria-label="メインナビゲーション">
+            <button class="tab-btn active" onclick="switchTab('data')" role="tab" aria-controls="dataTab" aria-selected="true">データ一覧</button>
+            <button class="tab-btn" onclick="switchTab('growth')" role="tab" aria-controls="growthTab" aria-selected="false">成長ランキング</button>
+            <button class="tab-btn" onclick="switchTab('overall')" role="tab" aria-controls="overallTab" aria-selected="false">上位300人統計</button>
+            <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
+            <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
+            <button class="tab-btn" onclick="switchTab('contact')" role="tab" aria-controls="contactTab" aria-selected="false">問い合わせ先</button>
+        </nav>
 
         <!-- データ一覧タブ -->
         <div id="dataTab" class="tab-content active">
@@ -617,7 +619,8 @@
 
             <div class="controls">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索...">
+                    <label for="searchInput" class="sr-only">検索</label>
+                    <input type="text" id="searchInput" placeholder="🔍 名前、ID、同盟で検索..." aria-label="名前、ID、同盟で検索">
                 </div>
                 <div class="date-range-indicator" id="dateRangeIndicator" style="display: none;">
                     期間: <span id="dateRangeText">-</span>
@@ -625,20 +628,20 @@
             </div>
 
             <div class="table-container">
-                <table id="dataTable">
+                <table id="dataTable" role="table" aria-label="ROKプレイヤーデータテーブル">
                     <thead>
                         <tr>
-                            <th style="width: 60px; text-align: center;">No.</th>
-                            <th class="sortable" data-column="Data">日付</th>
-                            <th class="sortable" data-column="ID">ID</th>
-                            <th class="sortable" data-column="Name">名前</th>
-                            <th class="sortable" data-column="Power">Power</th>
-                            <th class="sortable" data-column="Alliance">同盟</th>
-                            <th class="sortable" data-column="T4-Kills">T4-Kills</th>
-                            <th class="sortable" data-column="T5-Kills">T5-Kills</th>
-                            <th class="sortable" data-column="Total Kill Points">Total Kill Points</th>
-                            <th class="sortable" data-column="Dead Troops">Dead Troops</th>
-                            <th class="sortable" data-column="Troops Power">Troops Power</th>
+                            <th scope="col" style="width: 60px; text-align: center;">No.</th>
+                            <th scope="col" class="sortable" data-column="Data" tabindex="0" aria-sort="none">日付</th>
+                            <th scope="col" class="sortable" data-column="ID" tabindex="0" aria-sort="none">ID</th>
+                            <th scope="col" class="sortable" data-column="Name" tabindex="0" aria-sort="none">名前</th>
+                            <th scope="col" class="sortable" data-column="Power" tabindex="0" aria-sort="none">Power</th>
+                            <th scope="col" class="sortable" data-column="Alliance" tabindex="0" aria-sort="none">同盟</th>
+                            <th scope="col" class="sortable" data-column="T4-Kills" tabindex="0" aria-sort="none">T4-Kills</th>
+                            <th scope="col" class="sortable" data-column="T5-Kills" tabindex="0" aria-sort="none">T5-Kills</th>
+                            <th scope="col" class="sortable" data-column="Total Kill Points" tabindex="0" aria-sort="none">Total Kill Points</th>
+                            <th scope="col" class="sortable" data-column="Dead Troops" tabindex="0" aria-sort="none">Dead Troops</th>
+                            <th scope="col" class="sortable" data-column="Troops Power" tabindex="0" aria-sort="none">Troops Power</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -1098,13 +1101,13 @@
         const CORRECT_PASSWORD = '2062data';
         
         function checkPassword() {
-            const input = document.getElementById('passwordInput').value;
-            const errorMsg = document.getElementById('passwordError');
+            const input = getElement('passwordInput').value;
+            const errorMsg = getElement('passwordError');
             
             if (input === CORRECT_PASSWORD) {
                 // パスワードが正しい場合
-                document.getElementById('passwordProtection').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
+                getElement('passwordProtection').style.display = 'none';
+                getElement('mainContent').style.display = 'block';
                 
                 // セッションストレージに認証状態を保存
                 sessionStorage.setItem('authenticated', 'true');
@@ -1123,10 +1126,10 @@
             } else {
                 // パスワードが間違っている場合
                 errorMsg.style.display = 'block';
-                document.getElementById('passwordInput').value = '';
+                getElement('passwordInput').value = '';
                 
                 // 入力欄を振動させる
-                const inputBox = document.getElementById('passwordInput');
+                const inputBox = getElement('passwordInput');
                 inputBox.style.animation = 'shake 0.5s';
                 setTimeout(() => {
                     inputBox.style.animation = '';
@@ -1134,6 +1137,28 @@
             }
         }
         
+        // DOM要素キャッシュ
+        const domCache = {};
+        const getElement = (id) => {
+            if (!domCache[id]) {
+                domCache[id] = document.getElementById(id);
+            }
+            return domCache[id];
+        };
+        
+        // デバウンス関数
+        const debounce = (func, wait) => {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        };
+
         // グローバル変数
         let allData = [];
         let filteredData = [];
@@ -1876,7 +1901,9 @@
         }
 
         function setupEventListeners() {
-            document.getElementById('searchInput').addEventListener('input', filterDataBySearch);
+            // 検索機能にデバウンスを適用してパフォーマンス改善
+            const debouncedSearch = debounce(filterDataBySearch, 300);
+            getElement('searchInput').addEventListener('input', debouncedSearch);
             
             // データ一覧タブのソート設定
             document.getElementById('dataSortColumn').addEventListener('change', (e) => {
