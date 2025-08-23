@@ -1458,7 +1458,22 @@
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // event.targetの代わりに、クリックされたボタンを探す
+            const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => {
+                const btnText = btn.textContent;
+                if (tab === 'data' && btnText === 'データ一覧') return true;
+                if (tab === 'growth' && btnText === '成長ランキング') return true;
+                if (tab === 'overall' && btnText === '上位300人統計') return true;
+                if (tab === 'individual' && btnText === '個人分析') return true;
+                if (tab === 'kvk' && btnText === 'KVKノルマ') return true;
+                if (tab === 'contact' && btnText === '問い合わせ先') return true;
+                return false;
+            });
+            
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
 
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
@@ -2354,3 +2369,295 @@
                 
                 if (!grouped[date]) {
                     grouped[date] = [];
+                }
+                grouped[date].push(row);
+            });
+            return grouped;
+        }
+
+        // チャートデータを計算
+        function calculateChartData(groupedData, metric) {
+            const chartData = [];
+            Object.keys(groupedData).sort().forEach(date => {
+                const dayData = groupedData[date];
+                
+                // メトリクスでソート
+                dayData.sort((a, b) => {
+                    const aVal = parseNumberValue(a[metric]);
+                    const bVal = parseNumberValue(b[metric]);
+                    return bVal - aVal;
+                });
+                
+                const top300 = dayData.slice(0, 300);
+                const total = top300.reduce((sum, row) => {
+                    return sum + parseNumberValue(row[metric]);
+                }, 0);
+                
+                const average = total / top300.length;
+                
+                chartData.push({
+                    date: date,
+                    total: total,
+                    average: average,
+                    count: top300.length
+                });
+            });
+            return chartData;
+        }
+
+        // 数値パースユーティリティ関数
+        function parseNumberValue(value) {
+            return parseInt((value || '0').toString().replace(/,/g, '')) || 0;
+        }
+
+        function updateOverallChart() {
+            const metric = document.getElementById('overallMetric').value;
+            const { labels, totals } = processOverallChartData(metric);
+            
+            const lineCtx = document.getElementById('overallChart').getContext('2d');
+            if (overallChartInstance) {
+                overallChartInstance.destroy();
+            }
+            
+            overallChartInstance = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `上位300人の${metric}合計`,
+                        data: totals,
+                        borderColor: 'rgb(118, 75, 162)',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.1,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: 'rgb(118, 75, 162)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `上位300人の${metric}統計`,
+                            font: {
+                                size: 16
+                            }
+                        },
+                        datalabels: {
+                            display: true,
+                            align: 'top',
+                            backgroundColor: 'rgba(118, 75, 162, 0.9)',
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size: 10
+                            },
+                            formatter: function(value) {
+                                if (value >= 1000000000) {
+                                    return (value / 1000000000).toFixed(1) + 'B';
+                                } else if (value >= 1000000) {
+                                    return (value / 1000000).toFixed(1) + 'M';
+                                } else if (value >= 1000) {
+                                    return (value / 1000).toFixed(0) + 'K';
+                                }
+                                return value.toLocaleString();
+                            },
+                            padding: 4,
+                            offset: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000000) {
+                                        return (value / 1000000000).toFixed(0) + 'B';
+                                    } else if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(0) + 'M';
+                                    }
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const barCtx = document.getElementById('overallBarChart').getContext('2d');
+            if (overallBarChartInstance) {
+                overallBarChartInstance.destroy();
+            }
+            
+            overallBarChartInstance = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: `上位300人の${metric}合計`,
+                        data: totals,
+                        backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                        borderColor: 'rgb(52, 152, 219)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `上位300人の${metric}合計`,
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: false
+                        },
+                        datalabels: {
+                            display: true,
+                            align: 'end',
+                            anchor: 'end',
+                            backgroundColor: 'rgba(52, 152, 219, 0.9)',
+                            borderRadius: 4,
+                            color: 'white',
+                            font: {
+                                weight: 'bold',
+                                size: 9
+                            },
+                            formatter: function(value) {
+                                if (value >= 1000000000) {
+                                    return (value / 1000000000).toFixed(1) + 'B';
+                                } else if (value >= 1000000) {
+                                    return (value / 1000000).toFixed(1) + 'M';
+                                } else if (value >= 1000) {
+                                    return (value / 1000).toFixed(0) + 'K';
+                                }
+                                return value.toLocaleString();
+                            },
+                            padding: 3
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000000) {
+                                        return (value / 1000000000).toFixed(0) + 'B';
+                                    } else if (value >= 1000000) {
+                                        return (value / 1000000).toFixed(0) + 'M';
+                                    }
+                                    return value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showLineChart() {
+            document.getElementById('overallChart').parentElement.style.display = 'block';
+            document.getElementById('overallBarChart').parentElement.style.display = 'none';
+            
+            const buttons = document.querySelectorAll('#overallTab .chart-controls button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showBarChart() {
+            document.getElementById('overallChart').parentElement.style.display = 'none';
+            document.getElementById('overallBarChart').parentElement.style.display = 'block';
+            
+            const buttons = document.querySelectorAll('#overallTab .chart-controls button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.toString().replace(/[&<>"']/g, m => map[m]);
+        }
+
+
+        // キャッシュシステム
+        class DataCache {
+            constructor() {
+                this.cache = new Map();
+                this.maxSize = 100; // キャッシュの最大サイズ
+                this.ttl = 10 * 60 * 1000; // 10分のTTL
+            }
+
+            generateKey(...args) {
+                return JSON.stringify(args);
+            }
+
+            set(key, value) {
+                if (this.cache.size >= this.maxSize) {
+                    // LRU: 最も古いエントリを削除
+                    const firstKey = this.cache.keys().next().value;
+                    this.cache.delete(firstKey);
+                }
+                
+                this.cache.set(key, {
+                    value,
+                    timestamp: Date.now()
+                });
+            }
+
+            get(key) {
+                const entry = this.cache.get(key);
+                if (!entry) return null;
+                
+                // TTLチェック
+                if (Date.now() - entry.timestamp > this.ttl) {
+                    this.cache.delete(key);
+                    return null;
+                }
+                
+                // LRU: アクセスしたアイテムを末尾に移動
+                this.cache.delete(key);
+                this.cache.set(key, entry);
+                
+                return entry.value;
+            }
+
+            clear() {
+                this.cache.clear();
+            }
+
+            has(key) {
+                const entry = this.cache.get(key);
+                if (!entry) return false;
+                
+                // TTLチェック
+                if (Date.now() - entry.timestamp > this.ttl) {
+                    this.cache.delete(key);
+                    return false;
+                }
+                
+                return true;
+            }
+        }
+
+        const dataCache = new DataCache();
+
+
+
+    </script>
+</body>
+</html>
