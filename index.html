@@ -840,183 +840,185 @@
 
         <!-- KVKノルマタブ -->
         <div id="kvkTab" class="tab-content">
-            <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-                <div style="text-align: center; margin-bottom: 40px;">
-                    <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">⚔️ KVKノルマ一覧</h2>
-                    <p style="color: #7f8c8d; font-size: 16px;">Power帯別の撃破ノルマ・戦死ノルマ基準値</p>
-                </div>
+    <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+        <!-- ヘッダーセクション -->
+        <div style="text-align: center; margin-bottom: 45px;">
+            <h2 style="color: #2c3e50; font-size: 34px; margin-bottom: 15px; font-weight: 700;">
+                ⚔️ KVKノルマ一覧
+            </h2>
+            <p style="color: #7f8c8d; font-size: 16px;">Power帯別の撃破ノルマ・戦死ノルマ基準値</p>
+            <div style="width: 80px; height: 2px; background: #3498db; margin: 15px auto;"></div>
+        </div>
 
-                <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
-                            <thead>
-                                <tr style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
-                                    <th colspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-radius: 15px 0 0 0;">Power帯</th>
-                                    <th rowspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-left: 2px solid rgba(255,255,255,0.2);">撃破ノルマ<br><span style="font-size: 14px; opacity: 0.9;">Kill Points</span></th>
-                                    <th rowspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-left: 2px solid rgba(255,255,255,0.2);">戦死ノルマ<br><span style="font-size: 14px; opacity: 0.9;">Deaths</span></th>
-                                    <th rowspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-left: 2px solid rgba(255,255,255,0.2); border-radius: 0 15px 0 0;">数値<br><span style="font-size: 14px; opacity: 0.9;">Death Rate</span></th>
-                                </tr>
-                                <tr style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
-                                    <th style="padding: 15px; color: white; font-size: 16px; text-align: center; border-right: 1px solid rgba(255,255,255,0.2);">最小値</th>
-                                    <th style="padding: 15px; color: white; font-size: 16px; text-align: center; border-right: 2px solid rgba(255,255,255,0.2);">最大値</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">45,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">59,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">75,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">198,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0033</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">60,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">64,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">150,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">214,500</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0033</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">65,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">69,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">150,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">231,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0033</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">70,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">74,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">187,500,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">315,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0042</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">75,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">79,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">187,500,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">336,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0042</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">80,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">84,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">200,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">425,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.005</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">85,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">89,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">200,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">450,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.005</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">90,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">94,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">300,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">551,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0058</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">95,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">99,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">300,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">580,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0058</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">100,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">149,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">600,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">1,005,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0067</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0; border-radius: 0 0 0 15px;">150,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">199,999,999</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">600,000,000</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">1,340,000</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d; border-radius: 0 0 15px 0;">0.0067</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- 補足説明 -->
-                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
-                        <h3 style="color: #2c3e50; margin-bottom: 15px;">📊 ノルマについて</h3>
-                        <ul style="color: #5d6d7e; line-height: 1.8; list-style: none; padding: 0;">
-                            <li style="margin-bottom: 10px;">💪 <strong>Power帯</strong>: プレイヤーの戦力による区分</li>
-                            <li style="margin-bottom: 10px;">⚔️ <strong>撃破ノルマ</strong>: KVK期間中に達成すべきKill Points目標</li>
-                            <li style="margin-bottom: 10px;">💀 <strong>戦死ノルマ</strong>: KVK期間中に達成すべき戦死目標</li>
-                            <li style="margin-bottom: 10px;">📈 <strong>Death Rate</strong>: Power帯に対する戦死率の基準値</li>
-                        </ul>
-                        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
-                            <p style="color: #856404; margin: 0;">
-                                <strong>⚠️ 注意事項:</strong> これらの数値は参考基準です。実際のKVKでは状況に応じて調整される場合があります。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 貢献度ポイント上限戦力表 -->
-                <div style="margin-top: 40px; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    <h3 style="color: #2c3e50; text-align: center; margin-bottom: 25px; font-size: 24px;">🏆 貢献度ポイント：上限戦力表</h3>
-                    <div style="overflow-x: auto;">
-                        <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: separate; border-spacing: 0;">
-                            <thead>
-                                <tr style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
-                                    <th style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-radius: 15px 0 0 0;">順位</th>
-                                    <th style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-radius: 0 15px 0 0;">上限戦力</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 600; color: #2c3e50;">1～30位</td>
-                                    <td style="padding: 15px; text-align: center; font-weight: 600; color: #27ae60; font-size: 18px;">無制限</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">31位～40位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">95,000,000</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">41位～50位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">90,000,000</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">51位～70位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">85,000,000</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">71位～90位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">80,000,000</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">91位～110位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">75,000,000</td>
-                                </tr>
-                                <tr style="background: #f8f9fa;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">111位～150位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">70,000,000</td>
-                                </tr>
-                                <tr style="background: white;">
-                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50; border-radius: 0 0 0 15px;">151位</td>
-                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px; border-radius: 0 0 15px 0;">65,000,000</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- 貢献度ポイント表の説明 -->
-                    <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-left: 4px solid #27ae60; border-radius: 5px;">
-                        <p style="color: #1b5e20; margin: 0;">
-                            <strong>📌 貢献度ポイントについて:</strong> 貢献度ランキングの順位に応じて、戦力に上限が設定されます。上位30位までは無制限ですが、31位以降は段階的に制限が適用されます。
-                        </p>
-                    </div>
-                </div>
+        <!-- メインノルマテーブル -->
+        <div style="background: white; border-radius: 15px; padding: 0; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 40px;">
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);">
+                            <th style="padding: 18px 20px; color: white; font-size: 14px; font-weight: 600; text-align: center; min-width: 100px;">
+                                Power帯
+                            </th>
+                            <th style="padding: 18px 20px; color: white; font-size: 14px; font-weight: 600; text-align: center; border-left: 1px solid rgba(255,255,255,0.1);">
+                                撃破ノルマ<br><span style="font-size: 11px; opacity: 0.8;">Kill Points</span>
+                            </th>
+                            <th style="padding: 18px 20px; color: white; font-size: 14px; font-weight: 600; text-align: center; border-left: 1px solid rgba(255,255,255,0.1);">
+                                戦死ノルマ<br><span style="font-size: 11px; opacity: 0.8;">Deaths</span>
+                            </th>
+                            <th style="padding: 18px 20px; color: white; font-size: 14px; font-weight: 600; text-align: center; border-left: 1px solid rgba(255,255,255,0.1);">
+                                Death Rate
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">45M - 60M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">75,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">198,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0033</td>
+                        </tr>
+                        
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">60M - 65M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">150,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">214,500</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0033</td>
+                        </tr>
+                        
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">65M - 70M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">150,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">231,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0033</td>
+                        </tr>
+                        
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">70M - 75M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">187,500,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">315,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0042</td>
+                        </tr>
+                        
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">75M - 80M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">187,500,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">336,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0042</td>
+                        </tr>
+                        
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">80M - 85M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">200,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">425,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.005</td>
+                        </tr>
+                        
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">85M - 90M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">200,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">450,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.005</td>
+                        </tr>
+                        
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">90M - 95M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">300,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">551,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0058</td>
+                        </tr>
+                        
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">95M - 100M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">300,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">580,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0058</td>
+                        </tr>
+                        
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">100M - 150M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">600,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">1,005,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0067</td>
+                        </tr>
+                        
+                        <tr style="background: #ffffff;">
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 14px;">150M - 200M</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #e74c3c; font-size: 18px;">600,000,000</td>
+                            <td style="padding: 16px 20px; text-align: center; font-weight: 700; color: #f39c12; font-size: 18px;">1,340,000</td>
+                            <td style="padding: 16px 20px; text-align: center; color: #7f8c8d; font-size: 14px;">0.0067</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+
+        <!-- 貢献度ポイント上限戦力表 -->
+        <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 40px;">
+            <h3 style="color: #2c3e50; text-align: center; margin-bottom: 30px; font-size: 24px; font-weight: 700;">
+                🏆 貢献度ポイント上限戦力表
+            </h3>
+            
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                            <th style="padding: 15px 20px; color: white; font-size: 14px; font-weight: 600; text-align: center; border-radius: 10px 0 0 0;">順位</th>
+                            <th style="padding: 15px 20px; color: white; font-size: 14px; font-weight: 600; text-align: center; border-radius: 0 10px 0 0;">上限戦力</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #f1c40f;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #856404;">1～30位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #856404; font-size: 18px;">無制限</td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50;">31位～40位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px;">95,000,000</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50;">41位～50位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px;">90,000,000</td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50;">51位～70位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px;">85,000,000</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50;">71位～90位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px;">80,000,000</td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50;">91位～110位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px;">75,000,000</td>
+                        </tr>
+                        <tr style="background: #f8f9fa;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50;">111位～150位</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px;">70,000,000</td>
+                        </tr>
+                        <tr style="background: white;">
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 600; color: #2c3e50; border-radius: 0 0 0 10px;">151位～</td>
+                            <td style="padding: 14px 20px; text-align: center; font-weight: 700; color: #2c3e50; font-size: 18px; border-radius: 0 0 10px 0;">65,000,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        <!-- 補足説明 -->
+        <div style="background: #e8f4fd; border-radius: 10px; padding: 25px; border-left: 4px solid #3498db;">
+            <h4 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px; font-weight: 600;">📋 ノルマについて</h4>
+            <ul style="color: #34495e; line-height: 1.8; margin: 0; padding-left: 20px;">
+                <li style="margin-bottom: 8px;"><strong>Power帯：</strong>プレイヤーの戦力による区分</li>
+                <li style="margin-bottom: 8px;"><strong>撃破ノルマ：</strong>KVK期間中に達成すべきKill Points目標</li>
+                <li style="margin-bottom: 8px;"><strong>戦死ノルマ：</strong>KVK期間中に達成すべき戦死目標</li>
+                <li style="margin-bottom: 8px;"><strong>Death Rate：</strong>Power帯に対する戦死率の基準値</li>
+            </ul>
+            <div style="margin-top: 20px; padding: 15px; background: #fff9e6; border-radius: 8px;">
+                <p style="color: #856404; margin: 0; font-size: 14px;">
+                    <strong>⚠️ 注意事項：</strong>これらの数値は参考基準です。実際のKVKでは状況に応じて調整される場合があります。
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- 問い合わせ先タブ -->
         <div id="contactTab" class="tab-content">
@@ -1763,7 +1765,7 @@
                 growthSortOrder = growthSortOrder === 'asc' ? 'desc' : 'asc';
             } else {
                 growthSortColumn = column;
-                growthSortOrder = column === 'difference' || column === 'growthRate' || column === 'endValue' ? 'desc' : 'asc';
+                growthSortOrder = column === 'difference' || column === 'growthRate' || column === 'endValue' || column === 'startValue' || column === 'dailyAverage' ? 'desc' : 'asc';
             }
             
             // データをソート
@@ -1771,9 +1773,16 @@
                 let aVal = a[column];
                 let bVal = b[column];
                 
-                // 文字列の場合は小文字で比較
-                if (typeof aVal === 'string') aVal = aVal.toLowerCase();
-                if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+                // 数値系フィールドの場合は数値として比較
+                if (column === 'difference' || column === 'growthRate' || column === 'endValue' || 
+                    column === 'startValue' || column === 'dailyAverage' || column === 'id') {
+                    aVal = parseFloat(aVal) || 0;
+                    bVal = parseFloat(bVal) || 0;
+                } else if (typeof aVal === 'string') {
+                    // 文字列の場合は小文字で比較
+                    aVal = aVal.toLowerCase();
+                    bVal = typeof bVal === 'string' ? bVal.toLowerCase() : String(bVal).toLowerCase();
+                }
                 
                 if (aVal < bVal) return growthSortOrder === 'asc' ? -1 : 1;
                 if (aVal > bVal) return growthSortOrder === 'asc' ? 1 : -1;
