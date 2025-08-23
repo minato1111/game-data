@@ -1174,6 +1174,7 @@
         let currentPlayer = null;
         let currentGrowthData = [];  // 成長ランキングのデータを保存
         let filteredGrowthData = []; // フィルター適用後の成長データ
+        let allGrowthData = []; // 全成長データ（ソート用）
         let growthSortColumn = '';   // 成長ランキングのソート列
         let growthSortOrder = 'desc'; // 成長ランキングのソート順
 
@@ -1720,6 +1721,9 @@
 
             console.log('成長データ数:', growthData.length);
 
+            // 全データを保存（ソート用）
+            allGrowthData = [...growthData];
+
             // ソート
             if (sortBy === 'amount') {
                 growthData.sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference));
@@ -1732,7 +1736,7 @@
             // 表示数制限
             const displayData = growthData.slice(0, limit);
             currentGrowthData = displayData;  // 保存しておく
-            filteredGrowthData = displayData; // フィルター用にも保存
+            filteredGrowthData = growthData; // フィルター用には制限なしデータを保存
 
             // データ件数を更新
             document.getElementById('growthAnalysisCount').textContent = displayData.length;
@@ -1768,8 +1772,9 @@
                 growthSortOrder = column === 'difference' || column === 'growthRate' || column === 'endValue' || column === 'startValue' || column === 'dailyAverage' ? 'desc' : 'asc';
             }
             
-            // データをソート
-            filteredGrowthData.sort((a, b) => {
+            // 全データをソート
+            const sortedData = [...filteredGrowthData];
+            sortedData.sort((a, b) => {
                 let aVal = a[column];
                 let bVal = b[column];
                 
@@ -1789,11 +1794,18 @@
                 return 0;
             });
             
+            // 表示制限を適用
+            const limit = parseInt(document.getElementById('growthLimit').value);
+            const displayData = limit === 9999 ? sortedData : sortedData.slice(0, limit);
+            
             // テーブルを再表示
-            displayGrowthTable(filteredGrowthData);
+            displayGrowthTable(displayData);
             
             // ソートインジケーターを更新
             updateGrowthSortIndicators();
+            
+            // データ件数を更新
+            document.getElementById('growthAnalysisCount').textContent = displayData.length;
         }
 
         // 成長ランキングのソートインジケーター更新
@@ -2148,8 +2160,24 @@
             sortColumn = column;
             sortOrder = order;
             
-            // ソート結果をキャッシュから取得
-            const sortKey = dataCache.generateKey('sort', filteredData.length, column, order, JSON.stringify(filteredData.slice(0, 5)));
+            // 全データでソートキーを生成（filteredDataの代わりにallDataを使用）
+            const allDataForSort = allData.filter(row => {
+                // 現在のフィルター条件を適用
+                if (selectedSeason && row.Data) {
+                    const season = getSeasonFromDate(new Date(row.Data));
+                    if (season !== selectedSeason) return false;
+                }
+                if (selectedDate && row.Data !== selectedDate) return false;
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    return (row.Name && row.Name.toLowerCase().includes(term)) ||
+                           (row.Alliance && row.Alliance.toLowerCase().includes(term)) ||
+                           (row.ID && row.ID.toString().includes(term));
+                }
+                return true;
+            });
+            
+            const sortKey = dataCache.generateKey('sort', allDataForSort.length, column, order, JSON.stringify(allDataForSort.slice(0, 5)));
             let cachedSort = dataCache.get(sortKey);
             
             if (cachedSort) {
@@ -2161,8 +2189,8 @@
                 return;
             }
             
-            // ソート実行前のデータをコピー（キャッシュ用）
-            const sortedData = [...filteredData];
+            // 全データをソート
+            const sortedData = [...allDataForSort];
             
             sortedData.sort((a, b) => {
                 let aVal = a[column] || '';
