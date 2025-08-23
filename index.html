@@ -534,6 +534,7 @@
             <button class="tab-btn" onclick="switchTab('growth')">成長ランキング</button>
             <button class="tab-btn" onclick="switchTab('overall')">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')">個人分析</button>
+            <button class="tab-btn" onclick="switchTab('kvk')">KVKノルマ</button>
             <button class="tab-btn" onclick="switchTab('contact')">問い合わせ先</button>
         </div>
 
@@ -830,6 +831,186 @@
                 <div id="noPlayerData" class="no-data">
                     <h2>プレイヤーを検索してください</h2>
                     <p>上の検索ボックスにプレイヤー名またはIDを入力してください</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- KVKノルマタブ -->
+        <div id="kvkTab" class="tab-content">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">⚔️ KVKノルマ一覧</h2>
+                    <p style="color: #7f8c8d; font-size: 16px;">Power帯別の撃破ノルマ・戦死ノルマ基準値</p>
+                </div>
+
+                <div style="background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: separate; border-spacing: 0;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                                    <th colspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-radius: 15px 0 0 0;">Power帯</th>
+                                    <th rowspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-left: 2px solid rgba(255,255,255,0.2);">撃破ノルマ<br><span style="font-size: 14px; opacity: 0.9;">Kill Points</span></th>
+                                    <th rowspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-left: 2px solid rgba(255,255,255,0.2);">戦死ノルマ<br><span style="font-size: 14px; opacity: 0.9;">Deaths</span></th>
+                                    <th rowspan="2" style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-left: 2px solid rgba(255,255,255,0.2); border-radius: 0 15px 0 0;">数値<br><span style="font-size: 14px; opacity: 0.9;">Death Rate</span></th>
+                                </tr>
+                                <tr style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);">
+                                    <th style="padding: 15px; color: white; font-size: 16px; text-align: center; border-right: 1px solid rgba(255,255,255,0.2);">最小値</th>
+                                    <th style="padding: 15px; color: white; font-size: 16px; text-align: center; border-right: 2px solid rgba(255,255,255,0.2);">最大値</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">45,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">59,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">75,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">198,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0033</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">60,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">64,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">150,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">214,500</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0033</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">65,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">69,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">150,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">231,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0033</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">70,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">74,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">187,500,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">315,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0042</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">75,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">79,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">187,500,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">336,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0042</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">80,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">84,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">200,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">425,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.005</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">85,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">89,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">200,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">450,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.005</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">90,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">94,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">300,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">551,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0058</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">95,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">99,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">300,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">580,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0058</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0;">100,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">149,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">600,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">1,005,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d;">0.0067</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 1px solid #e0e0e0; border-radius: 0 0 0 15px;">150,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 500; color: #2c3e50; border-right: 2px solid #d0d0d0;">199,999,999</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #e74c3c; font-size: 18px;">600,000,000</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #f39c12; font-size: 18px;">1,340,000</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #7f8c8d; border-radius: 0 0 15px 0;">0.0067</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 補足説明 -->
+                    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">📊 ノルマについて</h3>
+                        <ul style="color: #5d6d7e; line-height: 1.8; list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px;">💪 <strong>Power帯</strong>: プレイヤーの戦力による区分</li>
+                            <li style="margin-bottom: 10px;">⚔️ <strong>撃破ノルマ</strong>: KVK期間中に達成すべきKill Points目標</li>
+                            <li style="margin-bottom: 10px;">💀 <strong>戦死ノルマ</strong>: KVK期間中に達成すべき戦死目標</li>
+                            <li style="margin-bottom: 10px;">📈 <strong>Death Rate</strong>: Power帯に対する戦死率の基準値</li>
+                        </ul>
+                        <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 5px;">
+                            <p style="color: #856404; margin: 0;">
+                                <strong>⚠️ 注意事項:</strong> これらの数値は参考基準です。実際のKVKでは状況に応じて調整される場合があります。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 貢献度ポイント上限戦力表 -->
+                <div style="margin-top: 40px; background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="color: #2c3e50; text-align: center; margin-bottom: 25px; font-size: 24px;">🏆 貢献度ポイント：上限戦力表</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: separate; border-spacing: 0;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                                    <th style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-radius: 15px 0 0 0;">順位</th>
+                                    <th style="padding: 20px; color: white; font-size: 18px; font-weight: 600; text-align: center; border-radius: 0 15px 0 0;">上限戦力</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 600; color: #2c3e50;">1～30位</td>
+                                    <td style="padding: 15px; text-align: center; font-weight: 600; color: #27ae60; font-size: 18px;">無制限</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">31位～40位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">95,000,000</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">41位～50位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">90,000,000</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">51位～70位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">85,000,000</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">71位～90位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">80,000,000</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">91位～110位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">75,000,000</td>
+                                </tr>
+                                <tr style="background: #f8f9fa;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50;">111位～150位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px;">70,000,000</td>
+                                </tr>
+                                <tr style="background: white;">
+                                    <td style="padding: 15px; text-align: center; font-weight: 500; color: #2c3e50; border-radius: 0 0 0 15px;">151位</td>
+                                    <td style="padding: 15px; text-align: right; font-weight: 600; color: #2c3e50; font-size: 18px; border-radius: 0 0 15px 0;">65,000,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- 貢献度ポイント表の説明 -->
+                    <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-left: 4px solid #27ae60; border-radius: 5px;">
+                        <p style="color: #1b5e20; margin: 0;">
+                            <strong>📌 貢献度ポイントについて:</strong> 貢献度ランキングの順位に応じて、戦力に上限が設定されます。上位30位までは無制限ですが、31位以降は段階的に制限が適用されます。
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1295,6 +1476,8 @@
             } else if (tab === 'growth') {
                 document.getElementById('growthTab').classList.add('active');
                 initGrowthTab();
+            } else if (tab === 'kvk') {
+                document.getElementById('kvkTab').classList.add('active');
             } else if (tab === 'contact') {
                 document.getElementById('contactTab').classList.add('active');
             }
@@ -2016,289 +2199,6 @@
             updateIndividualChart();
         }
 
-        // 名前クリックで個人分析へ遷移
-        function navigateToPlayer(playerName, playerId) {
-            // 個人分析タブに切り替え
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelectorAll('.tab-btn')[3].classList.add('active'); // 個人分析タブ（4番目）
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById('individualTab').classList.add('active');
-            
-            // 検索ボックスに名前を設定して検索実行
-            document.getElementById('playerSearch').value = playerName;
-            searchPlayer();
-        }
-
-        // 箱ひげ図の更新
-        function updateBoxPlot() {
-            if (!currentPlayer) return;
-            
-            // 最新データを取得
-            const latestDate = [...new Set(allData.map(row => row.Data))].sort().reverse()[0];
-            const latestData = allData.filter(row => row.Data === latestDate);
-            
-            // 現在のプレイヤーの最新データを取得
-            const currentPlayerLatest = latestData.find(row => 
-                row.ID === currentPlayer.id || row.Name === currentPlayer.name
-            );
-            
-            if (!currentPlayerLatest) {
-                alert('最新データが見つかりません');
-                return;
-            }
-            
-            const playerPower = parseInt((currentPlayerLatest.Power || '0').toString().replace(/,/g, '')) || 0;
-            const playerTKP = parseInt((currentPlayerLatest['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
-            
-            // Power帯を判定
-            let powerBand = '';
-            let powerBandData = [];
-            
-            if (playerPower >= 100000000) {
-                powerBand = '1億以上';
-                powerBandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power >= 100000000;
-                });
-            } else if (playerPower >= 85000000) {
-                powerBand = '8500万～1億';
-                powerBandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power >= 85000000 && power < 100000000;
-                });
-            } else if (playerPower >= 75000000) {
-                powerBand = '7500万～8500万';
-                powerBandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power >= 75000000 && power < 85000000;
-                });
-            } else if (playerPower >= 65000000) {
-                powerBand = '6500万～7500万';
-                powerBandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power >= 65000000 && power < 75000000;
-                });
-            } else if (playerPower >= 55000000) {
-                powerBand = '5500万～6500万';
-                powerBandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power >= 55000000 && power < 65000000;
-                });
-            } else {
-                powerBand = '5500万未満';
-                powerBandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power < 55000000;
-                });
-            }
-            
-            // TKPデータを抽出してソート
-            const tkpValues = powerBandData.map(row => 
-                parseInt((row['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0
-            ).sort((a, b) => a - b);
-            
-            if (tkpValues.length === 0) {
-                alert('該当するPower帯のデータがありません');
-                return;
-            }
-            
-            // 統計値を計算
-            const q1Index = Math.floor(tkpValues.length * 0.25);
-            const q2Index = Math.floor(tkpValues.length * 0.5);
-            const q3Index = Math.floor(tkpValues.length * 0.75);
-            
-            const min = tkpValues[0];
-            const q1 = tkpValues[q1Index];
-            const median = tkpValues[q2Index];
-            const q3 = tkpValues[q3Index];
-            const max = tkpValues[tkpValues.length - 1];
-            const mean = tkpValues.reduce((a, b) => a + b, 0) / tkpValues.length;
-            
-            // プレイヤーの位置を判定
-            let position = '';
-            let positionColor = '';
-            const playerRank = tkpValues.filter(v => v <= playerTKP).length;
-            const percentile = (playerRank / tkpValues.length) * 100;
-            
-            if (percentile >= 75) {
-                position = `上位 ${(100 - percentile).toFixed(1)}% (優秀)`;
-                positionColor = '#27ae60';
-            } else if (percentile >= 50) {
-                position = `上位 ${(100 - percentile).toFixed(1)}% (平均以上)`;
-                positionColor = '#3498db';
-            } else if (percentile >= 25) {
-                position = `上位 ${(100 - percentile).toFixed(1)}% (平均以下)`;
-                positionColor = '#f39c12';
-            } else {
-                position = `下位 ${percentile.toFixed(1)}% (要改善)`;
-                positionColor = '#e74c3c';
-            }
-            
-            // 情報を表示
-            document.getElementById('boxPlotInfo').style.display = 'block';
-            document.getElementById('playerPowerBand').textContent = powerBand;
-            document.getElementById('playerTKP').textContent = playerTKP.toLocaleString();
-            document.getElementById('playerPosition').textContent = position;
-            document.getElementById('playerPosition').style.color = positionColor;
-            
-            // 箱ひげ図を描画
-            const ctx = document.getElementById('boxPlotChart').getContext('2d');
-            
-            if (boxPlotChartInstance) {
-                boxPlotChartInstance.destroy();
-                boxPlotChartInstance = null;
-            }
-            
-            // canvas要素をリセット
-            const canvas = document.getElementById('boxPlotChart');
-            const parent = canvas.parentNode;
-            parent.removeChild(canvas);
-            const newCanvas = document.createElement('canvas');
-            newCanvas.id = 'boxPlotChart';
-            parent.appendChild(newCanvas);
-            const newCtx = newCanvas.getContext('2d');
-            
-            // 全Power帯のデータを準備
-            const allBands = [
-                { label: '1億以上', min: 100000000, max: Infinity },
-                { label: '8500万～1億', min: 85000000, max: 100000000 },
-                { label: '7500万～8500万', min: 75000000, max: 85000000 },
-                { label: '6500万～7500万', min: 65000000, max: 75000000 },
-                { label: '5500万～6500万', min: 55000000, max: 65000000 }
-            ];
-            
-            const boxPlotData = allBands.map(band => {
-                const bandData = latestData.filter(row => {
-                    const power = parseInt((row.Power || '0').toString().replace(/,/g, '')) || 0;
-                    return power >= band.min && (band.max === Infinity ? true : power < band.max);
-                });
-                
-                const tkpVals = bandData.map(row => 
-                    parseInt((row['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0
-                ).sort((a, b) => a - b);
-                
-                if (tkpVals.length === 0) {
-                    return { min: 0, q1: 0, median: 0, q3: 0, max: 0, outliers: [], count: 0 };
-                }
-                
-                const q1Idx = Math.floor(tkpVals.length * 0.25);
-                const q2Idx = Math.floor(tkpVals.length * 0.5);
-                const q3Idx = Math.floor(tkpVals.length * 0.75);
-                
-                const q1Val = tkpVals[q1Idx];
-                const q3Val = tkpVals[q3Idx];
-                const iqr = q3Val - q1Val;
-                const lowerBound = q1Val - 1.5 * iqr;
-                const upperBound = q3Val + 1.5 * iqr;
-                
-                const filteredVals = tkpVals.filter(v => v >= lowerBound && v <= upperBound);
-                const outliers = tkpVals.filter(v => v < lowerBound || v > upperBound);
-                
-                return {
-                    min: filteredVals[0] || 0,
-                    q1: q1Val,
-                    median: tkpVals[q2Idx],
-                    q3: q3Val,
-                    max: filteredVals[filteredVals.length - 1] || 0,
-                    outliers: outliers,
-                    count: tkpVals.length,
-                    isCurrentBand: band.label === powerBand
-                };
-            });
-            
-            boxPlotChartInstance = new Chart(newCtx, {
-                type: 'boxplot',
-                data: {
-                    labels: allBands.map(b => b.label),
-                    datasets: [{
-                        label: 'Total Kill Points分布',
-                        backgroundColor: boxPlotData.map(d => d.isCurrentBand ? 'rgba(52, 152, 219, 0.5)' : 'rgba(149, 165, 166, 0.5)'),
-                        borderColor: boxPlotData.map(d => d.isCurrentBand ? 'rgb(52, 152, 219)' : 'rgb(149, 165, 166)'),
-                        borderWidth: 2,
-                        outlierColor: '#e74c3c',
-                        data: boxPlotData.map(d => [d.min, d.q1, d.median, d.q3, d.max])
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `Power帯別 Total Kill Points 分布 (${latestDate}時点)`,
-                            font: {
-                                size: 16
-                            }
-                        },
-                        legend: {
-                            display: true
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const data = context.parsed;
-                                    const bandData = boxPlotData[context.dataIndex];
-                                    return [
-                                        `最小値: ${data.min ? data.min.toLocaleString() : '0'}`,
-                                        `第1四分位: ${data.q1 ? data.q1.toLocaleString() : '0'}`,
-                                        `中央値: ${data.median ? data.median.toLocaleString() : '0'}`,
-                                        `第3四分位: ${data.q3 ? data.q3.toLocaleString() : '0'}`,
-                                        `最大値: ${data.max ? data.max.toLocaleString() : '0'}`,
-                                        `データ数: ${bandData.count}`,
-                                        bandData.isCurrentBand ? `現在のプレイヤー: ${playerTKP.toLocaleString()}` : ''
-                                    ].filter(s => s);
-                                }
-                            }
-                        },
-                        annotation: {
-                            annotations: boxPlotData.map((d, i) => {
-                                if (d.isCurrentBand) {
-                                    return {
-                                        type: 'point',
-                                        xValue: i,
-                                        yValue: playerTKP,
-                                        backgroundColor: 'rgba(231, 76, 60, 0.8)',
-                                        borderColor: 'rgb(231, 76, 60)',
-                                        borderWidth: 2,
-                                        radius: 8,
-                                        label: {
-                                            display: true,
-                                            content: currentPlayer.name,
-                                            position: 'top'
-                                        }
-                                    };
-                                }
-                                return null;
-                            }).filter(a => a !== null)
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    if (value >= 1000000000) {
-                                        return (value / 1000000000).toFixed(1) + 'B';
-                                    } else if (value >= 1000000) {
-                                        return (value / 1000000).toFixed(1) + 'M';
-                                    }
-                                    return value.toLocaleString();
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // 箱ひげ図も更新
-            updateBoxPlot();
-        }
-
         function updateIndividualChart() {
             if (!currentPlayer) return;
             
@@ -2454,295 +2354,3 @@
                 
                 if (!grouped[date]) {
                     grouped[date] = [];
-                }
-                grouped[date].push(row);
-            });
-            return grouped;
-        }
-
-        // チャートデータを計算
-        function calculateChartData(groupedData, metric) {
-            const chartData = [];
-            Object.keys(groupedData).sort().forEach(date => {
-                const dayData = groupedData[date];
-                
-                // メトリクスでソート
-                dayData.sort((a, b) => {
-                    const aVal = parseNumberValue(a[metric]);
-                    const bVal = parseNumberValue(b[metric]);
-                    return bVal - aVal;
-                });
-                
-                const top300 = dayData.slice(0, 300);
-                const total = top300.reduce((sum, row) => {
-                    return sum + parseNumberValue(row[metric]);
-                }, 0);
-                
-                const average = total / top300.length;
-                
-                chartData.push({
-                    date: date,
-                    total: total,
-                    average: average,
-                    count: top300.length
-                });
-            });
-            return chartData;
-        }
-
-        // 数値パースユーティリティ関数
-        function parseNumberValue(value) {
-            return parseInt((value || '0').toString().replace(/,/g, '')) || 0;
-        }
-
-        function updateOverallChart() {
-            const metric = document.getElementById('overallMetric').value;
-            const { labels, totals } = processOverallChartData(metric);
-            
-            const lineCtx = document.getElementById('overallChart').getContext('2d');
-            if (overallChartInstance) {
-                overallChartInstance.destroy();
-            }
-            
-            overallChartInstance = new Chart(lineCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `上位300人の${metric}合計`,
-                        data: totals,
-                        borderColor: 'rgb(118, 75, 162)',
-                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
-                        tension: 0.1,
-                        fill: true,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        pointBackgroundColor: 'rgb(118, 75, 162)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `上位300人の${metric}統計`,
-                            font: {
-                                size: 16
-                            }
-                        },
-                        datalabels: {
-                            display: true,
-                            align: 'top',
-                            backgroundColor: 'rgba(118, 75, 162, 0.9)',
-                            borderRadius: 4,
-                            color: 'white',
-                            font: {
-                                weight: 'bold',
-                                size: 10
-                            },
-                            formatter: function(value) {
-                                if (value >= 1000000000) {
-                                    return (value / 1000000000).toFixed(1) + 'B';
-                                } else if (value >= 1000000) {
-                                    return (value / 1000000).toFixed(1) + 'M';
-                                } else if (value >= 1000) {
-                                    return (value / 1000).toFixed(0) + 'K';
-                                }
-                                return value.toLocaleString();
-                            },
-                            padding: 4,
-                            offset: 8
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            ticks: {
-                                callback: function(value) {
-                                    if (value >= 1000000000) {
-                                        return (value / 1000000000).toFixed(0) + 'B';
-                                    } else if (value >= 1000000) {
-                                        return (value / 1000000).toFixed(0) + 'M';
-                                    }
-                                    return value.toLocaleString();
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            const barCtx = document.getElementById('overallBarChart').getContext('2d');
-            if (overallBarChartInstance) {
-                overallBarChartInstance.destroy();
-            }
-            
-            overallBarChartInstance = new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `上位300人の${metric}合計`,
-                        data: totals,
-                        backgroundColor: 'rgba(52, 152, 219, 0.8)',
-                        borderColor: 'rgb(52, 152, 219)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: `上位300人の${metric}合計`,
-                            font: {
-                                size: 16
-                            }
-                        },
-                        legend: {
-                            display: false
-                        },
-                        datalabels: {
-                            display: true,
-                            align: 'end',
-                            anchor: 'end',
-                            backgroundColor: 'rgba(52, 152, 219, 0.9)',
-                            borderRadius: 4,
-                            color: 'white',
-                            font: {
-                                weight: 'bold',
-                                size: 9
-                            },
-                            formatter: function(value) {
-                                if (value >= 1000000000) {
-                                    return (value / 1000000000).toFixed(1) + 'B';
-                                } else if (value >= 1000000) {
-                                    return (value / 1000000).toFixed(1) + 'M';
-                                } else if (value >= 1000) {
-                                    return (value / 1000).toFixed(0) + 'K';
-                                }
-                                return value.toLocaleString();
-                            },
-                            padding: 3
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    if (value >= 1000000000) {
-                                        return (value / 1000000000).toFixed(0) + 'B';
-                                    } else if (value >= 1000000) {
-                                        return (value / 1000000).toFixed(0) + 'M';
-                                    }
-                                    return value.toLocaleString();
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function showLineChart() {
-            document.getElementById('overallChart').parentElement.style.display = 'block';
-            document.getElementById('overallBarChart').parentElement.style.display = 'none';
-            
-            const buttons = document.querySelectorAll('#overallTab .chart-controls button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function showBarChart() {
-            document.getElementById('overallChart').parentElement.style.display = 'none';
-            document.getElementById('overallBarChart').parentElement.style.display = 'block';
-            
-            const buttons = document.querySelectorAll('#overallTab .chart-controls button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.toString().replace(/[&<>"']/g, m => map[m]);
-        }
-
-
-        // キャッシュシステム
-        class DataCache {
-            constructor() {
-                this.cache = new Map();
-                this.maxSize = 100; // キャッシュの最大サイズ
-                this.ttl = 10 * 60 * 1000; // 10分のTTL
-            }
-
-            generateKey(...args) {
-                return JSON.stringify(args);
-            }
-
-            set(key, value) {
-                if (this.cache.size >= this.maxSize) {
-                    // LRU: 最も古いエントリを削除
-                    const firstKey = this.cache.keys().next().value;
-                    this.cache.delete(firstKey);
-                }
-                
-                this.cache.set(key, {
-                    value,
-                    timestamp: Date.now()
-                });
-            }
-
-            get(key) {
-                const entry = this.cache.get(key);
-                if (!entry) return null;
-                
-                // TTLチェック
-                if (Date.now() - entry.timestamp > this.ttl) {
-                    this.cache.delete(key);
-                    return null;
-                }
-                
-                // LRU: アクセスしたアイテムを末尾に移動
-                this.cache.delete(key);
-                this.cache.set(key, entry);
-                
-                return entry.value;
-            }
-
-            clear() {
-                this.cache.clear();
-            }
-
-            has(key) {
-                const entry = this.cache.get(key);
-                if (!entry) return false;
-                
-                // TTLチェック
-                if (Date.now() - entry.timestamp > this.ttl) {
-                    this.cache.delete(key);
-                    return false;
-                }
-                
-                return true;
-            }
-        }
-
-        const dataCache = new DataCache();
-
-
-
-    </script>
-</body>
-</html>
