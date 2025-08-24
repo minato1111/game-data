@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上位300人統計 - ROK Kingdom Data</title>
+    <meta name="description" content="Rise of Kingdoms 上位300人のパワー推移と統計">
+    <link rel="stylesheet" href="styles/common.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .back-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-nav a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .back-nav a:hover {
+            background: #2980b9;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .overview-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .overview-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .overview-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .overview-card .change {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .chart-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .chart-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chart-controls select,
+        .chart-controls button {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .chart-controls button.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+
+        .distribution-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .ranking-table-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tier-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .tier-s { background: #f39c12; }
+        .tier-a { background: #e74c3c; }
+        .tier-b { background: #9b59b6; }
+        .tier-c { background: #3498db; }
+        .tier-d { background: #1abc9c; }
+
+        .power-bar {
+            display: inline-block;
+            height: 20px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 10px;
+            position: relative;
+            min-width: 100px;
+        }
+
+        .power-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+            
+            .distribution-charts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav">
+            <a href="index.html">← メインメニューに戻る</a>
+        </div>
+
+        <h1>📋 上位300人統計</h1>
+        <div class="subtitle">上位300人のパワー推移と詳細統計</div>
+        
+        <!-- 統計概要 -->
+        <div class="stats-overview">
+            <div class="overview-card">
+                <h3>総パワー</h3>
+                <div class="value" id="totalPowerTop300">0</div>
+                <div class="change" id="totalPowerChange">-</div>
+            </div>
+            <div class="overview-card">
+                <h3>平均パワー</h3>
+                <div class="value" id="avgPowerTop300">0</div>
+                <div class="change" id="avgPowerChange">-</div>
+            </div>
+            <div class="overview-card">
+                <h3>最小パワー (300位)</h3>
+                <div class="value" id="minPowerTop300">0</div>
+                <div class="change" id="minPowerChange">-</div>
+            </div>
+            <div class="overview-card">
+                <h3>分析データ数</h3>
+                <div class="value" id="dataPointCount">0</div>
+                <div class="change">日分のデータ</div>
+            </div>
+        </div>
+
+        <!-- パワー推移チャート -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2 class="chart-title">上位300人パワー推移</h2>
+                <div class="chart-controls">
+                    <select id="timeRangeSelect" onchange="updateCharts()">
+                        <option value="7">直近7日間</option>
+                        <option value="14">直近14日間</option>
+                        <option value="30" selected>直近30日間</option>
+                        <option value="60">直近60日間</option>
+                        <option value="90">全期間</option>
+                    </select>
+                    <button id="totalPowerBtn" class="active" onclick="switchChartView('total')">総パワー</button>
+                    <button id="avgPowerBtn" onclick="switchChartView('average')">平均パワー</button>
+                    <button id="minPowerBtn" onclick="switchChartView('minimum')">最小パワー</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="powerTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- 分布チャート -->
+        <div class="distribution-charts">
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h2 class="chart-title">パワー分布</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="powerDistributionChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h2 class="chart-title">ティア別構成</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="tierDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 現在のランキング -->
+        <div class="ranking-table-section">
+            <div class="chart-header">
+                <h2 class="chart-title">現在のTop300ランキング</h2>
+                <div class="chart-controls">
+                    <select id="displayRangeSelect" onchange="updateRankingTable()">
+                        <option value="50">Top50</option>
+                        <option value="100" selected>Top100</option>
+                        <option value="200">Top200</option>
+                        <option value="300">全て(300人)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="rankingTable">
+                    <thead>
+                        <tr>
+                            <th>順位</th>
+                            <th>プレイヤー名</th>
+                            <th>同盟</th>
+                            <th>パワー</th>
+                            <th>ティア</th>
+                            <th>パワーバー</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rankingTableBody">
+                        <tr>
+                            <td colspan="6" class="loading">データを読み込み中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameData = [];
+        let top300Data = [];
+        let charts = {};
+        let currentChartView = 'total';
+
+        // データ読み込み
+        async function loadData() {
+            try {
+                const response = await fetch('Master_Data.csv');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const csvText = await response.text();
+                
+                const lines = csvText.split('\n').filter(line => line.trim());
+                gameData = [];
+                
+                for (let i = 1; i < lines.length; i++) {
+                    const values = parseCSVLine(lines[i]);
+                    if (values.length >= 10) {
+                        gameData.push({
+                            date: values[0],
+                            id: values[1],
+                            name: values[2],
+                            power: parseNumber(values[3]),
+                            alliance: values[4],
+                            t4Kills: parseNumber(values[5]),
+                            t5Kills: parseNumber(values[6]),
+                            totalKillPoints: parseNumber(values[7]),
+                            deadTroops: parseNumber(values[8]),
+                            troopsPower: parseNumber(values[9])
+                        });
+                    }
+                }
+                
+                analyzeTop300Data();
+                updateCharts();
+                updateRankingTable();
+                
+            } catch (error) {
+                console.error('データ読み込みエラー:', error);
+                document.getElementById('rankingTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="error-message">
+                            データの読み込みに失敗しました: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current);
+            
+            return result.map(item => item.replace(/"/g, ''));
+        }
+
+        function parseNumber(str) {
+            if (!str || str === '') return 0;
+            return parseInt(str.replace(/,/g, '')) || 0;
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString();
+        }
+
+        // Top300データ分析
+        function analyzeTop300Data() {
+            if (gameData.length === 0) return;
+
+            // 日付別にデータをグループ化
+            const dataByDate = {};
+            gameData.forEach(record => {
+                if (!dataByDate[record.date]) {
+                    dataByDate[record.date] = [];
+                }
+                dataByDate[record.date].push(record);
+            });
+
+            // 各日のTop300を計算
+            top300Data = [];
+            Object.keys(dataByDate).sort().forEach(date => {
+                const dayData = dataByDate[date].sort((a, b) => b.power - a.power);
+                const top300 = dayData.slice(0, 300);
+                
+                if (top300.length >= 200) { // 最低200人のデータがある日のみ
+                    const totalPower = top300.reduce((sum, player) => sum + player.power, 0);
+                    const avgPower = totalPower / top300.length;
+                    const minPower = top300[top300.length - 1]?.power || 0;
+                    
+                    top300Data.push({
+                        date: date,
+                        totalPower: totalPower,
+                        avgPower: avgPower,
+                        minPower: minPower,
+                        players: top300
+                    });
+                }
+            });
+
+            updateOverviewStats();
+        }
+
+        // 概要統計更新
+        function updateOverviewStats() {
+            if (top300Data.length === 0) return;
+
+            const latest = top300Data[top300Data.length - 1];
+            const previous = top300Data.length > 1 ? top300Data[top300Data.length - 2] : null;
+
+            document.getElementById('totalPowerTop300').textContent = formatNumber(latest.totalPower);
+            document.getElementById('avgPowerTop300').textContent = formatNumber(Math.round(latest.avgPower));
+            document.getElementById('minPowerTop300').textContent = formatNumber(latest.minPower);
+            document.getElementById('dataPointCount').textContent = top300Data.length;
+
+            if (previous) {
+                const totalChange = latest.totalPower - previous.totalPower;
+                const avgChange = latest.avgPower - previous.avgPower;
+                const minChange = latest.minPower - previous.minPower;
+
+                document.getElementById('totalPowerChange').textContent = 
+                    `前日比: ${totalChange >= 0 ? '+' : ''}${formatNumber(totalChange)}`;
+                document.getElementById('avgPowerChange').textContent = 
+                    `前日比: ${avgChange >= 0 ? '+' : ''}${formatNumber(Math.round(avgChange))}`;
+                document.getElementById('minPowerChange').textContent = 
+                    `前日比: ${minChange >= 0 ? '+' : ''}${formatNumber(minChange)}`;
+            }
+        }
+
+        // チャート更新
+        function updateCharts() {
+            updatePowerTrendChart();
+            updateDistributionCharts();
+        }
+
+        // パワー推移チャート更新
+        function updatePowerTrendChart() {
+            const ctx = document.getElementById('powerTrendChart').getContext('2d');
+            
+            if (charts.powerTrend) {
+                charts.powerTrend.destroy();
+            }
+
+            if (top300Data.length === 0) return;
+
+            const timeRange = parseInt(document.getElementById('timeRangeSelect').value);
+            const dataToShow = timeRange === 90 ? top300Data : top300Data.slice(-timeRange);
+
+            let dataValues = [];
+            let label = '';
+            
+            switch (currentChartView) {
+                case 'total':
+                    dataValues = dataToShow.map(d => d.totalPower / 1000000000); // B単位
+                    label = '総パワー (B)';
+                    break;
+                case 'average':
+                    dataValues = dataToShow.map(d => d.avgPower / 1000000); // M単位
+                    label = '平均パワー (M)';
+                    break;
+                case 'minimum':
+                    dataValues = dataToShow.map(d => d.minPower / 1000000); // M単位
+                    label = '最小パワー (M)';
+                    break;
+            }
+
+            charts.powerTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dataToShow.map(d => d.date),
+                    datasets: [{
+                        label: label,
+                        data: dataValues,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: label
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '日付'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // 分布チャート更新
+        function updateDistributionCharts() {
+            updatePowerDistributionChart();
+            updateTierDistributionChart();
+        }
+
+        // パワー分布チャート
+        function updatePowerDistributionChart() {
+            const ctx = document.getElementById('powerDistributionChart').getContext('2d');
+            
+            if (charts.powerDistribution) {
+                charts.powerDistribution.destroy();
+            }
+
+            if (top300Data.length === 0) return;
+
+            const latestData = top300Data[top300Data.length - 1];
+            const powers = latestData.players.map(p => p.power);
+
+            // パワーレンジ別に分類
+            const ranges = [
+                { min: 0, max: 50000000, label: '~50M' },
+                { min: 50000000, max: 60000000, label: '50-60M' },
+                { min: 60000000, max: 70000000, label: '60-70M' },
+                { min: 70000000, max: 80000000, label: '70-80M' },
+                { min: 80000000, max: 90000000, label: '80-90M' },
+                { min: 90000000, max: 100000000, label: '90-100M' },
+                { min: 100000000, max: Infinity, label: '100M+' }
+            ];
+
+            const distribution = ranges.map(range => ({
+                label: range.label,
+                count: powers.filter(p => p >= range.min && p < range.max).length
+            }));
+
+            charts.powerDistribution = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: distribution.map(d => d.label),
+                    datasets: [{
+                        data: distribution.map(d => d.count),
+                        backgroundColor: [
+                            '#e74c3c', '#e67e22', '#f39c12', '#f1c40f',
+                            '#2ecc71', '#1abc9c', '#3498db'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // ティア分布チャート
+        function updateTierDistributionChart() {
+            const ctx = document.getElementById('tierDistributionChart').getContext('2d');
+            
+            if (charts.tierDistribution) {
+                charts.tierDistribution.destroy();
+            }
+
+            if (top300Data.length === 0) return;
+
+            const latestData = top300Data[top300Data.length - 1];
+            
+            const tiers = {
+                'S': { min: 100000000, count: 0, color: '#f39c12' },
+                'A': { min: 90000000, count: 0, color: '#e74c3c' },
+                'B': { min: 80000000, count: 0, color: '#9b59b6' },
+                'C': { min: 70000000, count: 0, color: '#3498db' },
+                'D': { min: 0, count: 0, color: '#1abc9c' }
+            };
+
+            latestData.players.forEach(player => {
+                if (player.power >= 100000000) tiers.S.count++;
+                else if (player.power >= 90000000) tiers.A.count++;
+                else if (player.power >= 80000000) tiers.B.count++;
+                else if (player.power >= 70000000) tiers.C.count++;
+                else tiers.D.count++;
+            });
+
+            charts.tierDistribution = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(tiers),
+                    datasets: [{
+                        label: 'プレイヤー数',
+                        data: Object.values(tiers).map(t => t.count),
+                        backgroundColor: Object.values(tiers).map(t => t.color)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'プレイヤー数'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // ランキングテーブル更新
+        function updateRankingTable() {
+            const tbody = document.getElementById('rankingTableBody');
+            
+            if (top300Data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">データがありません</td></tr>';
+                return;
+            }
+
+            const displayRange = parseInt(document.getElementById('displayRangeSelect').value);
+            const latestData = top300Data[top300Data.length - 1];
+            const players = latestData.players.slice(0, displayRange);
+            const maxPower = players[0]?.power || 1;
+
+            tbody.innerHTML = '';
+            
+            players.forEach((player, index) => {
+                const rank = index + 1;
+                const tier = getTier(player.power);
+                const powerPercentage = (player.power / maxPower * 100);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${rank}</strong></td>
+                    <td>${player.name}</td>
+                    <td><span class="alliance-badge">${player.alliance}</span></td>
+                    <td>${formatNumber(player.power)}</td>
+                    <td><span class="tier-indicator tier-${tier.toLowerCase()}">${tier}</span></td>
+                    <td>
+                        <div class="power-bar">
+                            <div class="power-bar-fill" style="width: ${powerPercentage}%"></div>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // ティア判定
+        function getTier(power) {
+            if (power >= 100000000) return 'S';
+            if (power >= 90000000) return 'A';
+            if (power >= 80000000) return 'B';
+            if (power >= 70000000) return 'C';
+            return 'D';
+        }
+
+        // チャート表示切り替え
+        function switchChartView(view) {
+            currentChartView = view;
+            
+            // ボタンのアクティブ状態を更新
+            document.querySelectorAll('.chart-controls button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(view + 'PowerBtn').classList.add('active');
+            
+            updatePowerTrendChart();
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KVKノルマ - ROK Kingdom Data</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        .kvk-calculator {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .calc-input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .calc-input {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .calc-input label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .calc-input input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .calc-result {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .progress-bar {
+            background: #ecf0f1;
+            height: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav" style="margin-bottom: 20px;">
+            <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 8px;">← メインメニューに戻る</a>
+        </div>
+
+        <h1>⚔️ KVKノルマ計算</h1>
+        <div class="subtitle">KVKイベント用のノルマ計算ツール</div>
+        
+        <div class="kvk-calculator">
+            <h2>KVKノルマ計算機</h2>
+            <div class="calc-input-group">
+                <div class="calc-input">
+                    <label for="targetKills">目標キル数:</label>
+                    <input type="number" id="targetKills" placeholder="例: 10000000" oninput="calculateQuota()">
+                </div>
+                <div class="calc-input">
+                    <label for="currentKills">現在のキル数:</label>
+                    <input type="number" id="currentKills" placeholder="例: 2000000" oninput="calculateQuota()">
+                </div>
+                <div class="calc-input">
+                    <label for="remainingDays">残り日数:</label>
+                    <input type="number" id="remainingDays" placeholder="例: 5" oninput="calculateQuota()">
+                </div>
+                <div class="calc-input">
+                    <label for="dailyPlayTime">1日プレイ時間(時間):</label>
+                    <input type="number" id="dailyPlayTime" placeholder="例: 8" oninput="calculateQuota()">
+                </div>
+            </div>
+
+            <div id="quotaResult" class="calc-result" style="display: none;">
+                <h3>ノルマ計算結果</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                    <div>
+                        <strong>残りキル数</strong><br>
+                        <span id="remainingKills">-</span>
+                    </div>
+                    <div>
+                        <strong>1日あたりノルマ</strong><br>
+                        <span id="dailyQuota">-</span>
+                    </div>
+                    <div>
+                        <strong>1時間あたりノルマ</strong><br>
+                        <span id="hourlyQuota">-</span>
+                    </div>
+                    <div>
+                        <strong>進捗率</strong><br>
+                        <span id="progressRate">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="kvk-calculator">
+            <h2>KVK参考データ</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ランク</th>
+                            <th>推奨キル数</th>
+                            <th>難易度</th>
+                            <th>備考</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>初心者</strong></td>
+                            <td>1,000,000</td>
+                            <td style="color: #27ae60;">★☆☆</td>
+                            <td>まずはここから</td>
+                        </tr>
+                        <tr>
+                            <td><strong>中級者</strong></td>
+                            <td>5,000,000</td>
+                            <td style="color: #f39c12;">★★☆</td>
+                            <td>安定した戦力</td>
+                        </tr>
+                        <tr>
+                            <td><strong>上級者</strong></td>
+                            <td>10,000,000</td>
+                            <td style="color: #e74c3c;">★★★</td>
+                            <td>高いスキルが必要</td>
+                        </tr>
+                        <tr>
+                            <td><strong>エキスパート</strong></td>
+                            <td>20,000,000+</td>
+                            <td style="color: #8e44ad;">★★★</td>
+                            <td>最上位プレイヤー向け</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="kvk-calculator">
+            <h2>効率的なキル稼ぎのコツ</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">🎯 ターゲット選択</h4>
+                    <ul style="margin-left: 20px; color: #555;">
+                        <li>適切なパワー差を保つ</li>
+                        <li>弱い同盟を狙う</li>
+                        <li>オフライン時間を狙う</li>
+                    </ul>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">⚡ 効率化</h4>
+                    <ul style="margin-left: 20px; color: #555;">
+                        <li>集結での大量キル</li>
+                        <li>連携攻撃</li>
+                        <li>時間帯を考慮</li>
+                    </ul>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                    <h4 style="color: #2c3e50; margin-bottom: 10px;">📊 データ活用</h4>
+                    <ul style="margin-left: 20px; color: #555;">
+                        <li>敵の行動パターン分析</li>
+                        <li>戦績の記録</li>
+                        <li>成長率の把握</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateQuota() {
+            const targetKills = parseInt(document.getElementById('targetKills').value) || 0;
+            const currentKills = parseInt(document.getElementById('currentKills').value) || 0;
+            const remainingDays = parseInt(document.getElementById('remainingDays').value) || 0;
+            const dailyPlayTime = parseInt(document.getElementById('dailyPlayTime').value) || 0;
+
+            if (targetKills <= 0 || remainingDays <= 0) {
+                document.getElementById('quotaResult').style.display = 'none';
+                return;
+            }
+
+            const remainingKills = Math.max(0, targetKills - currentKills);
+            const dailyQuota = Math.ceil(remainingKills / remainingDays);
+            const hourlyQuota = dailyPlayTime > 0 ? Math.ceil(dailyQuota / dailyPlayTime) : 0;
+            const progressRate = targetKills > 0 ? (currentKills / targetKills * 100) : 0;
+
+            document.getElementById('remainingKills').textContent = remainingKills.toLocaleString();
+            document.getElementById('dailyQuota').textContent = dailyQuota.toLocaleString();
+            document.getElementById('hourlyQuota').textContent = hourlyQuota.toLocaleString();
+            document.getElementById('progressRate').textContent = progressRate.toFixed(1) + '%';
+
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = Math.min(100, progressRate) + '%';
+
+            document.getElementById('quotaResult').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
