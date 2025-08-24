@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROK Kingdom Data - ホーム</title>
+    <meta name="description" content="Rise of Kingdoms ゲームデータ統計・分析ツール - ホーム">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ログイン画面 -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-form">
+            <h1>🏰 ROK Kingdom Data</h1>
+            <p>Rise of Kingdoms データ統計・分析ツール</p>
+            <div style="margin: 30px 0;">
+                <input type="password" id="passwordInput" placeholder="パスワードを入力してください" />
+                <button id="loginButton" class="login-btn">ログイン</button>
+                <div id="passwordError" style="color: #e74c3c; margin-top: 15px; display: none;">パスワードが正しくありません</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ホームコンテンツ（認証後に表示） -->
+    <div id="homeContent" class="home-container" style="display: none;">
+        <div class="container">
+            <!-- ウェルカムセクション -->
+            <div class="welcome-section">
+                <h1>🏰 ROK Kingdom Data</h1>
+                <p>Rise of Kingdoms のゲームデータを分析・可視化するための統合ツール</p>
+            </div>
+
+            <!-- 機能一覧 -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>📊 データ一覧</h3>
+                    <p>プレイヤーの戦力、撃破数、戦死数などの詳細データを一覧表示。期間フィルターや検索機能でデータを効率的に確認できます。</p>
+                    <a href="index.html#data" class="feature-btn">データ分析を開始</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📈 成長ランキング</h3>
+                    <p>指定期間内での成長率や増加量をランキング形式で表示。プレイヤーの成長トレンドを把握できます。</p>
+                    <a href="index.html#growth" class="feature-btn">成長を確認</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🏆 上位統計</h3>
+                    <p>上位300人の統計データをグラフで可視化。王国全体の動向を把握し、戦略立案に活用できます。</p>
+                    <a href="index.html#overall" class="feature-btn">統計を確認</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>👤 個人分析</h3>
+                    <p>特定プレイヤーの成長履歴をチャートで表示。個人の戦力推移やパフォーマンスを詳細に分析できます。</p>
+                    <a href="index.html#individual" class="feature-btn">個人分析</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>⚔️ KVKノルマ</h3>
+                    <p>Power帯別の撃破ノルマや戦死ノルマを確認。KVK参加時の目標設定や戦略立案に役立ちます。</p>
+                    <a href="index.html#kvk" class="feature-btn">ノルマ確認</a>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📧 問い合わせ</h3>
+                    <p>ツールに関する質問やご要望はこちらから。TwitterやDiscordでお気軽にお問い合わせください。</p>
+                    <a href="index.html#contact" class="feature-btn">お問い合わせ</a>
+                </div>
+            </div>
+
+            <!-- 統計概要 -->
+            <div class="stats-overview">
+                <h2>📈 データ統計概要</h2>
+                <div class="quick-stats">
+                    <div class="quick-stat">
+                        <h4>総データ数</h4>
+                        <p id="totalRecordsHome">-</p>
+                    </div>
+                    <div class="quick-stat">
+                        <h4>最終更新</h4>
+                        <p id="lastUpdateHome">-</p>
+                    </div>
+                    <div class="quick-stat">
+                        <h4>分析機能</h4>
+                        <p>6種類</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // パスワード設定（元のものと同じ）
+        const CORRECT_PASSWORD = '2062data';
+        
+        // DOM要素を取得
+        const loginScreen = document.getElementById('loginScreen');
+        const homeContent = document.getElementById('homeContent');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginButton = document.getElementById('loginButton');
+        const passwordError = document.getElementById('passwordError');
+
+        // ログイン機能
+        function checkPassword() {
+            const input = passwordInput.value;
+            
+            if (input === CORRECT_PASSWORD) {
+                // 認証成功
+                sessionStorage.setItem('authenticated', 'true');
+                showHomeContent();
+                loadQuickStats();
+            } else {
+                // 認証失敗
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    passwordInput.style.animation = '';
+                }, 500);
+            }
+        }
+
+        // ホームコンテンツを表示
+        function showHomeContent() {
+            loginScreen.style.display = 'none';
+            homeContent.style.display = 'block';
+        }
+
+        // 簡易統計を読み込み
+        function loadQuickStats() {
+            fetch('Master_Data.csv')
+                .then(response => response.text())
+                .then(csvText => {
+                    const lines = csvText.split('\n').filter(line => line.trim());
+                    document.getElementById('totalRecordsHome').textContent = (lines.length - 1).toLocaleString() + '件';
+                    
+                    const now = new Date();
+                    document.getElementById('lastUpdateHome').textContent = now.toLocaleDateString('ja-JP');
+                })
+                .catch(error => {
+                    console.log('統計データの読み込みに失敗しました:', error);
+                });
+        }
+
+        // イベントリスナー設定
+        loginButton.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // 認証済みかチェック
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('authenticated') === 'true') {
+                showHomeContent();
+                loadQuickStats();
+            } else {
+                passwordInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
