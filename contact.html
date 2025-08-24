@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>問い合わせ先 - ROK Kingdom Data</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <style>
+        .contact-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+        .contact-icon {
+            font-size: 24px;
+            width: 50px;
+            text-align: center;
+        }
+        .contact-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .contact-info p {
+            color: #7f8c8d;
+            margin: 0;
+        }
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .faq-question {
+            background: #f8f9fa;
+            padding: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-answer {
+            padding: 15px;
+            display: none;
+            background: white;
+            color: #555;
+            line-height: 1.6;
+        }
+        .faq-toggle {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="back-nav" style="margin-bottom: 20px;">
+            <a href="index.html" style="display: inline-block; padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 8px;">← メインメニューに戻る</a>
+        </div>
+
+        <h1>📞 問い合わせ先</h1>
+        <div class="subtitle">サポートと連絡先情報</div>
+        
+        <div class="contact-card">
+            <h2>連絡先情報</h2>
+            <div class="contact-item">
+                <div class="contact-icon">📧</div>
+                <div class="contact-info">
+                    <h3>メール</h3>
+                    <p>rok-data-support@example.com</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">💬</div>
+                <div class="contact-info">
+                    <h3>Discord</h3>
+                    <p>ROK Data Server - #support</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">🕐</div>
+                <div class="contact-info">
+                    <h3>対応時間</h3>
+                    <p>平日 9:00-18:00 (JST)</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">⚡</div>
+                <div class="contact-info">
+                    <h3>緊急時</h3>
+                    <p>ゲーム内メッセージでご連絡ください</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <h2>よくある質問 (FAQ)</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>データの更新頻度は？</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    データは毎日自動的に更新されています。通常は日本時間の深夜に最新データが反映されます。
+                    手動でのデータ更新が必要な場合は管理者にお問い合わせください。
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>パスワードを忘れました</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    パスワードの再設定については、管理者までメールまたはDiscordでご連絡ください。
+                    本人確認のため、ゲーム内IDと同盟名をお知らせいただく場合があります。
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>データが正しく表示されない</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    ブラウザのキャッシュをクリアしてページを再読み込みしてください。
+                    それでも解決しない場合は、使用ブラウザとエラー内容を詳しくお教えください。
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>新機能のリクエストは可能？</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    新機能のご要望は大歓迎です！Discord または メールで詳細をお聞かせください。
+                    開発の優先度と技術的な実現可能性を検討して対応いたします。
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>モバイルでも利用できますか？</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    はい、モバイル端末でもご利用いただけます。レスポンシブデザインに対応しており、
+                    スマートフォンやタブレットでも快適にご利用いただけます。
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <h2>フィードバックフォーム</h2>
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #2c3e50;">種類:</label>
+                        <select id="feedbackType" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                            <option value="">選択してください</option>
+                            <option value="bug">バグ報告</option>
+                            <option value="feature">機能要望</option>
+                            <option value="question">質問</option>
+                            <option value="other">その他</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #2c3e50;">件名:</label>
+                        <input type="text" id="feedbackSubject" placeholder="件名を入力" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #2c3e50;">内容:</label>
+                        <textarea id="feedbackContent" rows="5" placeholder="詳細な内容をご記入ください" style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; resize: vertical;"></textarea>
+                    </div>
+                    <button onclick="submitFeedback()" style="padding: 12px 30px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background 0.3s;">
+                        送信
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-card">
+            <h2>お知らせ・更新履歴</h2>
+            <div style="border-left: 4px solid #3498db; padding-left: 15px;">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 600; color: #2c3e50;">2024/01/15</div>
+                    <div style="color: #555; margin-top: 5px;">個人分析機能にチャート表示を追加しました</div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 600; color: #2c3e50;">2024/01/10</div>
+                    <div style="color: #555; margin-top: 5px;">データ表示の高速化を行いました</div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 600; color: #2c3e50;">2024/01/05</div>
+                    <div style="color: #555; margin-top: 5px;">KVKノルマ計算機を公開しました</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('active');
+        }
+
+        function submitFeedback() {
+            const type = document.getElementById('feedbackType').value;
+            const subject = document.getElementById('feedbackSubject').value;
+            const content = document.getElementById('feedbackContent').value;
+
+            if (!type || !subject || !content) {
+                alert('すべての項目を入力してください。');
+                return;
+            }
+
+            // 実際の実装では、ここでサーバーにデータを送信
+            alert('フィードバックを送信しました。ありがとうございます！\n\n※この機能はデモ版のため、実際には送信されません。\n実際のお問い合わせはメールまたはDiscordをご利用ください。');
+            
+            // フォームをリセット
+            document.getElementById('feedbackType').value = '';
+            document.getElementById('feedbackSubject').value = '';
+            document.getElementById('feedbackContent').value = '';
+        }
+    </script>
+</body>
+</html>
