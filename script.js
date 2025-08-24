@@ -687,7 +687,11 @@ function updateGrowthRanking() {
 
 // 成長ランキングテーブルのソート
 function sortGrowthTable(column) {
-    if (!filteredGrowthData || filteredGrowthData.length === 0) return;
+    // データが存在するかチェック
+    if (!allGrowthData || allGrowthData.length === 0) {
+        console.log('成長データが存在しません');
+        return;
+    }
     
     // ソート順を切り替え
     if (growthSortColumn === column) {
@@ -697,17 +701,20 @@ function sortGrowthTable(column) {
         growthSortOrder = column === 'difference' || column === 'growthRate' || column === 'endValue' || column === 'startValue' || column === 'dailyAverage' ? 'desc' : 'asc';
     }
     
-    // 全データをソート
-    const sortedData = [...filteredGrowthData];
+    // 全データをソート（allGrowthDataを使用）
+    const sortedData = [...allGrowthData];
     sortedData.sort((a, b) => {
         let aVal = a[column];
         let bVal = b[column];
         
         // 数値系フィールドの場合は数値として比較
         if (column === 'difference' || column === 'growthRate' || column === 'endValue' || 
-            column === 'startValue' || column === 'dailyAverage' || column === 'id') {
+            column === 'startValue' || column === 'dailyAverage') {
             aVal = parseFloat(aVal) || 0;
             bVal = parseFloat(bVal) || 0;
+        } else if (column === 'id') {
+            aVal = parseInt(aVal) || 0;
+            bVal = parseInt(bVal) || 0;
         } else if (typeof aVal === 'string') {
             // 文字列の場合は小文字で比較
             aVal = aVal.toLowerCase();
@@ -723,14 +730,30 @@ function sortGrowthTable(column) {
     const limit = parseInt(document.getElementById('growthLimit').value);
     const displayData = limit === 9999 ? sortedData : sortedData.slice(0, limit);
     
+    // 検索フィルターが適用されている場合は検索条件も適用
+    const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase();
+    let finalDisplayData = displayData;
+    if (searchTerm) {
+        finalDisplayData = displayData.filter(row => {
+            return (
+                (row.name && row.name.toLowerCase().includes(searchTerm)) ||
+                (row.id && row.id.toString().toLowerCase().includes(searchTerm)) ||
+                (row.alliance && row.alliance.toLowerCase().includes(searchTerm))
+            );
+        });
+    }
+    
+    // filteredGrowthDataを更新
+    filteredGrowthData = finalDisplayData;
+    
     // テーブルを再表示
-    displayGrowthTable(displayData);
+    displayGrowthTable(finalDisplayData);
     
     // ソートインジケーターを更新
     updateGrowthSortIndicators();
     
     // データ件数を更新
-    document.getElementById('growthAnalysisCount').textContent = displayData.length;
+    document.getElementById('growthAnalysisCount').textContent = finalDisplayData.length;
 }
 
 // 成長ランキングのソートインジケーター更新
@@ -738,9 +761,12 @@ function updateGrowthSortIndicators() {
     const headers = document.querySelectorAll('#growthTab th.sortable');
     headers.forEach(th => {
         th.classList.remove('sorted-asc', 'sorted-desc');
-        const thColumn = th.getAttribute('onclick').match(/sortGrowthTable\('(.+?)'\)/)[1];
-        if (thColumn === growthSortColumn) {
-            th.classList.add(`sorted-${growthSortOrder}`);
+        const onclickAttr = th.getAttribute('onclick');
+        if (onclickAttr) {
+            const match = onclickAttr.match(/sortGrowthTable\('(.+?)'\)/);
+            if (match && match[1] === growthSortColumn) {
+                th.classList.add(`sorted-${growthSortOrder}`);
+            }
         }
     });
 }
@@ -809,8 +835,13 @@ function displayGrowthTable(data) {
 function filterGrowthBySearch() {
     const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase();
     
+    if (!currentGrowthData || currentGrowthData.length === 0) {
+        console.log('検索対象のデータがありません');
+        return;
+    }
+    
     if (!searchTerm) {
-        filteredGrowthData = currentGrowthData;
+        filteredGrowthData = [...currentGrowthData];
     } else {
         filteredGrowthData = currentGrowthData.filter(row => {
             return (
