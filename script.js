@@ -454,8 +454,27 @@ function switchTab(tab) {
 // 成長ランキングタブの初期化
 function initGrowthTab() {
     if (allData.length > 0 && !document.getElementById('growthStartDate').value) {
-        // デフォルトで直近7日を設定
-        setGrowthPreset('week');
+        // デフォルトで全期間を設定（データが確実に表示される）
+        const dates = allData.map(row => row.Data).filter(d => d).sort();
+        if (dates.length >= 2) {
+            const uniqueDates = [...new Set(dates)].sort();
+            const firstDate = uniqueDates[0];
+            const lastDate = uniqueDates[uniqueDates.length - 1];
+            
+            // 日付フォーマットを変換 (YYYY/MM/DD → YYYY-MM-DD)
+            const formatDate = (dateStr) => {
+                const parts = dateStr.split('/');
+                return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+            };
+            
+            document.getElementById('growthStartDate').value = formatDate(firstDate);
+            document.getElementById('growthEndDate').value = formatDate(lastDate);
+            
+            console.log('成長ランキング初期化 - 全期間設定:', firstDate, '～', lastDate);
+            
+            // 自動的に成長ランキングを更新
+            updateGrowthRanking();
+        }
     }
 }
 
@@ -570,8 +589,11 @@ function updateGrowthRanking() {
     const sortBy = document.getElementById('growthSort').value;
     const filterType = document.getElementById('growthFilter').value;
 
+    console.log('=== 成長ランキング更新開始 ===');
     console.log('分析期間:', startFormatted, '～', endFormatted);
     console.log('選択指標:', metric);
+    console.log('表示制限:', limit);
+    console.log('フィルター:', filterType);
 
     // 開始日と終了日のデータを取得
     const startData = allData.filter(row => row.Data === startFormatted);
@@ -579,6 +601,12 @@ function updateGrowthRanking() {
 
     console.log('開始日データ数:', startData.length);
     console.log('終了日データ数:', endData.length);
+
+    // 特定IDの存在確認
+    const targetId = '75607809';
+    const startHasTarget = startData.some(row => row.ID === targetId);
+    const endHasTarget = endData.some(row => row.ID === targetId);
+    console.log(`ID ${targetId} - 開始日存在: ${startHasTarget}, 終了日存在: ${endHasTarget}`);
 
     if (startData.length === 0 || endData.length === 0) {
         document.getElementById('growthTableBody').innerHTML = `
@@ -592,6 +620,10 @@ function updateGrowthRanking() {
                 </td>
             </tr>
         `;
+        // 全データをクリア
+        allGrowthData = [];
+        currentGrowthData = [];
+        filteredGrowthData = [];
         return;
     }
 
@@ -612,7 +644,9 @@ function updateGrowthRanking() {
         
         const endRow = endDataMap[startRow.ID];
         if (!endRow) {
-            console.log('終了日にデータなし:', startRow.Name, startRow.ID);
+            if (startRow.ID === targetId) {
+                console.log(`ID ${targetId} - 終了日にデータがありません`);
+            }
             return;
         }
 
@@ -621,9 +655,9 @@ function updateGrowthRanking() {
         const difference = endValue - startValue;
         const growthRate = startValue > 0 ? (difference / startValue * 100) : 0;
 
-        // デバッグ：特定のIDをログ出力
-        if (startRow.ID === '75607809') {
-            console.log('ID 75607809 の詳細:', {
+        // フィルター適用前にログ出力
+        if (startRow.ID === targetId) {
+            console.log(`ID ${targetId} - フィルター適用前:`, {
                 name: startRow.Name,
                 startValue: startValue,
                 endValue: endValue,
@@ -635,14 +669,14 @@ function updateGrowthRanking() {
 
         // フィルター適用
         if (filterType === 'growth' && difference <= 0) {
-            if (startRow.ID === '75607809') {
-                console.log('ID 75607809 は成長フィルターで除外されました');
+            if (startRow.ID === targetId) {
+                console.log(`ID ${targetId} - 成長フィルターで除外 (difference: ${difference})`);
             }
             return;
         }
         if (filterType === 'decline' && difference >= 0) {
-            if (startRow.ID === '75607809') {
-                console.log('ID 75607809 は減少フィルターで除外されました');
+            if (startRow.ID === targetId) {
+                console.log(`ID ${targetId} - 減少フィルターで除外 (difference: ${difference})`);
             }
             return;
         }
@@ -667,15 +701,15 @@ function updateGrowthRanking() {
         
         growthData.push(growthEntry);
         
-        // デバッグ：特定のIDが追加されたかログ出力
-        if (startRow.ID === '75607809') {
-            console.log('ID 75607809 が成長データに追加されました:', growthEntry);
+        if (startRow.ID === targetId) {
+            console.log(`ID ${targetId} - 成長データに追加されました:`, growthEntry);
         }
     });
 
-    console.log('成長データ数:', growthData.length);
+    console.log('総成長データ数:', growthData.length);
+    console.log(`ID ${targetId} が含まれているか:`, growthData.some(item => item.id === targetId));
 
-    // 全データを保存（ソート用）
+    // 全データを保存（ソート・検索用）
     allGrowthData = [...growthData];
 
     // ソート
@@ -689,8 +723,11 @@ function updateGrowthRanking() {
 
     // 表示数制限
     const displayData = growthData.slice(0, limit);
-    currentGrowthData = displayData;  // 保存しておく
-    filteredGrowthData = growthData; // フィルター用には制限なしデータを保存
+    currentGrowthData = displayData;
+    filteredGrowthData = [...displayData]; // 検索用にコピー
+
+    console.log('表示データ数:', displayData.length);
+    console.log(`表示データにID ${targetId} が含まれているか:`, displayData.some(item => item.id === targetId));
 
     // データ件数を更新
     document.getElementById('growthAnalysisCount').textContent = displayData.length;
@@ -711,7 +748,7 @@ function updateGrowthRanking() {
 
     // テーブルに表示
     displayGrowthTable(displayData);
-    console.log('テーブル更新完了');
+    console.log('=== 成長ランキング更新完了 ===');
 }
 
 // 成長ランキングテーブルのソート
@@ -862,35 +899,85 @@ function displayGrowthTable(data) {
 
 // 成長ランキングの検索フィルター
 function filterGrowthBySearch() {
-    const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase();
+    const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase().trim();
+    const targetId = '75607809';
     
-    // 全成長データから検索する（表示制限を無視）
+    console.log('=== 成長ランキング検索開始 ===');
+    console.log('検索語:', `"${searchTerm}"`);
+    console.log('allGrowthData の件数:', allGrowthData ? allGrowthData.length : 0);
+    
+    // 検索対象データの確認
     if (!allGrowthData || allGrowthData.length === 0) {
-        console.log('検索対象のデータがありません');
+        console.log('❌ 検索対象のデータがありません - 先に成長ランキングの期間を設定してください');
+        
+        // 期間未設定のメッセージを表示
+        document.getElementById('growthTableBody').innerHTML = `
+            <tr>
+                <td colspan="9" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                    <h3>検索するには先に期間を選択してください</h3>
+                    <p>上の期間選択で開始日と終了日を設定し、「適用」ボタンをクリックしてからご利用ください</p>
+                </td>
+            </tr>
+        `;
+        document.getElementById('growthAnalysisCount').textContent = '0';
         return;
     }
     
+    // 特定IDがデータに含まれているかチェック
+    const hasTargetId = allGrowthData.some(row => row.id === targetId);
+    console.log(`ID ${targetId} がallGrowthDataに含まれているか: ${hasTargetId}`);
+    if (hasTargetId) {
+        const targetData = allGrowthData.find(row => row.id === targetId);
+        console.log(`ID ${targetId} のデータ:`, targetData);
+    }
+    
     if (!searchTerm) {
-        // 検索語がない場合は元の表示制限を適用
+        // 検索語がない場合は表示制限を適用して全件表示
         const limit = parseInt(document.getElementById('growthLimit').value);
-        filteredGrowthData = limit === 9999 ? [...allGrowthData] : allGrowthData.slice(0, limit);
+        if (limit === 9999) {
+            filteredGrowthData = [...allGrowthData];
+        } else {
+            // 元のソート順を維持して制限適用
+            const sortBy = document.getElementById('growthSort').value;
+            const sortedData = [...allGrowthData];
+            
+            if (sortBy === 'amount') {
+                sortedData.sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference));
+            } else if (sortBy === 'rate') {
+                sortedData.sort((a, b) => Math.abs(b.growthRate) - Math.abs(a.growthRate));
+            } else if (sortBy === 'current') {
+                sortedData.sort((a, b) => b.endValue - a.endValue);
+            }
+            
+            filteredGrowthData = sortedData.slice(0, limit);
+        }
+        
+        console.log('検索語なし - 全データ表示:', filteredGrowthData.length, '件');
     } else {
         // 検索語がある場合は全データから検索（制限なし）
         filteredGrowthData = allGrowthData.filter(row => {
-            const matchesSearch = (
-                (row.name && row.name.toLowerCase().includes(searchTerm)) ||
-                (row.id && row.id.toString().toLowerCase().includes(searchTerm)) ||
-                (row.alliance && row.alliance.toLowerCase().includes(searchTerm))
-            );
+            // より柔軟な検索条件
+            const searchInName = row.name && row.name.toString().toLowerCase().includes(searchTerm);
+            const searchInId = row.id && row.id.toString().toLowerCase().includes(searchTerm);
+            const searchInAlliance = row.alliance && row.alliance.toString().toLowerCase().includes(searchTerm);
             
-            // デバッグ：特定のIDの検索処理をログ出力
-            if (row.id === '75607809') {
-                console.log('ID 75607809 の検索チェック:', {
+            const matchesSearch = searchInName || searchInId || searchInAlliance;
+            
+            // 特定IDの詳細ログ
+            if (row.id === targetId) {
+                console.log(`ID ${targetId} の検索詳細:`, {
                     searchTerm: searchTerm,
-                    id: row.id,
-                    name: row.name,
-                    alliance: row.alliance,
-                    matchesSearch: matchesSearch
+                    rowData: {
+                        id: row.id,
+                        name: row.name,
+                        alliance: row.alliance
+                    },
+                    searchResults: {
+                        searchInName: searchInName,
+                        searchInId: searchInId,
+                        searchInAlliance: searchInAlliance,
+                        matchesSearch: matchesSearch
+                    }
                 });
             }
             
@@ -898,6 +985,7 @@ function filterGrowthBySearch() {
         });
         
         console.log(`検索結果: ${filteredGrowthData.length}件 (検索語: "${searchTerm}")`);
+        console.log(`検索結果にID ${targetId} が含まれているか:`, filteredGrowthData.some(row => row.id === targetId));
     }
     
     // 検索結果の件数を更新
@@ -905,6 +993,7 @@ function filterGrowthBySearch() {
     
     // テーブルを再表示
     displayGrowthTable(filteredGrowthData);
+    console.log('=== 成長ランキング検索完了 ===');
 }
 
 // 名前クリックで個人分析へ遷移
