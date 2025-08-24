@@ -621,9 +621,31 @@ function updateGrowthRanking() {
         const difference = endValue - startValue;
         const growthRate = startValue > 0 ? (difference / startValue * 100) : 0;
 
+        // デバッグ：特定のIDをログ出力
+        if (startRow.ID === '75607809') {
+            console.log('ID 75607809 の詳細:', {
+                name: startRow.Name,
+                startValue: startValue,
+                endValue: endValue,
+                difference: difference,
+                growthRate: growthRate,
+                filterType: filterType
+            });
+        }
+
         // フィルター適用
-        if (filterType === 'growth' && difference <= 0) return;
-        if (filterType === 'decline' && difference >= 0) return;
+        if (filterType === 'growth' && difference <= 0) {
+            if (startRow.ID === '75607809') {
+                console.log('ID 75607809 は成長フィルターで除外されました');
+            }
+            return;
+        }
+        if (filterType === 'decline' && difference >= 0) {
+            if (startRow.ID === '75607809') {
+                console.log('ID 75607809 は減少フィルターで除外されました');
+            }
+            return;
+        }
 
         // 期間の日数を計算
         const startDateObj = new Date(startFormatted);
@@ -631,7 +653,7 @@ function updateGrowthRanking() {
         const days = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24)) || 1;
         const dailyAverage = difference / days;
 
-        growthData.push({
+        const growthEntry = {
             id: startRow.ID,
             name: endRow.Name || startRow.Name || 'Unknown',
             alliance: endRow.Alliance || startRow.Alliance || '',
@@ -641,7 +663,14 @@ function updateGrowthRanking() {
             growthRate: growthRate,
             dailyAverage: dailyAverage,
             days: days
-        });
+        };
+        
+        growthData.push(growthEntry);
+        
+        // デバッグ：特定のIDが追加されたかログ出力
+        if (startRow.ID === '75607809') {
+            console.log('ID 75607809 が成長データに追加されました:', growthEntry);
+        }
     });
 
     console.log('成長データ数:', growthData.length);
@@ -835,21 +864,40 @@ function displayGrowthTable(data) {
 function filterGrowthBySearch() {
     const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase();
     
-    if (!currentGrowthData || currentGrowthData.length === 0) {
+    // 全成長データから検索する（表示制限を無視）
+    if (!allGrowthData || allGrowthData.length === 0) {
         console.log('検索対象のデータがありません');
         return;
     }
     
     if (!searchTerm) {
-        filteredGrowthData = [...currentGrowthData];
+        // 検索語がない場合は元の表示制限を適用
+        const limit = parseInt(document.getElementById('growthLimit').value);
+        filteredGrowthData = limit === 9999 ? [...allGrowthData] : allGrowthData.slice(0, limit);
     } else {
-        filteredGrowthData = currentGrowthData.filter(row => {
-            return (
+        // 検索語がある場合は全データから検索（制限なし）
+        filteredGrowthData = allGrowthData.filter(row => {
+            const matchesSearch = (
                 (row.name && row.name.toLowerCase().includes(searchTerm)) ||
                 (row.id && row.id.toString().toLowerCase().includes(searchTerm)) ||
                 (row.alliance && row.alliance.toLowerCase().includes(searchTerm))
             );
+            
+            // デバッグ：特定のIDの検索処理をログ出力
+            if (row.id === '75607809') {
+                console.log('ID 75607809 の検索チェック:', {
+                    searchTerm: searchTerm,
+                    id: row.id,
+                    name: row.name,
+                    alliance: row.alliance,
+                    matchesSearch: matchesSearch
+                });
+            }
+            
+            return matchesSearch;
         });
+        
+        console.log(`検索結果: ${filteredGrowthData.length}件 (検索語: "${searchTerm}")`);
     }
     
     // 検索結果の件数を更新
