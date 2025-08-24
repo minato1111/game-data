@@ -1170,19 +1170,36 @@ function sortData(column, order) {
     sortColumn = column;
     sortOrder = order;
     
-    // 全データでソートキーを生成（filteredDataの代わりにallDataを使用）
+    // 現在のフィルター条件を取得
+    const startDate = document.getElementById('dataStartDate').value;
+    const endDate = document.getElementById('dataEndDate').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    
+    // 日付フィルター適用のためのヘルパー関数
+    const formatToSlash = (dateStr) => {
+        if (!dateStr) return null;
+        return dateStr.replace(/-/g, '/');
+    };
+    
+    // 全データでソートキーを生成（現在のフィルター条件を適用）
     const allDataForSort = allData.filter(row => {
-        // 現在のフィルター条件を適用
-        if (selectedSeason && row.Data) {
-            const season = getSeasonFromDate(new Date(row.Data));
-            if (season !== selectedSeason) return false;
+        // 日付フィルター
+        if (startDate || endDate) {
+            const rowDate = row.Data;
+            if (!rowDate) return false;
+            
+            const compareDate = new Date(rowDate);
+            const start = startDate ? new Date(formatToSlash(startDate)) : new Date('1900/01/01');
+            const end = endDate ? new Date(formatToSlash(endDate)) : new Date('2100/12/31');
+            
+            if (compareDate < start || compareDate > end) return false;
         }
-        if (selectedDate && row.Data !== selectedDate) return false;
+        
+        // 検索フィルター
         if (searchTerm) {
-            const term = searchTerm.toLowerCase();
-            return (row.Name && row.Name.toLowerCase().includes(term)) ||
-                   (row.Alliance && row.Alliance.toLowerCase().includes(term)) ||
-                   (row.ID && row.ID.toString().includes(term));
+            return (row.Name && row.Name.toLowerCase().includes(searchTerm)) ||
+                   (row.Alliance && row.Alliance.toLowerCase().includes(searchTerm)) ||
+                   (row.ID && row.ID.toString().includes(searchTerm));
         }
         return true;
     });
