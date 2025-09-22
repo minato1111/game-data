@@ -676,3 +676,37 @@ td {
     font-size: 24px;
     font-weight: bold;
 }
+
+/* 問い合わせ先タブ用のスタイル */
+#contactTab.active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 400px !important;
+    height: auto !important;
+    animation: slideIn 0.3s ease-out;
+}
+
+.contact-card {
+    transition: all 0.3s ease;
+    transform: translateY(0);
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+    #contactTab .contact-card {
+        margin: 0 10px;
+    }
+
+    #contactTab img {
+        width: 80px !important;
+        height: 80px !important;
+    }
+
+    #contactTab .contact-card {
+        padding: 15px !important;
+    }
+}
