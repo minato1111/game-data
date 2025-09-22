@@ -1853,14 +1853,23 @@ const KVK_NORMA_TABLE = [
     { minPower: 200000000, maxPower: 999999999, killTarget: 600000000, deathRate: 0.0067 }
 ];
 
-// Power帯からノルマを取得する関数
-function getKvkNormaByPower(power) {
+// Power帯からノルマを取得する関数（9/22時点のPowerでDeath Rate計算）
+function getKvkNormaByPower(power, useDeathRateCalculation = false, startPower = null) {
     const powerNum = parseInt((power || '0').toString().replace(/,/g, '')) || 0;
 
     for (const norma of KVK_NORMA_TABLE) {
         if (powerNum >= norma.minPower && powerNum <= norma.maxPower) {
-            // 戦死ノルマを動的に計算（Power × Death Rate）
-            const deathTarget = Math.round(powerNum * norma.deathRate);
+            let deathTarget;
+
+            if (useDeathRateCalculation && startPower) {
+                // 9/22時点のPowerでDeath Rateを使って戦死ノルマを計算
+                const startPowerNum = parseInt((startPower || '0').toString().replace(/,/g, '')) || 0;
+                deathTarget = Math.round(startPowerNum * norma.deathRate);
+            } else {
+                // 表示用の固定値（表では使わない）
+                deathTarget = Math.round(powerNum * norma.deathRate);
+            }
+
             return {
                 killTarget: norma.killTarget,
                 deathTarget: deathTarget,
@@ -1926,9 +1935,10 @@ function calculateKvkProgress(latestData, allPlayerData) {
     // 最新データ
     const currentData = latestData;
 
-    // Power帯からノルマを取得
+    // Power帯からノルマを取得（9/22時点のPowerで戦死ノルマを計算）
     const currentPower = parseInt((currentData.Power || '0').toString().replace(/,/g, '')) || 0;
-    const norma = getKvkNormaByPower(currentPower);
+    const startPower = parseInt((startData.Power || '0').toString().replace(/,/g, '')) || 0;
+    const norma = getKvkNormaByPower(currentPower, true, startData.Power);
 
     // 開始時と現在の値を取得
     const startKills = parseInt((startData['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
