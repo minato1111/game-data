@@ -1839,18 +1839,18 @@ const dataCache = new DataCache();
 
 // KVKノルマテーブル（Power帯別の目標値）
 const KVK_NORMA_TABLE = [
-    { minPower: 45000000, maxPower: 59999999, killTarget: 75000000, deathTarget: 198000, deathRate: 0.0033 },
-    { minPower: 60000000, maxPower: 64999999, killTarget: 150000000, deathTarget: 214500, deathRate: 0.0033 },
-    { minPower: 65000000, maxPower: 69999999, killTarget: 150000000, deathTarget: 231000, deathRate: 0.0033 },
-    { minPower: 70000000, maxPower: 74999999, killTarget: 187500000, deathTarget: 315000, deathRate: 0.0042 },
-    { minPower: 75000000, maxPower: 79999999, killTarget: 187500000, deathTarget: 336000, deathRate: 0.0042 },
-    { minPower: 80000000, maxPower: 84999999, killTarget: 200000000, deathTarget: 425000, deathRate: 0.0050 },
-    { minPower: 85000000, maxPower: 89999999, killTarget: 200000000, deathTarget: 450000, deathRate: 0.0050 },
-    { minPower: 90000000, maxPower: 94999999, killTarget: 300000000, deathTarget: 551000, deathRate: 0.0058 },
-    { minPower: 95000000, maxPower: 99999999, killTarget: 300000000, deathTarget: 580000, deathRate: 0.0058 },
-    { minPower: 100000000, maxPower: 149999999, killTarget: 600000000, deathTarget: 1005000, deathRate: 0.0067 },
-    { minPower: 150000000, maxPower: 199999999, killTarget: 600000000, deathTarget: 1340000, deathRate: 0.0067 },
-    { minPower: 200000000, maxPower: 999999999, killTarget: 600000000, deathTarget: 1340000, deathRate: 0.0067 }
+    { minPower: 45000000, maxPower: 59999999, killTarget: 75000000, deathRate: 0.0033 },
+    { minPower: 60000000, maxPower: 64999999, killTarget: 150000000, deathRate: 0.0033 },
+    { minPower: 65000000, maxPower: 69999999, killTarget: 150000000, deathRate: 0.0033 },
+    { minPower: 70000000, maxPower: 74999999, killTarget: 187500000, deathRate: 0.0042 },
+    { minPower: 75000000, maxPower: 79999999, killTarget: 187500000, deathRate: 0.0042 },
+    { minPower: 80000000, maxPower: 84999999, killTarget: 200000000, deathRate: 0.0050 },
+    { minPower: 85000000, maxPower: 89999999, killTarget: 200000000, deathRate: 0.0050 },
+    { minPower: 90000000, maxPower: 94999999, killTarget: 300000000, deathRate: 0.0058 },
+    { minPower: 95000000, maxPower: 99999999, killTarget: 300000000, deathRate: 0.0058 },
+    { minPower: 100000000, maxPower: 149999999, killTarget: 600000000, deathRate: 0.0067 },
+    { minPower: 150000000, maxPower: 199999999, killTarget: 600000000, deathRate: 0.0067 },
+    { minPower: 200000000, maxPower: 999999999, killTarget: 600000000, deathRate: 0.0067 }
 ];
 
 // Power帯からノルマを取得する関数
@@ -1859,7 +1859,13 @@ function getKvkNormaByPower(power) {
 
     for (const norma of KVK_NORMA_TABLE) {
         if (powerNum >= norma.minPower && powerNum <= norma.maxPower) {
-            return norma;
+            // 戦死ノルマを動的に計算（Power × Death Rate）
+            const deathTarget = Math.round(powerNum * norma.deathRate);
+            return {
+                killTarget: norma.killTarget,
+                deathTarget: deathTarget,
+                deathRate: norma.deathRate
+            };
         }
     }
 
