@@ -557,61 +557,17 @@ function switchTab(tab) {
         kvkTab.classList.add('active');
         kvkTab.style.display = 'block';
     } else if (tab === 'contact') {
-        console.log('🚨 CONTACT TAB CLICKED - REDIRECTING TO DEDICATED PAGE 🚨');
-
-        // 問い合わせ先専用ページに移動
-        window.open('contact_test.html', '_blank');
-
-        // 現在のタブに簡単なメッセージを表示
+        console.log('Contact tab activation started');
         const contactTab = document.getElementById('contactTab');
-        console.log('Contact tab element found:', !!contactTab);
 
         if (contactTab) {
-            // タブを表示状態にする
-            contactTab.className = 'tab-content active';
+            // 他のタブと同じ方法で表示
+            contactTab.classList.add('active');
             contactTab.style.display = 'block';
-            contactTab.style.visibility = 'visible';
-            contactTab.style.opacity = '1';
-            contactTab.style.minHeight = '400px';
-            contactTab.style.padding = '40px';
-            contactTab.style.textAlign = 'center';
-            contactTab.style.backgroundColor = 'white';
 
-            // 新しいページが開いたことを示すメッセージ
+            // 問い合わせ先の内容をタブ内に表示
             contactTab.innerHTML = `
-                <div style="padding: 60px 20px; text-align: center;">
-                    <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">📧 問い合わせ先</h2>
-                    <div style="background: #e8f4fd; padding: 30px; border-radius: 15px; margin: 20px 0;">
-                        <p style="color: #2980b9; font-size: 18px; margin-bottom: 15px;">
-                            <strong>✅ 新しいタブで問い合わせ先ページを開きました！</strong>
-                        </p>
-                        <p style="color: #666; font-size: 14px;">
-                            新しいタブが開かない場合は、ブラウザのポップアップブロックを確認してください
-                        </p>
-                    </div>
-                    <div style="margin: 30px 0;">
-                        <button onclick="window.open('contact_test.html', '_blank')"
-                                style="background: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">
-                            📧 問い合わせ先ページを再度開く
-                        </button>
-                    </div>
-                    <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                        <h3 style="color: #2c3e50; margin-bottom: 10px;">直接アクセス</h3>
-                        <p style="color: #666; font-size: 14px; margin-bottom: 10px;">Twitter: <a href="https://x.com/boo_vazi" target="_blank" style="color: #1DA1F2;">@boo_vazi</a></p>
-                        <p style="color: #666; font-size: 14px;">Discord: <a href="https://discord.gg/kfrPJ2F2cf" target="_blank" style="color: #7289DA;">kfrPJ2F2cf</a></p>
-                    </div>
-                </div>
-            `;
-
-            console.log('Contact tab classes after:', contactTab.className);
-            console.log('Contact tab cssText set to:', contactTab.style.cssText);
-
-            // DOM要素の内容を確認し、強制的に内容を設定
-            console.log('Contact tab innerHTML before:', contactTab.innerHTML.length);
-
-            // 問い合わせ先の内容を強制的に設定
-            contactTab.innerHTML = `
-                <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px; min-height: 500px; background: rgba(255,255,255,0.95); border-radius: 15px;">
+                <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
                     <div style="text-align: center; margin-bottom: 40px;">
                         <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">📧 問い合わせ先</h2>
                         <p style="color: #7f8c8d; font-size: 16px;">ご質問・ご要望がございましたら、お気軽にお問い合わせください</p>
@@ -676,30 +632,9 @@ function switchTab(tab) {
                 </div>
             `;
 
-            console.log('Contact tab innerHTML after:', contactTab.innerHTML.length);
-
-            // 少し後にも確認
-            setTimeout(() => {
-                console.log('Contact tab display after 100ms:', window.getComputedStyle(contactTab).display);
-                console.log('Contact tab visibility after 100ms:', window.getComputedStyle(contactTab).visibility);
-                console.log('Contact tab opacity after 100ms:', window.getComputedStyle(contactTab).opacity);
-                console.log('Contact tab children count:', contactTab.children.length);
-                console.log('Contact tab innerHTML length:', contactTab.innerHTML.length);
-                console.log('Contact tab innerHTML preview:', contactTab.innerHTML.substring(0, 200));
-
-                // 最終チェック：表示されていない場合の緊急対応
-                const finalDisplay = window.getComputedStyle(contactTab).display;
-                if (finalDisplay === 'none') {
-                    console.error('Contact tab still not displaying! Applying emergency fix...');
-                    contactTab.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 1000 !important;';
-                }
-            }, 100);
+            console.log('Contact tab content loaded successfully');
         } else {
             console.error('Contact tab element not found!');
-
-            // 万が一の場合: DOM全体を確認
-            const allElements = document.querySelectorAll('*[id*="contact"], *[class*="contact"], *[id*="Contact"], *[class*="Contact"]');
-            console.log('Elements with contact in id/class:', allElements);
         }
     }
 
