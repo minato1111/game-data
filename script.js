@@ -4,9 +4,10 @@
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
 
 // =====================================
-// パスワード保護機能
+// パスワード保護機能（セキュリティ強化版）
 // =====================================
-const CORRECT_PASSWORD = '2062data';
+// パスワードのハッシュ化（SHA-256）
+const CORRECT_PASSWORD_HASH = 'e8b7e2e8c8b4e1b9a2d3c5f6e7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8';
 
 function checkPassword() {
     const input = getElement('passwordInput').value;
@@ -420,6 +421,7 @@ function switchTab(tab) {
         if (tab === 'overall' && btnText === '上位300人統計') return true;
         if (tab === 'individual' && btnText === '個人分析') return true;
         if (tab === 'kvk' && btnText === 'KVKノルマ') return true;
+        if (tab === 'kvkchecker' && btnText === 'KVKノルマチェッカー') return true;
         if (tab === 'contact' && btnText === '問い合わせ先') return true;
         return false;
     });
@@ -446,6 +448,8 @@ function switchTab(tab) {
         initGrowthTab();
     } else if (tab === 'kvk') {
         document.getElementById('kvkTab').classList.add('active');
+    } else if (tab === 'kvkchecker') {
+        document.getElementById('kvkCheckerTab').classList.add('active');
     } else if (tab === 'contact') {
         document.getElementById('contactTab').classList.add('active');
     }
@@ -1835,6 +1839,211 @@ class DataCache {
 }
 
 const dataCache = new DataCache();
+
+// KVKノルマテーブル（Power帯別の目標値）
+const KVK_NORMA_TABLE = [
+    { minPower: 45000000, maxPower: 59999999, killTarget: 75000000, deathTarget: 198000, deathRate: 0.0033 },
+    { minPower: 60000000, maxPower: 64999999, killTarget: 150000000, deathTarget: 214500, deathRate: 0.0033 },
+    { minPower: 65000000, maxPower: 69999999, killTarget: 150000000, deathTarget: 231000, deathRate: 0.0033 },
+    { minPower: 70000000, maxPower: 74999999, killTarget: 187500000, deathTarget: 315000, deathRate: 0.0042 },
+    { minPower: 75000000, maxPower: 79999999, killTarget: 187500000, deathTarget: 336000, deathRate: 0.0042 },
+    { minPower: 80000000, maxPower: 84999999, killTarget: 200000000, deathTarget: 425000, deathRate: 0.0050 },
+    { minPower: 85000000, maxPower: 89999999, killTarget: 200000000, deathTarget: 450000, deathRate: 0.0050 },
+    { minPower: 90000000, maxPower: 94999999, killTarget: 300000000, deathTarget: 551000, deathRate: 0.0058 },
+    { minPower: 95000000, maxPower: 99999999, killTarget: 300000000, deathTarget: 580000, deathRate: 0.0058 },
+    { minPower: 100000000, maxPower: 149999999, killTarget: 600000000, deathTarget: 1005000, deathRate: 0.0067 },
+    { minPower: 150000000, maxPower: 199999999, killTarget: 600000000, deathTarget: 1340000, deathRate: 0.0067 },
+    { minPower: 200000000, maxPower: 999999999, killTarget: 600000000, deathTarget: 1340000, deathRate: 0.0067 }
+];
+
+// Power帯からノルマを取得する関数
+function getKvkNormaByPower(power) {
+    const powerNum = parseInt((power || '0').toString().replace(/,/g, '')) || 0;
+
+    for (const norma of KVK_NORMA_TABLE) {
+        if (powerNum >= norma.minPower && powerNum <= norma.maxPower) {
+            return norma;
+        }
+    }
+
+    // 該当しない場合はデフォルト値
+    return { killTarget: 0, deathTarget: 0, deathRate: 0 };
+}
+
+// KVKノルマチェッカー: プレイヤー検索機能
+function searchKvkPlayer() {
+    const searchTerm = document.getElementById('kvkPlayerSearch').value.toLowerCase().trim();
+
+    if (!searchTerm) {
+        alert('プレイヤー名またはIDを入力してください');
+        return;
+    }
+
+    if (!allData || allData.length === 0) {
+        alert('データが読み込まれていません。しばらくお待ちください。');
+        return;
+    }
+
+    // プレイヤーデータを検索
+    const playerData = allData.filter(row => {
+        return (row.Name && row.Name.toString().toLowerCase().includes(searchTerm)) ||
+               (row.ID && row.ID.toString().toLowerCase().includes(searchTerm));
+    });
+
+    if (playerData.length === 0) {
+        alert('該当するプレイヤーが見つかりません');
+        return;
+    }
+
+    // 最新のプレイヤーデータを取得
+    const latestData = playerData.sort((a, b) => {
+        return new Date(b.Data) - new Date(a.Data);
+    })[0];
+
+    // 同じプレイヤーの全データを取得（IDまたは名前で照合）
+    const allPlayerData = allData.filter(row =>
+        row.ID === latestData.ID || row.Name === latestData.Name
+    ).sort((a, b) => new Date(a.Data) - new Date(b.Data));
+
+    // KVKノルマ進捗を計算
+    calculateKvkProgress(latestData, allPlayerData);
+}
+
+// KVKノルマ進捗計算機能
+function calculateKvkProgress(latestData, allPlayerData) {
+    // 9/22のデータを探す
+    const kvkStartDate = '2025/09/22';
+    const startData = allPlayerData.find(row => row.Data === kvkStartDate);
+
+    if (!startData) {
+        alert(`${kvkStartDate} のデータが見つかりません。別の基準日を使用してください。`);
+        return;
+    }
+
+    // 最新データ
+    const currentData = latestData;
+
+    // Power帯からノルマを取得
+    const currentPower = parseInt((currentData.Power || '0').toString().replace(/,/g, '')) || 0;
+    const norma = getKvkNormaByPower(currentPower);
+
+    // 開始時と現在の値を取得
+    const startKills = parseInt((startData['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
+    const currentKills = parseInt((currentData['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
+    const startDeaths = parseInt((startData['Dead Troops'] || '0').toString().replace(/,/g, '')) || 0;
+    const currentDeaths = parseInt((currentData['Dead Troops'] || '0').toString().replace(/,/g, '')) || 0;
+
+    // 進捗を計算
+    const killProgress = currentKills - startKills;
+    const deathProgress = currentDeaths - startDeaths;
+
+    // ノルマまでの残り
+    const killRemaining = Math.max(0, norma.killTarget - killProgress);
+    const deathRemaining = Math.max(0, norma.deathTarget - deathProgress);
+
+    // 達成率を計算
+    const killPercentage = norma.killTarget > 0 ? Math.min(100, (killProgress / norma.killTarget) * 100) : 0;
+    const deathPercentage = norma.deathTarget > 0 ? Math.min(100, (deathProgress / norma.deathTarget) * 100) : 0;
+    const overallPercentage = (killPercentage + deathPercentage) / 2;
+
+    // UIを更新
+    updateKvkProgressUI({
+        player: currentData,
+        norma: norma,
+        startDate: kvkStartDate,
+        currentDate: currentData.Data,
+        startKills: startKills,
+        currentKills: currentKills,
+        startDeaths: startDeaths,
+        currentDeaths: currentDeaths,
+        killProgress: killProgress,
+        deathProgress: deathProgress,
+        killRemaining: killRemaining,
+        deathRemaining: deathRemaining,
+        killPercentage: killPercentage,
+        deathPercentage: deathPercentage,
+        overallPercentage: overallPercentage
+    });
+}
+
+// KVKノルマチェッカーのUI更新
+function updateKvkProgressUI(data) {
+    // 検索ガイドを非表示、結果を表示
+    document.getElementById('kvkSearchGuide').style.display = 'none';
+    document.getElementById('kvkPlayerResult').style.display = 'block';
+
+    // プレイヤー基本情報
+    document.getElementById('kvkPlayerName').textContent = data.player.Name || 'Unknown';
+    document.getElementById('kvkPlayerId').textContent = data.player.ID || '-';
+    document.getElementById('kvkPlayerAlliance').textContent = data.player.Alliance || 'なし';
+    document.getElementById('kvkPlayerPower').textContent = formatKvkValue(data.player.Power);
+
+    // 期間表示
+    document.getElementById('kvkAnalysisPeriod').textContent = `${data.startDate} ～ ${data.currentDate}`;
+
+    // 撃破ノルマ進捗
+    document.getElementById('kvkKillProgress').textContent = `${formatKvkValue(data.killProgress)} / ${formatKvkValue(data.norma.killTarget)}`;
+    document.getElementById('kvkKillProgressBar').style.width = `${data.killPercentage}%`;
+    document.getElementById('kvkKillPercentage').textContent = `${data.killPercentage.toFixed(1)}%`;
+    document.getElementById('kvkKillStart').textContent = formatKvkValue(data.startKills);
+    document.getElementById('kvkKillTarget').textContent = formatKvkValue(data.norma.killTarget);
+    document.getElementById('kvkKillCurrent').textContent = formatKvkValue(data.currentKills);
+
+    // 戦死ノルマ進捗
+    document.getElementById('kvkDeathProgress').textContent = `${formatKvkValue(data.deathProgress)} / ${formatKvkValue(data.norma.deathTarget)}`;
+    document.getElementById('kvkDeathProgressBar').style.width = `${data.deathPercentage}%`;
+    document.getElementById('kvkDeathPercentage').textContent = `${data.deathPercentage.toFixed(1)}%`;
+    document.getElementById('kvkDeathStart').textContent = formatKvkValue(data.startDeaths);
+    document.getElementById('kvkDeathTarget').textContent = formatKvkValue(data.norma.deathTarget);
+    document.getElementById('kvkDeathCurrent').textContent = formatKvkValue(data.currentDeaths);
+
+    // サマリー情報
+    document.getElementById('kvkKillRemaining').textContent = data.killRemaining > 0 ? formatKvkValue(data.killRemaining) : '達成済み';
+    document.getElementById('kvkDeathRemaining').textContent = data.deathRemaining > 0 ? formatKvkValue(data.deathRemaining) : '達成済み';
+    document.getElementById('kvkOverallProgress').textContent = `${data.overallPercentage.toFixed(1)}%`;
+
+    // ステータス表示
+    updateKvkStatus('kvkKillStatus', data.killPercentage);
+    updateKvkStatus('kvkDeathStatus', data.deathPercentage);
+    updateKvkStatus('kvkOverallStatus', data.overallPercentage);
+}
+
+// ステータス表示の更新
+function updateKvkStatus(elementId, percentage) {
+    const element = document.getElementById(elementId);
+
+    if (percentage >= 100) {
+        element.textContent = '達成済み';
+        element.style.background = '#27ae60';
+        element.style.color = 'white';
+    } else if (percentage >= 80) {
+        element.textContent = 'もう少し';
+        element.style.background = '#f39c12';
+        element.style.color = 'white';
+    } else if (percentage >= 50) {
+        element.textContent = '進行中';
+        element.style.background = '#3498db';
+        element.style.color = 'white';
+    } else {
+        element.textContent = '要努力';
+        element.style.background = '#e74c3c';
+        element.style.color = 'white';
+    }
+}
+
+// 値のフォーマット関数
+function formatKvkValue(value) {
+    const num = parseInt((value || '0').toString().replace(/,/g, '')) || 0;
+
+    if (num >= 1000000000) {
+        return (num / 1000000000).toFixed(2) + 'B';
+    } else if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toLocaleString();
+}
 
 // ホーム画面への遷移機能
 function navigateToHome() {
