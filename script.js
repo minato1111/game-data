@@ -450,6 +450,7 @@ function switchTab(tab) {
         document.getElementById('kvkTab').classList.add('active');
     } else if (tab === 'contact') {
         document.getElementById('contactTab').classList.add('active');
+        console.log('Contact tab activated');
     }
 }
 
