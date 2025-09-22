@@ -453,6 +453,30 @@
                         <div id="kvkOverallStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
                     </div>
                 </div>
+
+                <!-- 日次進捗グラフセクション -->
+                <div style="margin-top: 30px;">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">📈 日次進捗グラフ</h3>
+                        <p style="color: #7f8c8d; font-size: 14px;">9/22からの撃破数・戦死数の推移</p>
+                    </div>
+
+                    <!-- 撃破数グラフ -->
+                    <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                        <h4 style="color: #2c3e50; text-align: center; margin-bottom: 20px; font-size: 18px;">撃破数 (Kill Points) 推移</h4>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="kvkKillChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 戦死数グラフ -->
+                    <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+                        <h4 style="color: #2c3e50; text-align: center; margin-bottom: 20px; font-size: 18px;">戦死数 (Dead Troops) 推移</h4>
+                        <div style="position: relative; height: 300px;">
+                            <canvas id="kvkDeathChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 検索前のガイド -->

@@ -1975,7 +1975,8 @@ function calculateKvkProgress(latestData, allPlayerData) {
         deathRemaining: deathRemaining,
         killPercentage: killPercentage,
         deathPercentage: deathPercentage,
-        overallPercentage: overallPercentage
+        overallPercentage: overallPercentage,
+        allPlayerData: allPlayerData
     });
 }
 
@@ -2019,6 +2020,9 @@ function updateKvkProgressUI(data) {
     updateKvkStatus('kvkKillStatus', data.killPercentage);
     updateKvkStatus('kvkDeathStatus', data.deathPercentage);
     updateKvkStatus('kvkOverallStatus', data.overallPercentage);
+
+    // 日次進捗グラフを作成
+    createKvkProgressCharts(data.player, data.allPlayerData);
 }
 
 // ステータス表示の更新
@@ -2056,6 +2060,196 @@ function formatKvkValue(value) {
         return (num / 1000).toFixed(1) + 'K';
     }
     return num.toLocaleString();
+}
+
+// KVK日次進捗グラフ作成
+function createKvkProgressCharts(playerData, allPlayerData) {
+    // 9/22を起点とした日別データを準備
+    const kvkStartDate = new Date('2025/09/22');
+    const chartData = prepareKvkChartData(allPlayerData, kvkStartDate);
+
+    // 撃破数グラフを作成
+    createKvkKillChart(chartData);
+
+    // 戦死数グラフを作成
+    createKvkDeathChart(chartData);
+}
+
+// KVKチャート用データ準備
+function prepareKvkChartData(allPlayerData, startDate) {
+    // 日付順にソート
+    const sortedData = allPlayerData.sort((a, b) => new Date(a.Data) - new Date(b.Data));
+
+    // 9/22以降のデータをフィルター
+    const kvkData = sortedData.filter(row => {
+        const rowDate = new Date(row.Data);
+        return rowDate >= startDate;
+    });
+
+    if (kvkData.length === 0) return { dates: [], killProgress: [], deathProgress: [] };
+
+    // 起点データ（9/22）
+    const baseKills = parseInt((kvkData[0]['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
+    const baseDeaths = parseInt((kvkData[0]['Dead Troops'] || '0').toString().replace(/,/g, '')) || 0;
+
+    const dates = [];
+    const killProgress = [];
+    const deathProgress = [];
+
+    kvkData.forEach(row => {
+        const currentKills = parseInt((row['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
+        const currentDeaths = parseInt((row['Dead Troops'] || '0').toString().replace(/,/g, '')) || 0;
+
+        // 日付フォーマット
+        const date = new Date(row.Data);
+        const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`;
+
+        dates.push(formattedDate);
+        killProgress.push(currentKills - baseKills);
+        deathProgress.push(currentDeaths - baseDeaths);
+    });
+
+    return { dates, killProgress, deathProgress };
+}
+
+// 撃破数チャート作成
+function createKvkKillChart(chartData) {
+    const ctx = document.getElementById('kvkKillChart').getContext('2d');
+
+    // 既存のチャートを破棄
+    if (window.kvkKillChartInstance) {
+        window.kvkKillChartInstance.destroy();
+    }
+
+    window.kvkKillChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.dates,
+            datasets: [{
+                label: '撃破数進捗',
+                data: chartData.killProgress,
+                borderColor: '#e74c3c',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#e74c3c',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `撃破数: ${formatKvkValue(context.raw)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return formatKvkValue(value);
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    hoverBackgroundColor: '#c0392b'
+                }
+            }
+        }
+    });
+}
+
+// 戦死数チャート作成
+function createKvkDeathChart(chartData) {
+    const ctx = document.getElementById('kvkDeathChart').getContext('2d');
+
+    // 既存のチャートを破棄
+    if (window.kvkDeathChartInstance) {
+        window.kvkDeathChartInstance.destroy();
+    }
+
+    window.kvkDeathChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.dates,
+            datasets: [{
+                label: '戦死数進捗',
+                data: chartData.deathProgress,
+                borderColor: '#f39c12',
+                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointBackgroundColor: '#f39c12',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `戦死数: ${formatKvkValue(context.raw)}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return formatKvkValue(value);
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    hoverBackgroundColor: '#e67e22'
+                }
+            }
+        }
+    });
 }
 
 // ホーム画面への遷移機能
