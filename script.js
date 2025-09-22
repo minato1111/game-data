@@ -410,17 +410,10 @@ function updateDataDisplay() {
 }
 
 function switchTab(tab) {
-    console.log('Switching to tab:', tab);
-
-    // すべてのタブコンテンツを非アクティブ化
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // event.targetの代わりに、クリックされたボタンを探す
     const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => {
         const btnText = btn.textContent;
@@ -432,7 +425,7 @@ function switchTab(tab) {
         if (tab === 'contact' && btnText === '問い合わせ先') return true;
         return false;
     });
-    
+
     if (clickedBtn) {
         clickedBtn.classList.add('active');
     }
@@ -456,14 +449,7 @@ function switchTab(tab) {
     } else if (tab === 'kvk') {
         document.getElementById('kvkTab').classList.add('active');
     } else if (tab === 'contact') {
-        const contactTab = document.getElementById('contactTab');
-        console.log('Contact tab element found:', contactTab);
-        if (contactTab) {
-            contactTab.classList.add('active');
-            console.log('Contact tab activated successfully');
-        } else {
-            console.error('Contact tab element not found!');
-        }
+        document.getElementById('contactTab').classList.add('active');
     }
 }
 
