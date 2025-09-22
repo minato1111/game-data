@@ -557,20 +557,51 @@ function switchTab(tab) {
         kvkTab.classList.add('active');
         kvkTab.style.display = 'block';
     } else if (tab === 'contact') {
-        console.log('Activating contact tab...');
+        console.log('🚨 CONTACT TAB CLICKED - REDIRECTING TO DEDICATED PAGE 🚨');
+
+        // 問い合わせ先専用ページに移動
+        window.open('contact_test.html', '_blank');
+
+        // 現在のタブに簡単なメッセージを表示
         const contactTab = document.getElementById('contactTab');
         console.log('Contact tab element found:', !!contactTab);
-        console.log('Contact tab element:', contactTab);
 
         if (contactTab) {
-            console.log('Contact tab classes before:', contactTab.className);
-            console.log('Contact tab current display:', window.getComputedStyle(contactTab).display);
-
-            // 既存のクラスをクリアして、確実にactiveクラスを適用
+            // タブを表示状態にする
             contactTab.className = 'tab-content active';
+            contactTab.style.display = 'block';
+            contactTab.style.visibility = 'visible';
+            contactTab.style.opacity = '1';
+            contactTab.style.minHeight = '400px';
+            contactTab.style.padding = '40px';
+            contactTab.style.textAlign = 'center';
+            contactTab.style.backgroundColor = 'white';
 
-            // 強制的にインラインスタイルで表示を設定（!importantの代わり）
-            contactTab.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 600px !important; height: auto !important; background: transparent !important; position: relative !important; z-index: 1 !important;';
+            // 新しいページが開いたことを示すメッセージ
+            contactTab.innerHTML = `
+                <div style="padding: 60px 20px; text-align: center;">
+                    <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">📧 問い合わせ先</h2>
+                    <div style="background: #e8f4fd; padding: 30px; border-radius: 15px; margin: 20px 0;">
+                        <p style="color: #2980b9; font-size: 18px; margin-bottom: 15px;">
+                            <strong>✅ 新しいタブで問い合わせ先ページを開きました！</strong>
+                        </p>
+                        <p style="color: #666; font-size: 14px;">
+                            新しいタブが開かない場合は、ブラウザのポップアップブロックを確認してください
+                        </p>
+                    </div>
+                    <div style="margin: 30px 0;">
+                        <button onclick="window.open('contact_test.html', '_blank')"
+                                style="background: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">
+                            📧 問い合わせ先ページを再度開く
+                        </button>
+                    </div>
+                    <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h3 style="color: #2c3e50; margin-bottom: 10px;">直接アクセス</h3>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 10px;">Twitter: <a href="https://x.com/boo_vazi" target="_blank" style="color: #1DA1F2;">@boo_vazi</a></p>
+                        <p style="color: #666; font-size: 14px;">Discord: <a href="https://discord.gg/kfrPJ2F2cf" target="_blank" style="color: #7289DA;">kfrPJ2F2cf</a></p>
+                    </div>
+                </div>
+            `;
 
             console.log('Contact tab classes after:', contactTab.className);
             console.log('Contact tab cssText set to:', contactTab.style.cssText);
