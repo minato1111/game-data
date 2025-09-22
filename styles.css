@@ -19,6 +19,9 @@ body {
     padding: 30px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: fadeIn 0.6s ease-out;
+    min-height: 600px;
+    height: auto;
+    overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -91,8 +94,24 @@ h1 {
 }
 
 .tab-content.active {
-    display: block;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 400px !important;
+    height: auto !important;
     animation: slideIn 0.3s ease-out;
+}
+
+/* 問い合わせ先タブ専用の修正 */
+#contactTab.active {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 600px !important;
+    height: auto !important;
+    background: transparent !important;
+    position: relative !important;
+    z-index: 1 !important;
 }
 
 @keyframes slideIn {

@@ -36,6 +36,13 @@ function checkPassword() {
 
         // テスト用：contactタブの状態確認
         setTimeout(testContactTab, 1000);
+
+        // さらに詳細な確認（5秒後）
+        setTimeout(() => {
+            console.log('=== Final Contact Tab Check (5 seconds after load) ===');
+            testContactTab();
+            forceActivateContactTab();
+        }, 5000);
     } else {
         // パスワードが間違っている場合
         errorMsg.style.display = 'block';
@@ -153,6 +160,27 @@ function testContactTab() {
         console.log('Contact tab display style:', window.getComputedStyle(contactTab).display);
         console.log('Contact tab visibility:', window.getComputedStyle(contactTab).visibility);
         console.log('Contact tab innerHTML length:', contactTab.innerHTML.length);
+        console.log('Contact tab content preview:', contactTab.innerHTML.substring(0, 500));
+
+        // 親要素の状態も確認
+        console.log('Contact tab parent element:', contactTab.parentElement);
+        if (contactTab.parentElement) {
+            console.log('Parent display:', window.getComputedStyle(contactTab.parentElement).display);
+            console.log('Parent visibility:', window.getComputedStyle(contactTab.parentElement).visibility);
+        }
+
+        // 子要素の数も確認
+        console.log('Contact tab children count:', contactTab.children.length);
+        console.log('Contact tab first child:', contactTab.firstElementChild);
+    } else {
+        console.error('Contact tab element not found!');
+
+        // 全てのタブコンテンツを確認
+        const allTabs = document.querySelectorAll('.tab-content');
+        console.log('All tab content elements found:', allTabs.length);
+        allTabs.forEach((tab, index) => {
+            console.log(`Tab ${index}: id=${tab.id}, classes=${tab.className}`);
+        });
     }
     console.log('=== End Test ===');
 }
@@ -537,21 +565,110 @@ function switchTab(tab) {
         if (contactTab) {
             console.log('Contact tab classes before:', contactTab.className);
             console.log('Contact tab current display:', window.getComputedStyle(contactTab).display);
-            contactTab.classList.add('active');
 
-            // 強制的にインラインスタイルでdisplay: blockを設定
-            contactTab.style.display = 'block';
+            // 既存のクラスをクリアして、確実にactiveクラスを適用
+            contactTab.className = 'tab-content active';
+
+            // 強制的にインラインスタイルで表示を設定（!importantの代わり）
+            contactTab.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; min-height: 600px !important; height: auto !important; background: transparent !important; position: relative !important; z-index: 1 !important;';
+
             console.log('Contact tab classes after:', contactTab.className);
-            console.log('Contact tab inline style set to block');
+            console.log('Contact tab cssText set to:', contactTab.style.cssText);
+
+            // DOM要素の内容を確認し、強制的に内容を設定
+            console.log('Contact tab innerHTML before:', contactTab.innerHTML.length);
+
+            // 問い合わせ先の内容を強制的に設定
+            contactTab.innerHTML = `
+                <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px; min-height: 500px; background: rgba(255,255,255,0.95); border-radius: 15px;">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">📧 問い合わせ先</h2>
+                        <p style="color: #7f8c8d; font-size: 16px;">ご質問・ご要望がございましたら、お気軽にお問い合わせください</p>
+                    </div>
+
+                    <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <div style="width: 150px; height: 150px; margin: 0 auto 20px; border-radius: 50%; box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); border: 3px solid #fff; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                <span style="font-size: 48px; color: white;">👤</span>
+                            </div>
+                            <h3 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">制作者</h3>
+                            <p style="color: #3498db; font-size: 24px; font-weight: 600;">VaziBoo</p>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <a href="https://x.com/boo_vazi" target="_blank" style="text-decoration: none;">
+                                <div style="background: linear-gradient(135deg, #1DA1F2 0%, #0088cc 100%); color: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.3s;">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                            <span style="font-size: 24px;">🐦</span>
+                                        </div>
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 18px; font-weight: 600;">VaziBoo Twitter</h4>
+                                            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">@boo_vazi</p>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 24px;">→</div>
+                                </div>
+                            </a>
+
+                            <a href="https://discord.gg/kfrPJ2F2cf" target="_blank" style="text-decoration: none;">
+                                <div style="background: linear-gradient(135deg, #7289DA 0%, #5865F2 100%); color: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.3s;">
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                            <span style="font-size: 24px;">💬</span>
+                                        </div>
+                                        <div>
+                                            <h4 style="margin: 0; font-size: 18px; font-weight: 600;">Discord Server</h4>
+                                            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">コミュニティに参加</p>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 24px;">→</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8f9fa; border-radius: 15px; padding: 30px; text-align: center;">
+                        <h3 style="color: #2c3e50; margin-bottom: 15px;">🎮 About This Tool</h3>
+                        <p style="color: #7f8c8d; line-height: 1.8;">
+                            このツールは Rise of Kingdoms のゲームデータを分析・可視化するために作成されました。<br>
+                            プレイヤーの成長追跡、ランキング分析、統計データの確認などが可能です。<br>
+                            ご利用いただきありがとうございます！
+                        </p>
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
+                            <p style="color: #95a5a6; font-size: 14px;">
+                                © 2024 VaziBoo - ROK Kingdom Data Tool<br>
+                                Version 1.0.0
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            console.log('Contact tab innerHTML after:', contactTab.innerHTML.length);
 
             // 少し後にも確認
             setTimeout(() => {
                 console.log('Contact tab display after 100ms:', window.getComputedStyle(contactTab).display);
                 console.log('Contact tab visibility after 100ms:', window.getComputedStyle(contactTab).visibility);
+                console.log('Contact tab opacity after 100ms:', window.getComputedStyle(contactTab).opacity);
                 console.log('Contact tab children count:', contactTab.children.length);
+                console.log('Contact tab innerHTML length:', contactTab.innerHTML.length);
+                console.log('Contact tab innerHTML preview:', contactTab.innerHTML.substring(0, 200));
+
+                // 最終チェック：表示されていない場合の緊急対応
+                const finalDisplay = window.getComputedStyle(contactTab).display;
+                if (finalDisplay === 'none') {
+                    console.error('Contact tab still not displaying! Applying emergency fix...');
+                    contactTab.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important; z-index: 1000 !important;';
+                }
             }, 100);
         } else {
             console.error('Contact tab element not found!');
+
+            // 万が一の場合: DOM全体を確認
+            const allElements = document.querySelectorAll('*[id*="contact"], *[class*="contact"], *[id*="Contact"], *[class*="Contact"]');
+            console.log('Elements with contact in id/class:', allElements);
         }
     }
 
