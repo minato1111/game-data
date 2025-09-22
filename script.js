@@ -467,7 +467,12 @@ function updateDataDisplay() {
 }
 
 function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    console.log('=== switchTab called with:', tab, '===');
+
+    // タブボタンを非アクティブ化
+    const allTabBtns = document.querySelectorAll('.tab-btn');
+    console.log('Found tab buttons:', allTabBtns.length);
+    allTabBtns.forEach(btn => {
         btn.classList.remove('active');
     });
 
@@ -483,35 +488,74 @@ function switchTab(tab) {
         return false;
     });
 
+    console.log('Found clicked button:', clickedBtn);
     if (clickedBtn) {
         clickedBtn.classList.add('active');
+        console.log('Button activated:', clickedBtn.textContent);
     }
 
-    document.querySelectorAll('.tab-content').forEach(content => {
+    // タブコンテンツを非アクティブ化
+    const allTabContents = document.querySelectorAll('.tab-content');
+    console.log('Found tab contents:', allTabContents.length);
+    allTabContents.forEach(content => {
+        console.log('Deactivating:', content.id);
         content.classList.remove('active');
+        // 強制的にインラインスタイルでdisplay: noneを設定
+        content.style.display = 'none';
     });
 
     if (tab === 'data') {
-        document.getElementById('dataTab').classList.add('active');
+        const dataTab = document.getElementById('dataTab');
+        dataTab.classList.add('active');
+        dataTab.style.display = 'block';
     } else if (tab === 'individual') {
-        document.getElementById('individualTab').classList.add('active');
+        const individualTab = document.getElementById('individualTab');
+        individualTab.classList.add('active');
+        individualTab.style.display = 'block';
     } else if (tab === 'overall') {
-        document.getElementById('overallTab').classList.add('active');
+        const overallTab = document.getElementById('overallTab');
+        overallTab.classList.add('active');
+        overallTab.style.display = 'block';
         if (allData.length > 0) {
             updateOverallChart();
         }
     } else if (tab === 'growth') {
-        document.getElementById('growthTab').classList.add('active');
+        const growthTab = document.getElementById('growthTab');
+        growthTab.classList.add('active');
+        growthTab.style.display = 'block';
         initGrowthTab();
     } else if (tab === 'kvk') {
-        document.getElementById('kvkTab').classList.add('active');
+        const kvkTab = document.getElementById('kvkTab');
+        kvkTab.classList.add('active');
+        kvkTab.style.display = 'block';
     } else if (tab === 'contact') {
+        console.log('Activating contact tab...');
         const contactTab = document.getElementById('contactTab');
+        console.log('Contact tab element found:', !!contactTab);
         console.log('Contact tab element:', contactTab);
-        console.log('Contact tab classes before:', contactTab.className);
-        contactTab.classList.add('active');
-        console.log('Contact tab classes after:', contactTab.className);
+
+        if (contactTab) {
+            console.log('Contact tab classes before:', contactTab.className);
+            console.log('Contact tab current display:', window.getComputedStyle(contactTab).display);
+            contactTab.classList.add('active');
+
+            // 強制的にインラインスタイルでdisplay: blockを設定
+            contactTab.style.display = 'block';
+            console.log('Contact tab classes after:', contactTab.className);
+            console.log('Contact tab inline style set to block');
+
+            // 少し後にも確認
+            setTimeout(() => {
+                console.log('Contact tab display after 100ms:', window.getComputedStyle(contactTab).display);
+                console.log('Contact tab visibility after 100ms:', window.getComputedStyle(contactTab).visibility);
+                console.log('Contact tab children count:', contactTab.children.length);
+            }, 100);
+        } else {
+            console.error('Contact tab element not found!');
+        }
     }
+
+    console.log('=== switchTab end ===');
 }
 
 // 成長ランキングタブの初期化
