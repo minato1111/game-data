@@ -34,15 +34,6 @@ function checkPassword() {
         loadCSVData();
         setupEventListeners();
 
-        // テスト用：contactタブの状態確認
-        setTimeout(testContactTab, 1000);
-
-        // さらに詳細な確認（5秒後）
-        setTimeout(() => {
-            console.log('=== Final Contact Tab Check (5 seconds after load) ===');
-            testContactTab();
-            forceActivateContactTab();
-        }, 5000);
     } else {
         // パスワードが間違っている場合
         errorMsg.style.display = 'block';
@@ -149,77 +140,8 @@ function switchToHashTab() {
     }
 }
 
-// テスト用：contactタブの状態確認
-function testContactTab() {
-    console.log('=== Contact Tab Test ===');
-    const contactTab = document.getElementById('contactTab');
-    console.log('Contact tab element:', contactTab);
-    console.log('Contact tab exists:', !!contactTab);
-    if (contactTab) {
-        console.log('Contact tab classes:', contactTab.className);
-        console.log('Contact tab display style:', window.getComputedStyle(contactTab).display);
-        console.log('Contact tab visibility:', window.getComputedStyle(contactTab).visibility);
-        console.log('Contact tab innerHTML length:', contactTab.innerHTML.length);
-        console.log('Contact tab content preview:', contactTab.innerHTML.substring(0, 500));
 
-        // 親要素の状態も確認
-        console.log('Contact tab parent element:', contactTab.parentElement);
-        if (contactTab.parentElement) {
-            console.log('Parent display:', window.getComputedStyle(contactTab.parentElement).display);
-            console.log('Parent visibility:', window.getComputedStyle(contactTab.parentElement).visibility);
-        }
 
-        // 子要素の数も確認
-        console.log('Contact tab children count:', contactTab.children.length);
-        console.log('Contact tab first child:', contactTab.firstElementChild);
-    } else {
-        console.error('Contact tab element not found!');
-
-        // 全てのタブコンテンツを確認
-        const allTabs = document.querySelectorAll('.tab-content');
-        console.log('All tab content elements found:', allTabs.length);
-        allTabs.forEach((tab, index) => {
-            console.log(`Tab ${index}: id=${tab.id}, classes=${tab.className}`);
-        });
-    }
-    console.log('=== End Test ===');
-}
-
-// テスト用：contactタブを強制アクティブ化
-function forceActivateContactTab() {
-    console.log('Forcing contact tab activation...');
-
-    // すべてのタブを非アクティブ化
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-
-    // すべてのタブボタンを非アクティブ化
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    // contactタブをアクティブ化
-    const contactTab = document.getElementById('contactTab');
-    if (contactTab) {
-        contactTab.classList.add('active');
-        console.log('Contact tab forced to active. Classes:', contactTab.className);
-        console.log('Display style:', window.getComputedStyle(contactTab).display);
-    }
-
-    // contactタブボタンをアクティブ化
-    const contactBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn =>
-        btn.textContent === '問い合わせ先'
-    );
-    if (contactBtn) {
-        contactBtn.classList.add('active');
-        console.log('Contact button activated');
-    }
-}
-
-// ブラウザ コンソールから呼び出せるようにグローバルに設定
-window.testContactTab = testContactTab;
-window.forceActivateContactTab = forceActivateContactTab;
 
 // ページ読み込み時の処理
 window.addEventListener('DOMContentLoaded', () => {
@@ -512,7 +434,6 @@ function switchTab(tab) {
         if (tab === 'overall' && btnText === '上位300人統計') return true;
         if (tab === 'individual' && btnText === '個人分析') return true;
         if (tab === 'kvk' && btnText === 'KVKノルマ') return true;
-        if (tab === 'contact' && btnText === '問い合わせ先') return true;
         return false;
     });
 
@@ -556,86 +477,6 @@ function switchTab(tab) {
         const kvkTab = document.getElementById('kvkTab');
         kvkTab.classList.add('active');
         kvkTab.style.display = 'block';
-    } else if (tab === 'contact') {
-        console.log('Contact tab activation started');
-        const contactTab = document.getElementById('contactTab');
-
-        if (contactTab) {
-            // 他のタブと同じ方法で表示
-            contactTab.classList.add('active');
-            contactTab.style.display = 'block';
-
-            // 問い合わせ先の内容をタブ内に表示
-            contactTab.innerHTML = `
-                <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
-                    <div style="text-align: center; margin-bottom: 40px;">
-                        <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 20px;">📧 問い合わせ先</h2>
-                        <p style="color: #7f8c8d; font-size: 16px;">ご質問・ご要望がございましたら、お気軽にお問い合わせください</p>
-                    </div>
-
-                    <div style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px;">
-                        <div style="text-align: center; margin-bottom: 30px;">
-                            <div style="width: 150px; height: 150px; margin: 0 auto 20px; border-radius: 50%; box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3); border: 3px solid #fff; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-                                <span style="font-size: 48px; color: white;">👤</span>
-                            </div>
-                            <h3 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">制作者</h3>
-                            <p style="color: #3498db; font-size: 24px; font-weight: 600;">VaziBoo</p>
-                        </div>
-
-                        <div style="display: flex; flex-direction: column; gap: 20px;">
-                            <a href="https://x.com/boo_vazi" target="_blank" style="text-decoration: none;">
-                                <div style="background: linear-gradient(135deg, #1DA1F2 0%, #0088cc 100%); color: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.3s;">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                            <span style="font-size: 24px;">🐦</span>
-                                        </div>
-                                        <div>
-                                            <h4 style="margin: 0; font-size: 18px; font-weight: 600;">VaziBoo Twitter</h4>
-                                            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">@boo_vazi</p>
-                                        </div>
-                                    </div>
-                                    <div style="font-size: 24px;">→</div>
-                                </div>
-                            </a>
-
-                            <a href="https://discord.gg/kfrPJ2F2cf" target="_blank" style="text-decoration: none;">
-                                <div style="background: linear-gradient(135deg, #7289DA 0%, #5865F2 100%); color: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; justify-content: space-between; transition: transform 0.3s;">
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                            <span style="font-size: 24px;">💬</span>
-                                        </div>
-                                        <div>
-                                            <h4 style="margin: 0; font-size: 18px; font-weight: 600;">Discord Server</h4>
-                                            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">コミュニティに参加</p>
-                                        </div>
-                                    </div>
-                                    <div style="font-size: 24px;">→</div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div style="background: #f8f9fa; border-radius: 15px; padding: 30px; text-align: center;">
-                        <h3 style="color: #2c3e50; margin-bottom: 15px;">🎮 About This Tool</h3>
-                        <p style="color: #7f8c8d; line-height: 1.8;">
-                            このツールは Rise of Kingdoms のゲームデータを分析・可視化するために作成されました。<br>
-                            プレイヤーの成長追跡、ランキング分析、統計データの確認などが可能です。<br>
-                            ご利用いただきありがとうございます！
-                        </p>
-                        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e0e0e0;">
-                            <p style="color: #95a5a6; font-size: 14px;">
-                                © 2024 VaziBoo - ROK Kingdom Data Tool<br>
-                                Version 1.0.0
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            console.log('Contact tab content loaded successfully');
-        } else {
-            console.error('Contact tab element not found!');
-        }
     }
 
     console.log('=== switchTab end ===');

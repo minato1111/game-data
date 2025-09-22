@@ -102,17 +102,6 @@ h1 {
     animation: slideIn 0.3s ease-out;
 }
 
-/* 問い合わせ先タブ専用の修正 */
-#contactTab.active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    min-height: 600px !important;
-    height: auto !important;
-    background: transparent !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
 
 @keyframes slideIn {
     from {
