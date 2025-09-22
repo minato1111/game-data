@@ -6,7 +6,8 @@ const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイ�
 // =====================================
 // パスワード保護機能（セキュリティ強化版）
 // =====================================
-// パスワードのハッシュ化（SHA-256）
+// パスワード設定
+const CORRECT_PASSWORD = 'test123'; // テスト用パスワード
 const CORRECT_PASSWORD_HASH = 'e8b7e2e8c8b4e1b9a2d3c5f6e7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8';
 
 function checkPassword() {
@@ -1925,11 +1926,17 @@ function searchKvkPlayer() {
 function calculateKvkProgress(latestData, allPlayerData) {
     // 9/22のデータを探す
     const kvkStartDate = '2025/09/22';
-    const startData = allPlayerData.find(row => row.Data === kvkStartDate);
+    let startData = allPlayerData.find(row => row.Data === kvkStartDate);
 
     if (!startData) {
-        alert(`${kvkStartDate} のデータが見つかりません。別の基準日を使用してください。`);
-        return;
+        // 9/22のデータがない場合、最も古いデータを使用
+        console.warn(`${kvkStartDate} のデータが見つかりません。最も古いデータを使用します。`);
+        const oldestData = allPlayerData.length > 0 ? allPlayerData[0] : null;
+        if (!oldestData) {
+            alert('プレイヤーのデータが不足しています。');
+            return;
+        }
+        startData = oldestData;
     }
 
     // 最新データ
@@ -2064,9 +2071,19 @@ function formatKvkValue(value) {
 
 // KVK日次進捗グラフ作成
 function createKvkProgressCharts(playerData, allPlayerData) {
+    if (!allPlayerData || allPlayerData.length === 0) {
+        console.warn('プレイヤーデータが不足しているため、グラフを作成できません。');
+        return;
+    }
+
     // 9/22を起点とした日別データを準備
     const kvkStartDate = new Date('2025/09/22');
     const chartData = prepareKvkChartData(allPlayerData, kvkStartDate);
+
+    if (chartData.dates.length === 0) {
+        console.warn('グラフ用のデータが不足しています。');
+        return;
+    }
 
     // 撃破数グラフを作成
     createKvkKillChart(chartData);
