@@ -1,7 +1,51 @@
 // =====================================
-// CSVファイルのパスを設定
+// 設定値
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
+const DEBUG_MODE = false; // 本番環境では false、開発時は true
+
+// =====================================
+// ユーティリティ関数
+// =====================================
+// 数値のフォーマット関数（パフォーマンス向上版）
+function formatNumber(value) {
+    if (value == null || value === '') return '';
+    const num = parseInt(value.toString().replace(/,/g, '')) || 0;
+    return num.toLocaleString();
+}
+
+// 日付のバリデーション関数
+function isValidDate(dateString) {
+    if (!dateString) return false;
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date);
+}
+
+// HTML エスケープ関数（高速版）
+function escapeHtml(text) {
+    if (text == null) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.toString().replace(/[&<>"']/g, m => map[m]);
+}
+
+// デバウンス関数（パフォーマンス向上）
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
 
 // =====================================
 // パスワード保護機能（セキュリティ強化版）
@@ -57,18 +101,6 @@ const getElement = (id) => {
     return domCache[id];
 };
 
-// デバウンス関数
-const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-};
 
 // グローバル変数
 let allData = [];
@@ -139,9 +171,6 @@ function switchToHashTab() {
         switchTab(hash);
     }
 }
-
-
-
 
 // ページ読み込み時の処理
 window.addEventListener('DOMContentLoaded', () => {
@@ -231,7 +260,7 @@ async function loadCSVData() {
         // データ更新時にキャッシュをクリア
         dataCache.clear();
         
-        console.log(`データ読み込み完了: ${allData.length}件`);
+        if (DEBUG_MODE) console.log(`データ読み込み完了: ${allData.length}件`);
         
         // 更新日時を設定
         const now = new Date();
@@ -417,11 +446,11 @@ function updateDataDisplay() {
 }
 
 function switchTab(tab) {
-    console.log('=== switchTab called with:', tab, '===');
+    if (DEBUG_MODE) console.log('=== switchTab called with:', tab, '===');
 
     // タブボタンを非アクティブ化
     const allTabBtns = document.querySelectorAll('.tab-btn');
-    console.log('Found tab buttons:', allTabBtns.length);
+    if (DEBUG_MODE) console.log('Found tab buttons:', allTabBtns.length);
     allTabBtns.forEach(btn => {
         btn.classList.remove('active');
     });
@@ -437,19 +466,18 @@ function switchTab(tab) {
         return false;
     });
 
-    console.log('Found clicked button:', clickedBtn);
+    if (DEBUG_MODE) console.log('Found clicked button:', clickedBtn);
     if (clickedBtn) {
         clickedBtn.classList.add('active');
-        console.log('Button activated:', clickedBtn.textContent);
+        if (DEBUG_MODE) console.log('Button activated:', clickedBtn.textContent);
     }
 
     // タブコンテンツを非アクティブ化
     const allTabContents = document.querySelectorAll('.tab-content');
-    console.log('Found tab contents:', allTabContents.length);
+    if (DEBUG_MODE) console.log('Found tab contents:', allTabContents.length);
     allTabContents.forEach(content => {
-        console.log('Deactivating:', content.id);
+        if (DEBUG_MODE) console.log('Deactivating:', content.id);
         content.classList.remove('active');
-        // 強制的にインラインスタイルでdisplay: noneを設定
         content.style.display = 'none';
     });
 
@@ -479,7 +507,7 @@ function switchTab(tab) {
         kvkTab.style.display = 'block';
     }
 
-    console.log('=== switchTab end ===');
+    if (DEBUG_MODE) console.log('=== switchTab end ===');
 }
 
 // 成長ランキングタブの初期化
@@ -501,7 +529,7 @@ function initGrowthTab() {
             document.getElementById('growthStartDate').value = formatDate(firstDate);
             document.getElementById('growthEndDate').value = formatDate(lastDate);
             
-            console.log('成長ランキング初期化 - 全期間設定:', firstDate, '～', lastDate);
+            if (DEBUG_MODE) console.log('成長ランキング初期化 - 全期間設定:', firstDate, '～', lastDate);
             
             // 自動的に成長ランキングを更新
             updateGrowthRanking();
@@ -609,7 +637,7 @@ function updateGrowthRanking() {
     const endDate = document.getElementById('growthEndDate').value;
 
     if (!startDate || !endDate) {
-        console.log('日付が選択されていません');
+        if (DEBUG_MODE) console.log('日付が選択されていません');
         return;
     }
 
@@ -620,24 +648,28 @@ function updateGrowthRanking() {
     const sortBy = document.getElementById('growthSort').value;
     const filterType = document.getElementById('growthFilter').value;
 
-    console.log('=== 成長ランキング更新開始 ===');
-    console.log('分析期間:', startFormatted, '～', endFormatted);
-    console.log('選択指標:', metric);
-    console.log('表示制限:', limit);
-    console.log('フィルター:', filterType);
+    if (DEBUG_MODE) {
+        console.log('=== 成長ランキング更新開始 ===');
+        console.log('分析期間:', startFormatted, '～', endFormatted);
+        console.log('選択指標:', metric);
+        console.log('表示制限:', limit);
+        console.log('フィルター:', filterType);
+    }
 
     // 開始日と終了日のデータを取得
     const startData = allData.filter(row => row.Data === startFormatted);
     const endData = allData.filter(row => row.Data === endFormatted);
 
-    console.log('開始日データ数:', startData.length);
-    console.log('終了日データ数:', endData.length);
+    if (DEBUG_MODE) {
+        console.log('開始日データ数:', startData.length);
+        console.log('終了日データ数:', endData.length);
+    }
 
     // 特定IDの存在確認
     const targetId = '75607809';
     const startHasTarget = startData.some(row => row.ID === targetId);
     const endHasTarget = endData.some(row => row.ID === targetId);
-    console.log(`ID ${targetId} - 開始日存在: ${startHasTarget}, 終了日存在: ${endHasTarget}`);
+    if (DEBUG_MODE) console.log(`ID ${targetId} - 開始日存在: ${startHasTarget}, 終了日存在: ${endHasTarget}`);
 
     if (startData.length === 0 || endData.length === 0) {
         document.getElementById('growthTableBody').innerHTML = `
@@ -676,7 +708,7 @@ function updateGrowthRanking() {
         const endRow = endDataMap[startRow.ID];
         if (!endRow) {
             if (startRow.ID === targetId) {
-                console.log(`ID ${targetId} - 終了日にデータがありません`);
+                if (DEBUG_MODE) console.log(`ID ${targetId} - 終了日にデータがありません`);
             }
             return;
         }
@@ -688,7 +720,7 @@ function updateGrowthRanking() {
 
         // フィルター適用前にログ出力
         if (startRow.ID === targetId) {
-            console.log(`ID ${targetId} - フィルター適用前:`, {
+            if (DEBUG_MODE) console.log(`ID ${targetId} - フィルター適用前:`, {
                 name: startRow.Name,
                 startValue: startValue,
                 endValue: endValue,
@@ -701,13 +733,13 @@ function updateGrowthRanking() {
         // フィルター適用
         if (filterType === 'growth' && difference <= 0) {
             if (startRow.ID === targetId) {
-                console.log(`ID ${targetId} - 成長フィルターで除外 (difference: ${difference})`);
+                if (DEBUG_MODE) console.log(`ID ${targetId} - 成長フィルターで除外 (difference: ${difference})`);
             }
             return;
         }
         if (filterType === 'decline' && difference >= 0) {
             if (startRow.ID === targetId) {
-                console.log(`ID ${targetId} - 減少フィルターで除外 (difference: ${difference})`);
+                if (DEBUG_MODE) console.log(`ID ${targetId} - 減少フィルターで除外 (difference: ${difference})`);
             }
             return;
         }
@@ -733,12 +765,14 @@ function updateGrowthRanking() {
         growthData.push(growthEntry);
         
         if (startRow.ID === targetId) {
-            console.log(`ID ${targetId} - 成長データに追加されました:`, growthEntry);
+            if (DEBUG_MODE) console.log(`ID ${targetId} - 成長データに追加されました:`, growthEntry);
         }
     });
 
-    console.log('総成長データ数:', growthData.length);
-    console.log(`ID ${targetId} が含まれているか:`, growthData.some(item => item.id === targetId));
+    if (DEBUG_MODE) {
+        console.log('総成長データ数:', growthData.length);
+        console.log(`ID ${targetId} が含まれているか:`, growthData.some(item => item.id === targetId));
+    }
 
     // 全データを保存（ソート・検索用）
     allGrowthData = [...growthData];
@@ -757,8 +791,10 @@ function updateGrowthRanking() {
     currentGrowthData = displayData;
     filteredGrowthData = [...displayData]; // 検索用にコピー
 
-    console.log('表示データ数:', displayData.length);
-    console.log(`表示データにID ${targetId} が含まれているか:`, displayData.some(item => item.id === targetId));
+    if (DEBUG_MODE) {
+        console.log('表示データ数:', displayData.length);
+        console.log(`表示データにID ${targetId} が含まれているか:`, displayData.some(item => item.id === targetId));
+    }
 
     // データ件数を更新
     document.getElementById('growthAnalysisCount').textContent = displayData.length;
@@ -779,14 +815,14 @@ function updateGrowthRanking() {
 
     // テーブルに表示
     displayGrowthTable(displayData);
-    console.log('=== 成長ランキング更新完了 ===');
+    if (DEBUG_MODE) console.log('=== 成長ランキング更新完了 ===');
 }
 
 // 成長ランキングテーブルのソート
 function sortGrowthTable(column) {
     // データが存在するかチェック
     if (!allGrowthData || allGrowthData.length === 0) {
-        console.log('成長データが存在しません');
+        if (DEBUG_MODE) console.log('成長データが存在しません');
         return;
     }
     
@@ -933,13 +969,15 @@ function filterGrowthBySearch() {
     const searchTerm = document.getElementById('growthSearchInput').value.toLowerCase().trim();
     const targetId = '75607809';
     
-    console.log('=== 成長ランキング検索開始 ===');
-    console.log('検索語:', `"${searchTerm}"`);
-    console.log('allGrowthData の件数:', allGrowthData ? allGrowthData.length : 0);
+    if (DEBUG_MODE) {
+        console.log('=== 成長ランキング検索開始 ===');
+        console.log('検索語:', `"${searchTerm}"`);
+        console.log('allGrowthData の件数:', allGrowthData ? allGrowthData.length : 0);
+    }
     
     // 検索対象データの確認
     if (!allGrowthData || allGrowthData.length === 0) {
-        console.log('❌ 検索対象のデータがありません - 先に成長ランキングの期間を設定してください');
+        if (DEBUG_MODE) console.log('❌ 検索対象のデータがありません - 先に成長ランキングの期間を設定してください');
         
         // 期間未設定のメッセージを表示
         document.getElementById('growthTableBody').innerHTML = `
@@ -956,10 +994,10 @@ function filterGrowthBySearch() {
     
     // 特定IDがデータに含まれているかチェック
     const hasTargetId = allGrowthData.some(row => row.id === targetId);
-    console.log(`ID ${targetId} がallGrowthDataに含まれているか: ${hasTargetId}`);
+    if (DEBUG_MODE) console.log(`ID ${targetId} がallGrowthDataに含まれているか: ${hasTargetId}`);
     if (hasTargetId) {
         const targetData = allGrowthData.find(row => row.id === targetId);
-        console.log(`ID ${targetId} のデータ:`, targetData);
+        if (DEBUG_MODE) console.log(`ID ${targetId} のデータ:`, targetData);
     }
     
     if (!searchTerm) {
@@ -983,7 +1021,7 @@ function filterGrowthBySearch() {
             filteredGrowthData = sortedData.slice(0, limit);
         }
         
-        console.log('検索語なし - 全データ表示:', filteredGrowthData.length, '件');
+        if (DEBUG_MODE) console.log('検索語なし - 全データ表示:', filteredGrowthData.length, '件');
     } else {
         // 検索語がある場合は全データから検索（制限なし）
         filteredGrowthData = allGrowthData.filter(row => {
@@ -996,7 +1034,7 @@ function filterGrowthBySearch() {
             
             // 特定IDの詳細ログ
             if (row.id === targetId) {
-                console.log(`ID ${targetId} の検索詳細:`, {
+                if (DEBUG_MODE) console.log(`ID ${targetId} の検索詳細:`, {
                     searchTerm: searchTerm,
                     rowData: {
                         id: row.id,
@@ -1015,8 +1053,8 @@ function filterGrowthBySearch() {
             return matchesSearch;
         });
         
-        console.log(`検索結果: ${filteredGrowthData.length}件 (検索語: "${searchTerm}")`);
-        console.log(`検索結果にID ${targetId} が含まれているか:`, filteredGrowthData.some(row => row.id === targetId));
+        if (DEBUG_MODE) console.log(`検索結果: ${filteredGrowthData.length}件 (検索語: "${searchTerm}")`);
+        if (DEBUG_MODE) console.log(`検索結果にID ${targetId} が含まれているか:`, filteredGrowthData.some(row => row.id === targetId));
     }
     
     // 検索結果の件数を更新
@@ -1024,7 +1062,7 @@ function filterGrowthBySearch() {
     
     // テーブルを再表示
     displayGrowthTable(filteredGrowthData);
-    console.log('=== 成長ランキング検索完了 ===');
+    if (DEBUG_MODE) console.log('=== 成長ランキング検索完了 ===');
 }
 
 // 名前クリックで個人分析へ遷移
@@ -1793,16 +1831,6 @@ function showBarChart() {
     event.target.classList.add('active');
 }
 
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.toString().replace(/[&<>"']/g, m => map[m]);
-}
 
 
 // キャッシュシステム
@@ -1959,7 +1987,7 @@ function calculateKvkProgress(latestData, allPlayerData) {
 
     if (!startData) {
         // 9/22のデータがない場合、最も古いデータを使用
-        console.warn(`${kvkStartDate} のデータが見つかりません。最も古いデータを使用します。`);
+        if (DEBUG_MODE) console.warn(`${kvkStartDate} のデータが見つかりません。最も古いデータを使用します。`);
         const oldestData = allPlayerData.length > 0 ? allPlayerData[0] : null;
         if (!oldestData) {
             alert('プレイヤーのデータが不足しています。');
@@ -2101,7 +2129,7 @@ function formatKvkValue(value) {
 // KVK日次進捗グラフ作成
 function createKvkProgressCharts(playerData, allPlayerData) {
     if (!allPlayerData || allPlayerData.length === 0) {
-        console.warn('プレイヤーデータが不足しているため、グラフを作成できません。');
+        if (DEBUG_MODE) console.warn('プレイヤーデータが不足しているため、グラフを作成できません。');
         return;
     }
 
@@ -2110,7 +2138,7 @@ function createKvkProgressCharts(playerData, allPlayerData) {
     const chartData = prepareKvkChartData(allPlayerData, kvkStartDate);
 
     if (chartData.dates.length === 0) {
-        console.warn('グラフ用のデータが不足しています。');
+        if (DEBUG_MODE) console.warn('グラフ用のデータが不足しています。');
         return;
     }
 
