@@ -474,14 +474,20 @@ function switchTab(tab) {
     });
 
     const targetContent = document.getElementById(tabId);
+    if (DEBUG_MODE) console.log('Looking for tab ID:', tabId);
+    if (DEBUG_MODE) console.log('Found target content:', targetContent);
+
     if (!targetContent) {
         if (DEBUG_MODE) console.warn('Tab content not found:', tabId);
         return;
     }
 
+    if (DEBUG_MODE) console.log('Activating target content:', targetContent.id);
     targetContent.classList.add('active');
     targetContent.style.display = 'block';
     targetContent.setAttribute('aria-hidden', 'false');
+    if (DEBUG_MODE) console.log('Target content display style:', targetContent.style.display);
+    if (DEBUG_MODE) console.log('Target content classes:', targetContent.className);
 
     if (tab === 'overall' && allData.length > 0) {
         updateOverallChart();
