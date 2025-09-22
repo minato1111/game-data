@@ -2,7 +2,7 @@
 // 設定値
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = false; // 本番環境では false、開発時は true
+const DEBUG_MODE = true; // 本番環境では false、開発時は true
 
 // =====================================
 // ユーティリティ関数
