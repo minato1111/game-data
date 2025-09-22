@@ -306,11 +306,21 @@
         <!-- 個人分析タブ -->
         <div id="individualTab" class="tab-content">
             <div class="chart-container">
-                <div class="chart-header">
-                    <h2 class="chart-title">個人データ分析</h2>
-                    <div class="chart-controls">
-                        <input type="text" id="playerSearch" placeholder="プレイヤー名またはIDを入力">
-                        <button onclick="searchPlayer()">検索</button>
+                <!-- プレイヤー検索セクション -->
+                <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 30px;">
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">プレイヤー検索</h3>
+                        <p style="color: #7f8c8d; font-size: 14px;">プレイヤー名またはIDを入力して個人分析を確認</p>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                        <input type="text" id="playerSearch" placeholder="プレイヤー名またはIDを入力"
+                               style="padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 16px; min-width: 300px; transition: all 0.3s;"
+                               onkeypress="if(event.key==='Enter') searchPlayer()">
+                        <button onclick="searchPlayer()"
+                                style="padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                            検索
+                        </button>
                     </div>
                 </div>
                 
