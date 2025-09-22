@@ -421,7 +421,6 @@ function switchTab(tab) {
         if (tab === 'overall' && btnText === '上位300人統計') return true;
         if (tab === 'individual' && btnText === '個人分析') return true;
         if (tab === 'kvk' && btnText === 'KVKノルマ') return true;
-        if (tab === 'kvkchecker' && btnText === 'KVKノルマチェッカー') return true;
         if (tab === 'contact' && btnText === '問い合わせ先') return true;
         return false;
     });
@@ -448,8 +447,6 @@ function switchTab(tab) {
         initGrowthTab();
     } else if (tab === 'kvk') {
         document.getElementById('kvkTab').classList.add('active');
-    } else if (tab === 'kvkchecker') {
-        document.getElementById('kvkCheckerTab').classList.add('active');
     } else if (tab === 'contact') {
         document.getElementById('contactTab').classList.add('active');
     }

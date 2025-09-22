@@ -38,7 +38,6 @@
             <button class="tab-btn" onclick="switchTab('overall')" role="tab" aria-controls="overallTab" aria-selected="false">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
             <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
-            <button class="tab-btn" onclick="switchTab('kvkchecker')" role="tab" aria-controls="kvkCheckerTab" aria-selected="false">KVKノルマチェッカー</button>
             <button class="tab-btn" onclick="switchTab('contact')" role="tab" aria-controls="contactTab" aria-selected="false">問い合わせ先</button>
         </nav>
 
@@ -346,11 +345,137 @@
         <!-- ヘッダーセクション -->
         <div style="text-align: center; margin-bottom: 45px;">
             <h2 style="color: #2c3e50; font-size: 34px; margin-bottom: 15px; font-weight: 700;">
-                ⚔️ KVKノルマ一覧
+                ⚔️ KVKノルマチェッカー
             </h2>
-            <p style="color: #7f8c8d; font-size: 16px;">Power帯別の撃破ノルマ・戦死ノルマ基準値</p>
+            <p style="color: #7f8c8d; font-size: 16px;">プレイヤーのKVKノルマ達成状況を確認 & Power帯別ノルマ基準値</p>
             <div style="width: 80px; height: 2px; background: #3498db; margin: 15px auto;"></div>
         </div>
+
+        <!-- KVKノルマチェッカーセクション -->
+        <div style="margin-bottom: 50px;">
+            <!-- プレイヤー検索セクション -->
+            <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">プレイヤー検索</h3>
+                    <p style="color: #7f8c8d; font-size: 14px;">プレイヤー名またはIDを入力してKVKノルマの進捗を確認</p>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                    <input type="text" id="kvkPlayerSearch" placeholder="プレイヤー名またはIDを入力"
+                           style="padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 16px; min-width: 300px; transition: all 0.3s;"
+                           onkeypress="if(event.key==='Enter') searchKvkPlayer()">
+                    <button onclick="searchKvkPlayer()"
+                            style="padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        検索
+                    </button>
+                </div>
+            </div>
+
+            <!-- プレイヤー情報表示エリア -->
+            <div id="kvkPlayerResult" style="display: none;">
+                <!-- プレイヤー基本情報 -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <h3 id="kvkPlayerName" style="font-size: 24px; margin-bottom: 5px;">-</h3>
+                            <p style="opacity: 0.9;">ID: <span id="kvkPlayerId">-</span> | 同盟: <span id="kvkPlayerAlliance">-</span></p>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 14px; opacity: 0.9;">現在のPower</div>
+                            <div id="kvkPlayerPower" style="font-size: 20px; font-weight: 700;">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KVKノルマ進捗メーター -->
+                <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
+                    <h3 style="color: #2c3e50; text-align: center; margin-bottom: 25px; font-size: 20px;">KVKノルマ進捗状況</h3>
+
+                    <!-- 期間表示 -->
+                    <div style="text-align: center; margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                        <span style="color: #7f8c8d; font-size: 14px;">分析期間: <span id="kvkAnalysisPeriod">-</span></span>
+                    </div>
+
+                    <!-- 撃破ノルマ進捗 -->
+                    <div style="margin-bottom: 30px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: #2c3e50; font-size: 16px; margin: 0;">撃破ノルマ (Kill Points)</h4>
+                            <span id="kvkKillProgress" style="font-weight: 600; color: #e74c3c;">0 / 0</span>
+                        </div>
+                        <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden;">
+                            <div id="kvkKillProgressBar" style="background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); height: 100%; width: 0%; transition: width 0.5s ease; border-radius: 10px; position: relative;">
+                                <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-size: 12px; font-weight: 600;" id="kvkKillPercentage">0%</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #7f8c8d;">
+                            <span>開始時: <span id="kvkKillStart">-</span></span>
+                            <span>目標: <span id="kvkKillTarget">-</span></span>
+                            <span>現在: <span id="kvkKillCurrent">-</span></span>
+                        </div>
+                    </div>
+
+                    <!-- 戦死ノルマ進捗 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h4 style="color: #2c3e50; font-size: 16px; margin: 0;">戦死ノルマ (Dead Troops)</h4>
+                            <span id="kvkDeathProgress" style="font-weight: 600; color: #f39c12;">0 / 0</span>
+                        </div>
+                        <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden;">
+                            <div id="kvkDeathProgressBar" style="background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); height: 100%; width: 0%; transition: width 0.5s ease; border-radius: 10px; position: relative;">
+                                <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-size: 12px; font-weight: 600;" id="kvkDeathPercentage">0%</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #7f8c8d;">
+                            <span>開始時: <span id="kvkDeathStart">-</span></span>
+                            <span>目標: <span id="kvkDeathTarget">-</span></span>
+                            <span>現在: <span id="kvkDeathCurrent">-</span></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ノルマ達成状況サマリー -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px;">撃破ノルマまで</div>
+                        <div id="kvkKillRemaining" style="font-size: 20px; font-weight: 700; color: #e74c3c;">-</div>
+                        <div id="kvkKillStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
+                    </div>
+
+                    <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px;">戦死ノルマまで</div>
+                        <div id="kvkDeathRemaining" style="font-size: 20px; font-weight: 700; color: #f39c12;">-</div>
+                        <div id="kvkDeathStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
+                    </div>
+
+                    <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px;">総合達成率</div>
+                        <div id="kvkOverallProgress" style="font-size: 20px; font-weight: 700; color: #3498db;">-</div>
+                        <div id="kvkOverallStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 検索前のガイド -->
+            <div id="kvkSearchGuide" style="text-align: center; padding: 40px 20px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 30px;">
+                <div style="font-size: 48px; margin-bottom: 15px;">🔍</div>
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">プレイヤーを検索してください</h3>
+                <p style="color: #7f8c8d; line-height: 1.6; margin-bottom: 20px;">
+                    上の検索ボックスにプレイヤー名またはIDを入力して、KVKノルマの達成状況を確認できます
+                </p>
+                <div style="padding: 15px; background: #e8f4fd; border-radius: 8px; max-width: 400px; margin: 0 auto;">
+                    <p style="color: #34495e; font-size: 14px; margin: 0;">💡 9/22からの最新データまでの進捗を自動計算し、Power帯に応じたノルマを判定します</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ノルマ表セクション -->
+        <div>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px; font-weight: 700;">
+                    📋 Power帯別ノルマ基準値
+                </h2>
+                <p style="color: #7f8c8d; font-size: 14px;">各Power帯の撃破ノルマ・戦死ノルマ一覧</p>
+            </div>
 
         <!-- メインノルマテーブル -->
         <div style="background: white; border-radius: 15px; padding: 0; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 40px;">
@@ -472,141 +597,6 @@
         </div>
     </div>
 </div>
-
-        <!-- KVKノルマチェッカータブ -->
-        <div id="kvkCheckerTab" class="tab-content">
-            <div style="max-width: 1200px; margin: 0 auto; padding: 40px 20px;">
-                <!-- ヘッダーセクション -->
-                <div style="text-align: center; margin-bottom: 45px;">
-                    <h2 style="color: #2c3e50; font-size: 34px; margin-bottom: 15px; font-weight: 700;">
-                        ⚔️ KVKノルマチェッカー
-                    </h2>
-                    <p style="color: #7f8c8d; font-size: 16px;">プレイヤーのKVKノルマ達成状況を視覚的に確認</p>
-                    <div style="width: 80px; height: 2px; background: #3498db; margin: 15px auto;"></div>
-                </div>
-
-                <!-- プレイヤー検索セクション -->
-                <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 30px;">
-                    <div style="text-align: center; margin-bottom: 25px;">
-                        <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">プレイヤー検索</h3>
-                        <p style="color: #7f8c8d; font-size: 14px;">プレイヤー名またはIDを入力してKVKノルマの進捗を確認</p>
-                    </div>
-
-                    <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
-                        <input type="text" id="kvkPlayerSearch" placeholder="プレイヤー名またはIDを入力"
-                               style="padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 16px; min-width: 300px; transition: all 0.3s;"
-                               onkeypress="if(event.key==='Enter') searchKvkPlayer()">
-                        <button onclick="searchKvkPlayer()"
-                                style="padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
-                            検索
-                        </button>
-                    </div>
-                </div>
-
-                <!-- プレイヤー情報表示エリア -->
-                <div id="kvkPlayerResult" style="display: none;">
-                    <!-- プレイヤー基本情報 -->
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-                            <div>
-                                <h3 id="kvkPlayerName" style="font-size: 24px; margin-bottom: 5px;">-</h3>
-                                <p style="opacity: 0.9;">ID: <span id="kvkPlayerId">-</span> | 同盟: <span id="kvkPlayerAlliance">-</span></p>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 14px; opacity: 0.9;">現在のPower</div>
-                                <div id="kvkPlayerPower" style="font-size: 20px; font-weight: 700;">-</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- KVKノルマ進捗メーター -->
-                    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 25px;">
-                        <h3 style="color: #2c3e50; text-align: center; margin-bottom: 25px; font-size: 20px;">KVKノルマ進捗状況</h3>
-
-                        <!-- 期間表示 -->
-                        <div style="text-align: center; margin-bottom: 20px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
-                            <span style="color: #7f8c8d; font-size: 14px;">分析期間: <span id="kvkAnalysisPeriod">-</span></span>
-                        </div>
-
-                        <!-- 撃破ノルマ進捗 -->
-                        <div style="margin-bottom: 30px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h4 style="color: #2c3e50; font-size: 16px; margin: 0;">撃破ノルマ (Kill Points)</h4>
-                                <span id="kvkKillProgress" style="font-weight: 600; color: #e74c3c;">0 / 0</span>
-                            </div>
-                            <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden;">
-                                <div id="kvkKillProgressBar" style="background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); height: 100%; width: 0%; transition: width 0.5s ease; border-radius: 10px; position: relative;">
-                                    <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-size: 12px; font-weight: 600;" id="kvkKillPercentage">0%</div>
-                                </div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #7f8c8d;">
-                                <span>開始時: <span id="kvkKillStart">-</span></span>
-                                <span>目標: <span id="kvkKillTarget">-</span></span>
-                                <span>現在: <span id="kvkKillCurrent">-</span></span>
-                            </div>
-                        </div>
-
-                        <!-- 戦死ノルマ進捗 -->
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h4 style="color: #2c3e50; font-size: 16px; margin: 0;">戦死ノルマ (Dead Troops)</h4>
-                                <span id="kvkDeathProgress" style="font-weight: 600; color: #f39c12;">0 / 0</span>
-                            </div>
-                            <div style="background: #e0e0e0; border-radius: 10px; height: 20px; overflow: hidden;">
-                                <div id="kvkDeathProgressBar" style="background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); height: 100%; width: 0%; transition: width 0.5s ease; border-radius: 10px; position: relative;">
-                                    <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-size: 12px; font-weight: 600;" id="kvkDeathPercentage">0%</div>
-                                </div>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 12px; color: #7f8c8d;">
-                                <span>開始時: <span id="kvkDeathStart">-</span></span>
-                                <span>目標: <span id="kvkDeathTarget">-</span></span>
-                                <span>現在: <span id="kvkDeathCurrent">-</span></span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ノルマ達成状況サマリー -->
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
-                            <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px;">撃破ノルマまで</div>
-                            <div id="kvkKillRemaining" style="font-size: 20px; font-weight: 700; color: #e74c3c;">-</div>
-                            <div id="kvkKillStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
-                        </div>
-
-                        <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
-                            <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px;">戦死ノルマまで</div>
-                            <div id="kvkDeathRemaining" style="font-size: 20px; font-weight: 700; color: #f39c12;">-</div>
-                            <div id="kvkDeathStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
-                        </div>
-
-                        <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
-                            <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 5px;">総合達成率</div>
-                            <div id="kvkOverallProgress" style="font-size: 20px; font-weight: 700; color: #3498db;">-</div>
-                            <div id="kvkOverallStatus" style="font-size: 12px; margin-top: 5px; padding: 4px 8px; border-radius: 20px; display: inline-block;">-</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 検索前のガイド -->
-                <div id="kvkSearchGuide" style="text-align: center; padding: 60px 20px;">
-                    <div style="font-size: 64px; margin-bottom: 20px;">🔍</div>
-                    <h3 style="color: #2c3e50; margin-bottom: 15px;">プレイヤーを検索してください</h3>
-                    <p style="color: #7f8c8d; line-height: 1.6;">
-                        上の検索ボックスにプレイヤー名またはIDを入力して、<br>
-                        KVKノルマの達成状況を確認できます
-                    </p>
-                    <div style="margin-top: 30px; padding: 20px; background: #e8f4fd; border-radius: 10px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                        <h4 style="color: #2980b9; margin-bottom: 10px;">💡 使い方</h4>
-                        <ul style="color: #34495e; text-align: left; line-height: 1.8;">
-                            <li>プレイヤー名の一部またはIDを入力</li>
-                            <li>9/22からの最新データまでの進捗を自動計算</li>
-                            <li>Power帯に応じたノルマを自動判定</li>
-                            <li>視覚的なメーターで進捗状況を確認</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- 問い合わせ先タブ -->
         <div id="contactTab" class="tab-content">
