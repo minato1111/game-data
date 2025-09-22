@@ -7,7 +7,7 @@ const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイ�
 // パスワード保護機能（セキュリティ強化版）
 // =====================================
 // パスワード設定
-const CORRECT_PASSWORD = 'test123'; // テスト用パスワード
+const CORRECT_PASSWORD = '2062data'; // 本番用パスワード
 const CORRECT_PASSWORD_HASH = 'e8b7e2e8c8b4e1b9a2d3c5f6e7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8';
 
 function checkPassword() {
@@ -410,6 +410,13 @@ function updateDataDisplay() {
 }
 
 function switchTab(tab) {
+    console.log('Switching to tab:', tab);
+
+    // すべてのタブコンテンツを非アクティブ化
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
@@ -449,8 +456,14 @@ function switchTab(tab) {
     } else if (tab === 'kvk') {
         document.getElementById('kvkTab').classList.add('active');
     } else if (tab === 'contact') {
-        document.getElementById('contactTab').classList.add('active');
-        console.log('Contact tab activated');
+        const contactTab = document.getElementById('contactTab');
+        console.log('Contact tab element found:', contactTab);
+        if (contactTab) {
+            contactTab.classList.add('active');
+            console.log('Contact tab activated successfully');
+        } else {
+            console.error('Contact tab element not found!');
+        }
     }
 }
 
