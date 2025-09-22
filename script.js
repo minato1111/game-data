@@ -33,6 +33,9 @@ function checkPassword() {
         // データの読み込みを開始
         loadCSVData();
         setupEventListeners();
+
+        // テスト用：contactタブの状態確認
+        setTimeout(testContactTab, 1000);
     } else {
         // パスワードが間違っている場合
         errorMsg.style.display = 'block';
@@ -139,6 +142,57 @@ function switchToHashTab() {
     }
 }
 
+// テスト用：contactタブの状態確認
+function testContactTab() {
+    console.log('=== Contact Tab Test ===');
+    const contactTab = document.getElementById('contactTab');
+    console.log('Contact tab element:', contactTab);
+    console.log('Contact tab exists:', !!contactTab);
+    if (contactTab) {
+        console.log('Contact tab classes:', contactTab.className);
+        console.log('Contact tab display style:', window.getComputedStyle(contactTab).display);
+        console.log('Contact tab visibility:', window.getComputedStyle(contactTab).visibility);
+        console.log('Contact tab innerHTML length:', contactTab.innerHTML.length);
+    }
+    console.log('=== End Test ===');
+}
+
+// テスト用：contactタブを強制アクティブ化
+function forceActivateContactTab() {
+    console.log('Forcing contact tab activation...');
+
+    // すべてのタブを非アクティブ化
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    // すべてのタブボタンを非アクティブ化
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // contactタブをアクティブ化
+    const contactTab = document.getElementById('contactTab');
+    if (contactTab) {
+        contactTab.classList.add('active');
+        console.log('Contact tab forced to active. Classes:', contactTab.className);
+        console.log('Display style:', window.getComputedStyle(contactTab).display);
+    }
+
+    // contactタブボタンをアクティブ化
+    const contactBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn =>
+        btn.textContent === '問い合わせ先'
+    );
+    if (contactBtn) {
+        contactBtn.classList.add('active');
+        console.log('Contact button activated');
+    }
+}
+
+// ブラウザ コンソールから呼び出せるようにグローバルに設定
+window.testContactTab = testContactTab;
+window.forceActivateContactTab = forceActivateContactTab;
+
 // ページ読み込み時の処理
 window.addEventListener('DOMContentLoaded', () => {
     // パスワード認証のイベントリスナーを設定
@@ -173,9 +227,12 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         loadCSVData();
         setupEventListeners();
-        
+
         // URLハッシュがある場合は該当タブを表示
         switchToHashTab();
+
+        // テスト用：contactタブの状態確認
+        setTimeout(testContactTab, 1000);
     } else {
         // 未認証の場合はパスワード入力画面を表示
         if (passwordInput) {
@@ -449,7 +506,11 @@ function switchTab(tab) {
     } else if (tab === 'kvk') {
         document.getElementById('kvkTab').classList.add('active');
     } else if (tab === 'contact') {
-        document.getElementById('contactTab').classList.add('active');
+        const contactTab = document.getElementById('contactTab');
+        console.log('Contact tab element:', contactTab);
+        console.log('Contact tab classes before:', contactTab.className);
+        contactTab.classList.add('active');
+        console.log('Contact tab classes after:', contactTab.className);
     }
 }
 
