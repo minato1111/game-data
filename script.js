@@ -1,4 +1,4 @@
-// =====================================
+﻿// =====================================
 // 設定値
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
@@ -211,7 +211,6 @@ window.addEventListener('DOMContentLoaded', () => {
         switchToHashTab();
 
         // テスト用：contactタブの状態確認
-        setTimeout(testContactTab, 1000);
     } else {
         // 未認証の場合はパスワード入力画面を表示
         if (passwordInput) {
@@ -448,68 +447,46 @@ function updateDataDisplay() {
 function switchTab(tab) {
     if (DEBUG_MODE) console.log('=== switchTab called with:', tab, '===');
 
-    // タブボタンを非アクティブ化
+    const tabId = `${tab}Tab`;
+
     const allTabBtns = document.querySelectorAll('.tab-btn');
     if (DEBUG_MODE) console.log('Found tab buttons:', allTabBtns.length);
     allTabBtns.forEach(btn => {
         btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
     });
 
-    // event.targetの代わりに、クリックされたボタンを探す
-    const clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => {
-        const btnText = btn.textContent;
-        if (tab === 'data' && btnText === 'データ一覧') return true;
-        if (tab === 'growth' && btnText === '成長ランキング') return true;
-        if (tab === 'overall' && btnText === '上位300人統計') return true;
-        if (tab === 'individual' && btnText === '個人分析') return true;
-        if (tab === 'kvk' && btnText === 'KVKノルマ') return true;
-        if (tab === 'contact' && btnText === '問い合わせ先') return true;
-        return false;
-    });
-
+    const clickedBtn = document.querySelector(`.tab-btn[aria-controls="${tabId}"]`);
     if (DEBUG_MODE) console.log('Found clicked button:', clickedBtn);
     if (clickedBtn) {
         clickedBtn.classList.add('active');
+        clickedBtn.setAttribute('aria-selected', 'true');
         if (DEBUG_MODE) console.log('Button activated:', clickedBtn.textContent);
     }
 
-    // タブコンテンツを非アクティブ化
     const allTabContents = document.querySelectorAll('.tab-content');
     if (DEBUG_MODE) console.log('Found tab contents:', allTabContents.length);
     allTabContents.forEach(content => {
         if (DEBUG_MODE) console.log('Deactivating:', content.id);
         content.classList.remove('active');
         content.style.display = 'none';
+        content.setAttribute('aria-hidden', 'true');
     });
 
-    if (tab === 'data') {
-        const dataTab = document.getElementById('dataTab');
-        dataTab.classList.add('active');
-        dataTab.style.display = 'block';
-    } else if (tab === 'individual') {
-        const individualTab = document.getElementById('individualTab');
-        individualTab.classList.add('active');
-        individualTab.style.display = 'block';
-    } else if (tab === 'overall') {
-        const overallTab = document.getElementById('overallTab');
-        overallTab.classList.add('active');
-        overallTab.style.display = 'block';
-        if (allData.length > 0) {
-            updateOverallChart();
-        }
+    const targetContent = document.getElementById(tabId);
+    if (!targetContent) {
+        if (DEBUG_MODE) console.warn('Tab content not found:', tabId);
+        return;
+    }
+
+    targetContent.classList.add('active');
+    targetContent.style.display = 'block';
+    targetContent.setAttribute('aria-hidden', 'false');
+
+    if (tab === 'overall' && allData.length > 0) {
+        updateOverallChart();
     } else if (tab === 'growth') {
-        const growthTab = document.getElementById('growthTab');
-        growthTab.classList.add('active');
-        growthTab.style.display = 'block';
         initGrowthTab();
-    } else if (tab === 'kvk') {
-        const kvkTab = document.getElementById('kvkTab');
-        kvkTab.classList.add('active');
-        kvkTab.style.display = 'block';
-    } else if (tab === 'contact') {
-        const contactTab = document.getElementById('contactTab');
-        contactTab.classList.add('active');
-        contactTab.style.display = 'block';
     }
 
     if (DEBUG_MODE) console.log('=== switchTab end ===');
