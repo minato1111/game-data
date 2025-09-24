@@ -562,9 +562,36 @@ function switchTab(tab) {
         updateOverallChart();
     } else if (tab === 'growth') {
         initGrowthTab();
+    } else if (tab === 'contact') {
+        // 連絡先タブの初期化
+        initContactTab();
     }
 
     if (DEBUG_MODE) console.log('=== switchTab end ===');
+}
+
+// 連絡先タブ初期化関数
+function initContactTab() {
+    if (DEBUG_MODE) console.log('連絡先タブを初期化中...');
+
+    const contactTab = document.getElementById('contactTab');
+    if (!contactTab) {
+        if (DEBUG_MODE) console.error('contactTabが見つかりません');
+        return;
+    }
+
+    // 連絡先カードにホバー効果を追加
+    const contactCards = contactTab.querySelectorAll('.contact-card');
+    contactCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-5px)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+
+    if (DEBUG_MODE) console.log('連絡先タブ初期化完了');
 }
 
 // 成長ランキングタブの初期化
