@@ -89,17 +89,13 @@ h1 {
     color: #2980b9;
 }
 
+/* タブコンテンツはJavaScriptで完全制御 */
 .tab-content {
-    display: none;
+    /* CSSでの制御を無効化 - JavaScriptが全て制御 */
 }
 
 .tab-content.active {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    min-height: 400px !important;
-    height: auto !important;
-    animation: slideIn 0.3s ease-out;
+    /* CSSでの制御を無効化 - JavaScriptが全て制御 */
 }
 
 

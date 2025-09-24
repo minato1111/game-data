@@ -632,25 +632,46 @@ function switchTab(tab) {
             clickedBtn.setAttribute('aria-selected', 'true');
         }
 
-        // 3. すべてのタブコンテンツを非表示（シンプルに）
+        // 3. すべてのタブコンテンツを完全非表示
         document.querySelectorAll('.tab-content').forEach(content => {
-            content.style.display = 'none';
+            content.style.cssText = `
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                position: absolute !important;
+                left: -9999px !important;
+                z-index: -1 !important;
+            `;
             content.classList.remove('active');
         });
 
-        // 4. ターゲットタブを表示（強制的に）
+        // 4. ターゲットタブを完全表示
         const targetContent = document.getElementById(tabId);
         if (!targetContent) {
             console.error('❌ タブが見つかりません:', tabId);
             return;
         }
 
-        // 強制表示
-        targetContent.style.display = 'block';
-        targetContent.style.visibility = 'visible';
-        targetContent.style.opacity = '1';
-        targetContent.style.position = 'relative';
-        targetContent.style.zIndex = '1';
+        // 完全強制表示（全ての干渉を排除）
+        targetContent.style.cssText = `
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            right: auto !important;
+            bottom: auto !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 400px !important;
+            z-index: 10 !important;
+            background: transparent !important;
+            overflow: visible !important;
+            transform: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        `;
         targetContent.classList.add('active');
 
         console.log('✅ タブ表示完了:', tabId);
