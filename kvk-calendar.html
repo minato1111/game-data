@@ -119,6 +119,47 @@
         .category-zone5 { border-left: 4px solid #f39c12; }
         .category-zone6 { border-left: 4px solid #f1c40f; }
         .category-kingsland { border-left: 4px solid #2ecc71; }
+
+        .editable-time {
+            background-color: #e3f2fd !important;
+            border: 1px dashed #2196f3;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .editable-time:hover {
+            background-color: #bbdefb !important;
+            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+        }
+
+        .time-input {
+            border: 2px solid #2196f3;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 150px;
+        }
+
+        .save-btn, .cancel-btn {
+            margin: 2px;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .save-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -632,13 +673,18 @@
                 const row = document.createElement('tr');
                 row.classList.add(`category-${phase.category}`);
 
+                // 征服の旅路フェーズの終了時間は編集可能にする
+                const endTimeCell = phase.phase === '征服の旅路'
+                    ? `<span class="editable-time" onclick="editTime(this, ${index})" title="クリックして編集">${phase.endTime}</span>`
+                    : phase.endTime;
+
                 row.innerHTML = `
                     <td class="${status.class}">${status.text}</td>
                     <td><strong>${phase.zone || ''}</strong></td>
                     <td><strong>${phase.phase}</strong></td>
                     <td>${phase.duration}</td>
                     <td>${phase.startTime}</td>
-                    <td>${phase.endTime}</td>
+                    <td>${endTimeCell}</td>
                     <td style="text-align: left;">${phase.description}</td>
                 `;
 
@@ -696,6 +742,101 @@
 
             updateCountdown();
             setInterval(updateCountdown, 1000);
+        }
+
+        // 時刻編集機能
+        function editTime(element, phaseIndex) {
+            const currentTime = element.textContent;
+            const originalElement = element;
+
+            // 入力フォーム作成
+            const inputContainer = document.createElement('div');
+            inputContainer.innerHTML = `
+                <input type="datetime-local" class="time-input" value="${formatForInput(currentTime)}" />
+                <button class="save-btn" onclick="saveTime(this, ${phaseIndex})">保存</button>
+                <button class="cancel-btn" onclick="cancelEdit(this, '${currentTime}')">キャンセル</button>
+            `;
+
+            // 元の要素を置き換え
+            element.parentNode.replaceChild(inputContainer, element);
+            inputContainer.querySelector('.time-input').focus();
+        }
+
+        function formatForInput(timeString) {
+            // "2025/10/1 3:00:00" を "2025-10-01T03:00" に変換
+            const date = new Date(timeString);
+            if (isNaN(date.getTime())) return '';
+
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        function formatForDisplay(inputValue) {
+            // "2025-10-01T03:00" を "2025/10/1 3:00:00" に変換
+            const date = new Date(inputValue);
+            if (isNaN(date.getTime())) return inputValue;
+
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hours = date.getHours();
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            return `${year}/${month}/${day} ${hours}:${minutes}:00`;
+        }
+
+        function saveTime(button, phaseIndex) {
+            const inputContainer = button.parentNode;
+            const inputValue = inputContainer.querySelector('.time-input').value;
+
+            if (!inputValue) {
+                alert('有効な日時を入力してください。');
+                return;
+            }
+
+            const newTime = formatForDisplay(inputValue);
+
+            // スケジュールデータを更新
+            KVK_SCHEDULE[phaseIndex].endTime = newTime;
+
+            // 次のフェーズの開始時間も自動更新
+            if (phaseIndex + 1 < KVK_SCHEDULE.length) {
+                KVK_SCHEDULE[phaseIndex + 1].startTime = newTime;
+            }
+
+            // 編集可能な要素に戻す
+            const newElement = document.createElement('span');
+            newElement.className = 'editable-time';
+            newElement.onclick = () => editTime(newElement, phaseIndex);
+            newElement.title = 'クリックして編集';
+            newElement.textContent = newTime;
+
+            inputContainer.parentNode.replaceChild(newElement, inputContainer);
+
+            // テーブル全体を再描画して関連する変更を反映
+            setTimeout(() => {
+                renderSchedule();
+                updateCurrentPhase();
+                console.log(`⚡ 征服の旅路の終了時間を ${newTime} に更新しました`);
+            }, 100);
+        }
+
+        function cancelEdit(button, originalTime) {
+            const inputContainer = button.parentNode;
+
+            // 元の編集可能な要素に戻す
+            const newElement = document.createElement('span');
+            newElement.className = 'editable-time';
+            newElement.onclick = () => editTime(newElement, 5); // 征服の旅路のインデックス
+            newElement.title = 'クリックして編集';
+            newElement.textContent = originalTime;
+
+            inputContainer.parentNode.replaceChild(newElement, inputContainer);
         }
 
         // 初期化
