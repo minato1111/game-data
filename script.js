@@ -697,49 +697,51 @@ function updateDataDisplay() {
 }
 
 function switchTab(tab) {
-    if (DEBUG_MODE) console.log('=== switchTab called with:', tab, '===');
+    console.log('🔄 switchTab開始:', tab);
 
-    const tabId = `${tab}Tab`;
+    try {
+        const tabId = `${tab}Tab`;
 
-    const allTabBtns = document.querySelectorAll('.tab-btn');
-    if (DEBUG_MODE) console.log('Found tab buttons:', allTabBtns.length);
-    allTabBtns.forEach(btn => {
-        btn.classList.remove('active');
-        btn.setAttribute('aria-selected', 'false');
-    });
+        // 1. すべてのタブボタンを非アクティブ
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
 
-    const clickedBtn = document.querySelector(`.tab-btn[aria-controls="${tabId}"]`);
-    if (DEBUG_MODE) console.log('Found clicked button:', clickedBtn);
-    if (clickedBtn) {
-        clickedBtn.classList.add('active');
-        clickedBtn.setAttribute('aria-selected', 'true');
-        if (DEBUG_MODE) console.log('Button activated:', clickedBtn.textContent);
-    }
+        // 2. クリックされたボタンをアクティブ
+        const clickedBtn = document.querySelector(`.tab-btn[aria-controls="${tabId}"]`);
+        if (clickedBtn) {
+            clickedBtn.classList.add('active');
+            clickedBtn.setAttribute('aria-selected', 'true');
+        }
 
-    const allTabContents = document.querySelectorAll('.tab-content');
-    if (DEBUG_MODE) console.log('Found tab contents:', allTabContents.length);
-    allTabContents.forEach(content => {
-        if (DEBUG_MODE) console.log('Deactivating:', content.id);
-        content.classList.remove('active');
-        content.style.display = 'none';
-        content.setAttribute('aria-hidden', 'true');
-    });
+        // 3. すべてのタブコンテンツを非表示（シンプルに）
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('active');
+        });
 
-    const targetContent = document.getElementById(tabId);
-    if (DEBUG_MODE) console.log('Looking for tab ID:', tabId);
-    if (DEBUG_MODE) console.log('Found target content:', targetContent);
+        // 4. ターゲットタブを表示（強制的に）
+        const targetContent = document.getElementById(tabId);
+        if (!targetContent) {
+            console.error('❌ タブが見つかりません:', tabId);
+            return;
+        }
 
-    if (!targetContent) {
-        if (DEBUG_MODE) console.warn('Tab content not found:', tabId);
-        return;
-    }
+        // 強制表示
+        targetContent.style.display = 'block';
+        targetContent.style.visibility = 'visible';
+        targetContent.style.opacity = '1';
+        targetContent.style.position = 'relative';
+        targetContent.style.zIndex = '1';
+        targetContent.classList.add('active');
 
-    if (DEBUG_MODE) console.log('Activating target content:', targetContent.id);
-    targetContent.classList.add('active');
-    targetContent.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important;';
-    targetContent.setAttribute('aria-hidden', 'false');
-    if (DEBUG_MODE) console.log('Target content display style:', targetContent.style.display);
-    if (DEBUG_MODE) console.log('Target content classes:', targetContent.className);
+        console.log('✅ タブ表示完了:', tabId);
+        console.log('📊 最終スタイル:', {
+            display: targetContent.style.display,
+            visibility: targetContent.style.visibility,
+            opacity: targetContent.style.opacity
+        });
 
     if (tab === 'overall' && allData.length > 0) {
         updateOverallChart();
@@ -801,9 +803,16 @@ function switchTab(tab) {
         } else {
             console.error('testTab要素が見つかりません');
         }
+        }
+
+        console.log('🎯 特別処理完了');
+
+    } catch (error) {
+        console.error('❌ switchTab エラー:', error);
+        console.error('スタックトレース:', error.stack);
     }
 
-    if (DEBUG_MODE) console.log('=== switchTab end ===');
+    console.log('🏁 switchTab終了');
 }
 
 
@@ -3373,3 +3382,67 @@ function filterKvkCalendar() {
     const filterValue = document.getElementById('phaseFilter').value;
     renderKvkCalendar(filterValue);
 }
+
+// =============================================================================
+// デバッグ用: エラー検出とタブ状態確認
+// =============================================================================
+
+// グローバルエラーハンドラー
+window.addEventListener('error', (event) => {
+    console.error('🚨 JavaScript Error:', {
+        message: event.message,
+        filename: event.filename,
+        line: event.lineno,
+        column: event.colno,
+        error: event.error
+    });
+});
+
+// Promise拒否エラーハンドラー
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('🚨 Unhandled Promise Rejection:', event.reason);
+});
+
+// タブ状態確認用デバッグ関数
+function debugTabStates() {
+    console.log('=== タブ状態確認 ===');
+
+    const allTabs = document.querySelectorAll('.tab-content');
+    allTabs.forEach(tab => {
+        const computedStyle = window.getComputedStyle(tab);
+        console.log(`${tab.id}:`, {
+            display: computedStyle.display,
+            visibility: computedStyle.visibility,
+            opacity: computedStyle.opacity,
+            zIndex: computedStyle.zIndex,
+            position: computedStyle.position,
+            width: computedStyle.width,
+            height: computedStyle.height
+        });
+    });
+}
+
+// ページ読み込み完了後にデバッグ関数を実行
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🟢 DOM読み込み完了');
+
+    setTimeout(() => {
+        console.log('🔍 5秒後のタブ状態確認');
+        debugTabStates();
+    }, 5000);
+});
+
+// タブクリック時のデバッグ
+document.addEventListener('click', (event) => {
+    if (event.target.classList.contains('tab-btn')) {
+        const tabName = event.target.textContent;
+        console.log(`🖱️ タブクリック: ${tabName}`);
+
+        setTimeout(() => {
+            console.log('📊 クリック後のタブ状態:');
+            debugTabStates();
+        }, 100);
+    }
+});
+
+console.log('🟢 script.js 読み込み完了');
