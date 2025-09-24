@@ -721,8 +721,7 @@ function switchTab(tab) {
     allTabContents.forEach(content => {
         if (DEBUG_MODE) console.log('Deactivating:', content.id);
         content.classList.remove('active');
-        // 強制的に他のタブを非表示
-        content.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important;';
+        content.style.display = 'none';
         content.setAttribute('aria-hidden', 'true');
     });
 
@@ -737,7 +736,7 @@ function switchTab(tab) {
 
     if (DEBUG_MODE) console.log('Activating target content:', targetContent.id);
     targetContent.classList.add('active');
-    targetContent.style.display = 'block';
+    targetContent.style.cssText = 'display: block !important; visibility: visible !important; opacity: 1 !important;';
     targetContent.setAttribute('aria-hidden', 'false');
     if (DEBUG_MODE) console.log('Target content display style:', targetContent.style.display);
     if (DEBUG_MODE) console.log('Target content classes:', targetContent.className);
