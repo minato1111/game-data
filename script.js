@@ -3039,9 +3039,30 @@ const KVK_SCHEDULE = [
 function initKvkCalendar() {
     if (DEBUG_MODE) console.log('=== KVKカレンダー初期化開始 ===');
 
+    // DOM要素の存在確認
+    const calendarBody = document.getElementById('kvkCalendarBody');
+    const currentPhase = document.getElementById('currentPhase');
+    const countdown = document.getElementById('countdown');
+    const nextPhase = document.getElementById('nextPhase');
+
+    if (DEBUG_MODE) {
+        console.log('DOM要素チェック:');
+        console.log('- kvkCalendarBody:', calendarBody ? '存在' : '見つからない');
+        console.log('- currentPhase:', currentPhase ? '存在' : '見つからない');
+        console.log('- countdown:', countdown ? '存在' : '見つからない');
+        console.log('- nextPhase:', nextPhase ? '存在' : '見つからない');
+    }
+
+    if (!calendarBody) {
+        console.error('KVKカレンダーのDOM要素が見つかりません');
+        return;
+    }
+
     renderKvkCalendar();
     updateCurrentPhase();
     startCountdown();
+
+    if (DEBUG_MODE) console.log('=== KVKカレンダー初期化完了 ===');
 }
 
 // KVKカレンダーテーブルを描画
