@@ -128,16 +128,25 @@
             homeContent.style.display = 'block';
         }
 
-        // 簡易統計を読み込み
+        // 簡易統計を読み込み（エラーハンドリング強化）
         function loadQuickStats() {
+            // ホーム画面では統計表示要素がないため、エラーを回避
+            const totalElement = document.getElementById('totalRecordsHome');
+            const updateElement = document.getElementById('lastUpdateHome');
+
+            if (!totalElement || !updateElement) {
+                // 統計表示要素がない場合はスキップ
+                return;
+            }
+
             fetch('Master_Data.csv')
                 .then(response => response.text())
                 .then(csvText => {
                     const lines = csvText.split('\n').filter(line => line.trim());
-                    document.getElementById('totalRecordsHome').textContent = (lines.length - 1).toLocaleString() + '件';
-                    
+                    totalElement.textContent = (lines.length - 1).toLocaleString() + '件';
+
                     const now = new Date();
-                    document.getElementById('lastUpdateHome').textContent = now.toLocaleDateString('ja-JP');
+                    updateElement.textContent = now.toLocaleDateString('ja-JP');
                 })
                 .catch(error => {
                     console.log('統計データの読み込みに失敗しました:', error);
