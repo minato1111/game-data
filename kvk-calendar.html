@@ -800,13 +800,42 @@
             }
 
             const newTime = formatForDisplay(inputValue);
+            const originalEndTime = KVK_SCHEDULE[phaseIndex].endTime;
 
-            // スケジュールデータを更新
+            // 時間差を計算
+            const originalDate = new Date(originalEndTime);
+            const newDate = new Date(newTime);
+            const timeDiff = newDate - originalDate;
+
+            console.log(`🕒 時間変更: ${originalEndTime} → ${newTime} (差分: ${timeDiff}ms)`);
+
+            // 征服の旅路の終了時間を更新
             KVK_SCHEDULE[phaseIndex].endTime = newTime;
 
-            // 次のフェーズの開始時間も自動更新
-            if (phaseIndex + 1 < KVK_SCHEDULE.length) {
-                KVK_SCHEDULE[phaseIndex + 1].startTime = newTime;
+            // 以降の全フェーズの開始時間と終了時間を時間差分だけ調整
+            for (let i = phaseIndex + 1; i < KVK_SCHEDULE.length; i++) {
+                const currentStartDate = new Date(KVK_SCHEDULE[i].startTime);
+                const currentEndDate = new Date(KVK_SCHEDULE[i].endTime);
+
+                const newStartDate = new Date(currentStartDate.getTime() + timeDiff);
+                const newEndDate = new Date(currentEndDate.getTime() + timeDiff);
+
+                // 日時を適切にフォーマット
+                const startYear = newStartDate.getFullYear();
+                const startMonth = newStartDate.getMonth() + 1;
+                const startDay = newStartDate.getDate();
+                const startHours = newStartDate.getHours();
+                const startMinutes = String(newStartDate.getMinutes()).padStart(2, '0');
+                KVK_SCHEDULE[i].startTime = `${startYear}/${startMonth}/${startDay} ${startHours}:${startMinutes}:00`;
+
+                const endYear = newEndDate.getFullYear();
+                const endMonth = newEndDate.getMonth() + 1;
+                const endDay = newEndDate.getDate();
+                const endHours = newEndDate.getHours();
+                const endMinutes = String(newEndDate.getMinutes()).padStart(2, '0');
+                KVK_SCHEDULE[i].endTime = `${endYear}/${endMonth}/${endDay} ${endHours}:${endMinutes}:00`;
+
+                console.log(`📅 更新: フェーズ${i+1} ${KVK_SCHEDULE[i].phase} ${KVK_SCHEDULE[i].startTime} - ${KVK_SCHEDULE[i].endTime}`);
             }
 
             // 編集可能な要素に戻す
@@ -822,7 +851,7 @@
             setTimeout(() => {
                 renderSchedule();
                 updateCurrentPhase();
-                console.log(`⚡ 征服の旅路の終了時間を ${newTime} に更新しました`);
+                console.log(`⚡ 征服の旅路の終了時間を ${newTime} に更新し、全${KVK_SCHEDULE.length - phaseIndex - 1}個のフェーズを調整しました`);
             }, 100);
         }
 
