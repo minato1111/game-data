@@ -2,7 +2,7 @@
 // 設定値（最適化済み）
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = false; // 本番環境では false、開発時は true
+const DEBUG_MODE = true; // 本番環境では false、開発時は true（デバッグ中）
 
 // パフォーマンス設定
 const PERFORMANCE_CONFIG = {
@@ -331,7 +331,7 @@ async function loadCSVData() {
             throw new Error(`CSVファイルが見つかりません: ${CSV_FILE_PATH} (Status: ${response.status})`);
         }
 
-        const csvText = await response.text();
+        let csvText = await response.text();
 
         // CSVテキストの基本チェック
         if (!csvText || typeof csvText !== 'string') {
@@ -342,11 +342,25 @@ async function loadCSVData() {
             throw new Error('CSVファイルのサイズが小さすぎます');
         }
 
-        if (DEBUG_MODE) console.log('CSVテキスト前半100文字:', csvText.substring(0, 100));
+        if (DEBUG_MODE) {
+            console.log('CSVテキスト前半100文字:', csvText.substring(0, 100));
+            console.log('CSVファイルサイズ:', csvText.length);
+            console.log('先頭文字の文字コード:', csvText.substring(0, 10).split('').map(c => c.charCodeAt(0)));
+            // BOM検出と除去
+            const hasBOM = csvText.charCodeAt(0) === 0xFEFF;
+            console.log('BOM検出:', hasBOM);
+            if (hasBOM) {
+                console.log('BOMを除去しました');
+                csvText = csvText.substring(1);
+                console.log('BOM除去後のサイズ:', csvText.length);
+            }
+        }
 
-        // PapaParseでCSVを解析（シンプル版）
+        // PapaParseでCSVを解析（デバッグ詳細版）
         let parsed;
         try {
+            if (DEBUG_MODE) console.log('=== PapaParse実行開始 ===');
+
             parsed = Papa.parse(csvText, {
                 header: true,
                 dynamicTyping: true,
@@ -354,6 +368,26 @@ async function loadCSVData() {
                 delimiter: "", // 自動検出
                 fastMode: false
             });
+
+            if (DEBUG_MODE) {
+                console.log('=== PapaParse実行完了 ===');
+                console.log('Papa.parse直後のparsed:', parsed);
+                console.log('parsed変数の状態:', {
+                    'parsed !== undefined': parsed !== undefined,
+                    'parsed !== null': parsed !== null,
+                    'typeof parsed': typeof parsed,
+                    'Object.keys(parsed)': parsed ? Object.keys(parsed) : 'N/A',
+                    'parsed.constructor': parsed ? parsed.constructor.name : 'N/A'
+                });
+
+                // parsed内のプロパティを詳細チェック
+                if (parsed && typeof parsed === 'object') {
+                    console.log('parsed詳細プロパティ:');
+                    for (const [key, value] of Object.entries(parsed)) {
+                        console.log(`  ${key}:`, typeof value, Array.isArray(value) ? `[配列:${value.length}要素]` : value);
+                    }
+                }
+            }
 
             if (DEBUG_MODE) {
                 console.log('PapaParse戻り値の型:', typeof parsed);
@@ -385,13 +419,34 @@ async function loadCSVData() {
             }
         }
 
-        // parsed結果の詳細チェック
+        // parsed結果の詳細チェック（デバッグ強化版）
+        if (DEBUG_MODE) {
+            console.log('=== parsed結果チェック開始 ===');
+            console.log('parsed:', parsed);
+            console.log('parsed === null:', parsed === null);
+            console.log('parsed === undefined:', parsed === undefined);
+            console.log('typeof parsed:', typeof parsed);
+        }
+
         if (!parsed) {
-            throw new Error('CSV解析結果がnullまたはundefinedです');
+            const errorMsg = `CSV解析結果がnullまたはundefinedです (parsed: ${parsed})`;
+            if (DEBUG_MODE) console.error(errorMsg);
+            throw new Error(errorMsg);
         }
 
         if (typeof parsed !== 'object') {
-            throw new Error(`CSV解析結果が無効です - 型: ${typeof parsed}, 値: ${String(parsed)}`);
+            const errorMsg = `CSV解析結果が無効です - 型: ${typeof parsed}, 値: ${String(parsed).substring(0, 200)}`;
+            if (DEBUG_MODE) {
+                console.error(errorMsg);
+                console.log('parsed完全な内容:', parsed);
+                console.log('parsedのJSON形式:', JSON.stringify(parsed, null, 2));
+            }
+            throw new Error('CSV解析結果が無効です');
+        }
+
+        if (DEBUG_MODE) {
+            console.log('parsed.data:', parsed.data);
+            console.log('Array.isArray(parsed.data):', Array.isArray(parsed.data));
         }
 
         if (!parsed.data || !Array.isArray(parsed.data)) {
