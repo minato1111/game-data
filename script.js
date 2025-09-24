@@ -758,11 +758,14 @@ function switchTab(tab) {
             calendarTabElement.style.opacity = '1';
 
             console.log('カレンダータブ表示完了');
+
+            // KVKカレンダーを初期化
+            initKvkCalendar();
         } else {
             console.error('calendarTab要素が見つかりません');
         }
-
-        // initKvkCalendar(); // 一時的にコメントアウト
+    } else if (tab === 'kvk') {
+        console.log('⚔️ KVKノルマタブが選択されました');
     } else if (tab === 'test') {
         console.log('🔴 テストタブが選択されました');
         alert('🔴 テストタブが動作しています！これが表示されればJavaScriptは正常です。');
