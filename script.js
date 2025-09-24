@@ -745,6 +745,8 @@ function switchTab(tab) {
         updateOverallChart();
     } else if (tab === 'growth') {
         initGrowthTab();
+    } else if (tab === 'calendar') {
+        initKvkCalendar();
     }
 
     if (DEBUG_MODE) console.log('=== switchTab end ===');
@@ -2631,4 +2633,551 @@ function createKvkDeathChart(chartData) {
 function navigateToHome() {
     // 認証状態は維持したままホーム画面に戻る
     window.location.href = 'home.html';
+}
+
+// =============================================================================
+// KVK カレンダー機能
+// =============================================================================
+
+// KVKスケジュールデータ
+const KVK_SCHEDULE = [
+    // Pre-KvK
+    {
+        zone: 'Home Kingdom',
+        phase: 'KvK ストーリーの選択期間',
+        duration: '72:00:00',
+        startTime: '0:00:01',
+        endTime: '2025/9/18 0:00:00',
+        description: 'ストーリーモードを選択する期間',
+        category: 'pre-kvk'
+    },
+    {
+        zone: '',
+        phase: 'マッチメイキング期間',
+        duration: '168:00:00',
+        startTime: '2025/9/18 0:00:00',
+        endTime: '2025/9/25 0:00:00',
+        description: '他の王国とのマッチングが始まります。\n※このタイミングで移民制限が掛かります【！移民受入注意！】\n※アップデやイベで告知がズレるとマッチメイキング時間が変わるときがあります！\n※終了時間-1日にマッチング結果がわかります',
+        category: 'pre-kvk'
+    },
+    {
+        zone: '',
+        phase: '前夜祭第１段階 "略奪者"',
+        duration: '48:00:00',
+        startTime: '2025/9/25 0:00:00',
+        endTime: '2025/9/27 0:00:00',
+        description: '略奪者を狩ってアイテムを箱と交換しましょう。',
+        category: 'pre-kvk'
+    },
+    {
+        zone: '',
+        phase: '前夜祭第２段階　"訓練"',
+        duration: '48:00:00',
+        startTime: '2025/9/27 0:00:00',
+        endTime: '2025/9/29 0:00:00',
+        description: '部隊訓練フェーズ',
+        category: 'pre-kvk'
+    },
+    {
+        zone: '',
+        phase: '前夜祭第３段階　"集落"',
+        duration: '48:00:00',
+        startTime: '2025/9/29 0:00:00',
+        endTime: '2025/10/1 0:00:00',
+        description: '略奪者集落を狩ってアイテムを手にれられます。',
+        category: 'pre-kvk'
+    },
+    // Zone 4
+    {
+        zone: 'Zone 4',
+        phase: '征服の旅路',
+        duration: '3:00:00',
+        startTime: '2025/10/1 0:00:00',
+        endTime: '2025/10/1 3:00:00',
+        description: '同盟要塞を30個建設\n最大24時間 目標が達成されると、ステージは終了します\n※ここで今後の関所開放の時間等をアクティブタイムに調整\n※よくわかんねーよって人は薄水色の部分を終了時間で直接編集してください\n★カルラック(簡単) 解放',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '目には目を',
+        duration: '12:00:00',
+        startTime: '2025/10/1 3:00:00',
+        endTime: '2025/10/1 15:00:00',
+        description: '(遠征軍拠点の活性化までの待機時間)',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/1 15:00:00',
+        endTime: '2025/10/3 3:00:00',
+        description: '所属軍団が遠征軍拠点を1箇所占領',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '領地争い',
+        duration: '12:00:00',
+        startTime: '2025/10/3 3:00:00',
+        endTime: '2025/10/3 15:00:00',
+        description: '(要塞の砦活性化までの待機時間)',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/3 15:00:00',
+        endTime: '2025/10/5 3:00:00',
+        description: '所属同盟が味方陣営の陣営要塞占領 (過去の栄光の打ち上げ)\n(軍団枠+1)',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '懲罰',
+        duration: '12:00:00',
+        startTime: '2025/10/5 3:00:00',
+        endTime: '2025/10/5 15:00:00',
+        description: '(太古の活性化までの待機時間)',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '12:00:00',
+        startTime: '2025/10/5 15:00:00',
+        endTime: '2025/10/6 3:00:00',
+        description: '太古の遺跡の殺戮者部隊を3体撃破',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '復讐',
+        duration: '48:00:00',
+        startTime: '2025/10/6 3:00:00',
+        endTime: '2025/10/8 3:00:00',
+        description: '所属同盟が野蛮人の集落Lv.11以上を100回撃破\n(軍団枠+1)',
+        category: 'zone4'
+    },
+    {
+        zone: '',
+        phase: '協力',
+        duration: '24:00:00',
+        startTime: '2025/10/8 3:00:00',
+        endTime: '2025/10/9 3:00:00',
+        description: 'エピック指揮官が依頼したミッションを10回クリアする\n(軍団枠+1)',
+        category: 'zone4'
+    },
+    // Zone 5
+    {
+        zone: 'Zone 5',
+        phase: '嵐の前の静けさ',
+        duration: '12:00:00',
+        startTime: '2025/10/9 3:00:00',
+        endTime: '2025/10/9 15:00:00',
+        description: '(関所Lv.4の開放待機時間 半開放)　(町を略奪)',
+        category: 'zone5'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/9 15:00:00',
+        endTime: '2025/10/11 3:00:00',
+        description: '所属軍団が関所Lv.4を箇所占領 ※赤四角開戦時間',
+        category: 'zone5'
+    },
+    {
+        zone: '',
+        phase: '攻城',
+        duration: '12:00:00',
+        startTime: '2025/10/11 3:00:00',
+        endTime: '2025/10/11 15:00:00',
+        description: '(要塞の遺跡開放待機時間)',
+        category: 'zone5'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/11 15:00:00',
+        endTime: '2025/10/13 3:00:00',
+        description: '所属軍団が要塞を1箇所占領',
+        category: 'zone5'
+    },
+    {
+        zone: '',
+        phase: '衝突',
+        duration: '48:00:00',
+        startTime: '2025/10/13 3:00:00',
+        endTime: '2025/10/15 3:00:00',
+        description: '所属軍団が野蛮人集落Lv.12以上を100回撃破  \n★カルラック(普通) 解放',
+        category: 'zone5'
+    },
+    // Zone 6
+    {
+        zone: 'Zone 6',
+        phase: '前進',
+        duration: '12:00:00',
+        startTime: '2025/10/15 3:00:00',
+        endTime: '2025/10/15 15:00:00',
+        description: '(関所Lv.5の開放待機時間 半開放)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/15 15:00:00',
+        endTime: '2025/10/17 3:00:00',
+        description: '所属軍団が関所Lv.5を箇所占領　※戦争無し',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '入場券',
+        duration: '12:00:00',
+        startTime: '2025/10/17 3:00:00',
+        endTime: '2025/10/17 15:00:00',
+        description: '(関所Lv.6の開放待機時間 半開放)\n(兵法カード追加)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/17 15:00:00',
+        endTime: '2025/10/19 3:00:00',
+        description: '所属軍団が関所Lv.6を箇所占領　※赤四角暗黒開戦時間',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '生贄は誰だ',
+        duration: '12:00:00',
+        startTime: '2025/10/19 3:00:00',
+        endTime: '2025/10/19 15:00:00',
+        description: '(暗黒の祭壇活性化までの待機時間)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/19 15:00:00',
+        endTime: '2025/10/21 3:00:00',
+        description: '暗黒の祭壇の殺戮者部隊を3体撃破　※赤四角開戦時間',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '究極の一',
+        duration: '12:00:00',
+        startTime: '2025/10/21 3:00:00',
+        endTime: '2025/10/21 15:00:00',
+        description: '(修道院(レベル7聖地)活性化までの待機時間)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/21 15:00:00',
+        endTime: '2025/10/23 3:00:00',
+        description: '所属軍団が修道院(レベル7聖地)を1箇所占領',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '一気呵成',
+        duration: '48:00:00',
+        startTime: '2025/10/23 3:00:00',
+        endTime: '2025/10/25 3:00:00',
+        description: '所属軍団が野蛮人集落Lv.13以上を100回撃破',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '戦友と共に',
+        duration: '48:00:00',
+        startTime: '2025/10/25 3:00:00',
+        endTime: '2025/10/27 3:00:00',
+        description: 'レジェンド指揮官が依頼したミッションを10回クリアする\n(軍団枠+1)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '一触即発',
+        duration: '48:00:00',
+        startTime: '2025/10/27 3:00:00',
+        endTime: '2025/10/29 3:00:00',
+        description: '所属軍団が野蛮人集落Lv.14以上を100回撃破 (兵法カード追加)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: 'やるかやられるか',
+        duration: '12:00:00',
+        startTime: '2025/10/29 3:00:00',
+        endTime: '2025/10/29 15:00:00',
+        description: '(関所Lv.7の開放待機時間 半開放)',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/10/29 15:00:00',
+        endTime: '2025/10/31 3:00:00',
+        description: '所属軍団が関所Lv.7を1箇所占領　※赤四角開戦時間',
+        category: 'zone6'
+    },
+    {
+        zone: '',
+        phase: '羊と狼',
+        duration: '24:00:00',
+        startTime: '2025/10/31 3:00:00',
+        endTime: '2025/11/1 3:00:00',
+        description: '他陣営の戦闘部隊を1,000,000人重傷または撃破',
+        category: 'zone6'
+    },
+    // Kingsland
+    {
+        zone: 'Kingsland',
+        phase: 'バアルの恵み',
+        duration: '12:00:00',
+        startTime: '2025/11/1 3:00:00',
+        endTime: '2025/11/1 15:00:00',
+        description: '(関所Lv.8の開放待機時間 半開放)',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/11/1 15:00:00',
+        endTime: '2025/11/3 3:00:00',
+        description: '所属軍団が関所Lv.8を箇所占領　※赤四角開戦時間',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '羊と狼',
+        duration: '24:00:00',
+        startTime: '2025/11/3 3:00:00',
+        endTime: '2025/11/4 3:00:00',
+        description: '他陣営の戦闘部隊を2,000,000人重傷または撃破\n★カルラック(ハード) 解放',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '聖域の名',
+        duration: '12:00:00',
+        startTime: '2025/11/4 3:00:00',
+        endTime: '2025/11/4 15:00:00',
+        description: '(聖城活性化までの待機時間)　',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '60:00:00',
+        startTime: '2025/11/4 15:00:00',
+        endTime: '2025/11/7 3:00:00',
+        description: '所属軍団が聖城を占領',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '連戦連勝',
+        duration: '48:00:00',
+        startTime: '2025/11/7 3:00:00',
+        endTime: '2025/11/9 3:00:00',
+        description: '所属軍団が野蛮人集落Lv.15以上を100回撃破\n★カルラック(ナイトメア) 解放',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '終焉の門',
+        duration: '12:00:00',
+        startTime: '2025/11/9 3:00:00',
+        endTime: '2025/11/9 15:00:00',
+        description: '(関所Lv.9の開放待機時間 完全開放)',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '',
+        duration: '36:00:00',
+        startTime: '2025/11/9 15:00:00',
+        endTime: '2025/11/11 3:00:00',
+        description: '所属軍団が関所Lv.9を1箇所占領　',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '究極の一',
+        duration: '96:00:00',
+        startTime: '2025/11/11 3:00:00',
+        endTime: '2025/11/15 3:00:00',
+        description: '所属陣営が他の陣営の修道院を6箇所占領　★カルラック(地獄) 解放',
+        category: 'kingsland'
+    },
+    {
+        zone: '',
+        phase: '前進の道',
+        duration: '96:00:00',
+        startTime: '2025/11/15 3:00:00',
+        endTime: '2025/11/19 3:00:00',
+        description: '所属軍団が要塞を6箇所占領',
+        category: 'kingsland'
+    }
+];
+
+// KVKカレンダーを初期化
+function initKvkCalendar() {
+    if (DEBUG_MODE) console.log('=== KVKカレンダー初期化開始 ===');
+
+    renderKvkCalendar();
+    updateCurrentPhase();
+    startCountdown();
+}
+
+// KVKカレンダーテーブルを描画
+function renderKvkCalendar(filter = 'all') {
+    const tbody = document.getElementById('kvkCalendarBody');
+    if (!tbody) return;
+
+    // フィルタリング
+    const filteredSchedule = filter === 'all'
+        ? KVK_SCHEDULE
+        : KVK_SCHEDULE.filter(item => item.category === filter);
+
+    tbody.innerHTML = '';
+
+    filteredSchedule.forEach((item, index) => {
+        const row = document.createElement('tr');
+
+        // 現在進行中のフェーズをハイライト
+        const isCurrentPhase = isCurrentActivePhase(item);
+        if (isCurrentPhase) {
+            row.style.backgroundColor = '#fff3cd';
+            row.style.borderLeft = '5px solid #f39c12';
+        }
+
+        row.innerHTML = `
+            <td style="font-weight: ${item.zone ? 'bold' : 'normal'}; color: ${item.zone ? '#2c3e50' : '#7f8c8d'};">
+                ${item.zone || ''}
+            </td>
+            <td style="font-weight: ${item.phase ? '600' : 'normal'};">
+                ${item.phase || ''}
+            </td>
+            <td style="text-align: center; font-family: monospace;">
+                ${item.duration}
+            </td>
+            <td style="text-align: center; font-family: monospace; color: #27ae60;">
+                ${item.startTime}
+            </td>
+            <td style="text-align: center; font-family: monospace; color: #e74c3c;">
+                ${item.endTime}
+            </td>
+            <td style="line-height: 1.5; white-space: pre-line;">
+                ${item.description}
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+
+    if (DEBUG_MODE) console.log(`カレンダー描画完了: ${filteredSchedule.length}件`);
+}
+
+// 現在のフェーズかどうかチェック
+function isCurrentActivePhase(phase) {
+    const now = new Date();
+    const startDate = parseKvkDate(phase.startTime);
+    const endDate = parseKvkDate(phase.endTime);
+
+    return startDate && endDate && now >= startDate && now <= endDate;
+}
+
+// KVK日付文字列を解析
+function parseKvkDate(dateStr) {
+    try {
+        // "2025/10/1 3:00:00" 形式を標準形式に変換
+        const cleanStr = dateStr.replace(/\//g, '/').trim();
+        return new Date(cleanStr);
+    } catch (error) {
+        if (DEBUG_MODE) console.warn('日付解析エラー:', dateStr, error);
+        return null;
+    }
+}
+
+// 現在のフェーズを更新
+function updateCurrentPhase() {
+    const currentPhaseElement = document.getElementById('currentPhase');
+    if (!currentPhaseElement) return;
+
+    const currentPhase = KVK_SCHEDULE.find(phase => isCurrentActivePhase(phase));
+
+    if (currentPhase) {
+        const zoneName = currentPhase.zone || '継続中';
+        const phaseName = currentPhase.phase || '待機期間';
+        currentPhaseElement.textContent = `${zoneName} - ${phaseName}`;
+    } else {
+        currentPhaseElement.textContent = '現在アクティブなフェーズはありません';
+    }
+}
+
+// カウントダウンを開始
+function startCountdown() {
+    const countdownElement = document.getElementById('countdown');
+    const nextPhaseElement = document.getElementById('nextPhase');
+
+    if (!countdownElement || !nextPhaseElement) return;
+
+    function updateCountdown() {
+        const now = new Date();
+        const nextPhase = KVK_SCHEDULE.find(phase => {
+            const startDate = parseKvkDate(phase.startTime);
+            return startDate && startDate > now;
+        });
+
+        if (nextPhase) {
+            const startDate = parseKvkDate(nextPhase.startTime);
+            const timeDiff = startDate - now;
+
+            if (timeDiff > 0) {
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                countdownElement.textContent = `${days}日 ${hours}時間 ${minutes}分 ${seconds}秒`;
+
+                const zoneName = nextPhase.zone || '継続';
+                const phaseName = nextPhase.phase || '次のフェーズ';
+                nextPhaseElement.textContent = `次: ${zoneName} - ${phaseName}`;
+            } else {
+                countdownElement.textContent = '開始まで僅か';
+                nextPhaseElement.textContent = '次のフェーズが間もなく開始されます';
+            }
+        } else {
+            countdownElement.textContent = 'KVK終了';
+            nextPhaseElement.textContent = 'すべてのフェーズが完了しています';
+        }
+    }
+
+    // 初回実行
+    updateCountdown();
+
+    // 1秒ごとに更新
+    setInterval(updateCountdown, 1000);
+}
+
+// フィルター機能
+function filterKvkCalendar() {
+    const filterValue = document.getElementById('phaseFilter').value;
+    renderKvkCalendar(filterValue);
 }

@@ -44,6 +44,7 @@
             <button class="tab-btn" onclick="switchTab('overall')" role="tab" aria-controls="overallTab" aria-selected="false">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
             <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
+            <button class="tab-btn" onclick="switchTab('calendar')" role="tab" aria-controls="calendarTab" aria-selected="false">KVKカレンダー</button>
         </nav>
 
         <!-- データ一覧タブ -->
@@ -637,6 +638,68 @@
 
     </div>
 </div>
+
+    <!-- KVKカレンダータブ -->
+    <div id="calendarTab" class="tab-content">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 10px; font-weight: 700;">
+                📅 KVK カレンダー
+            </h2>
+            <p style="color: #7f8c8d; font-size: 16px;">KVKスケジュールとタイムライン</p>
+        </div>
+
+        <!-- カレンダーフィルター -->
+        <div class="filter-section">
+            <div class="date-filter">
+                <label style="font-weight: 600;">フェーズ選択:</label>
+                <select id="phaseFilter" style="padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin: 0 10px;">
+                    <option value="all">すべて表示</option>
+                    <option value="pre-kvk">Pre-KvK</option>
+                    <option value="zone4">Zone 4</option>
+                    <option value="zone5">Zone 5</option>
+                    <option value="zone6">Zone 6</option>
+                    <option value="kingsland">Kingsland</option>
+                </select>
+                <button onclick="filterKvkCalendar()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer;">フィルター</button>
+            </div>
+        </div>
+
+        <!-- カレンダーテーブル -->
+        <div class="table-container">
+            <table id="kvkCalendarTable">
+                <thead>
+                    <tr>
+                        <th>ゾーン</th>
+                        <th>編年史</th>
+                        <th>時間</th>
+                        <th>開始時間</th>
+                        <th>終了時間</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody id="kvkCalendarBody">
+                    <!-- カレンダーデータはJavaScriptで生成 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 現在のフェーズ表示 -->
+        <div style="margin-top: 30px; text-align: center;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; max-width: 600px; margin: 0 auto;">
+                <h3 style="margin-bottom: 10px;">🔥 現在のフェーズ</h3>
+                <p id="currentPhase" style="font-size: 18px; margin: 0;">読み込み中...</p>
+            </div>
+        </div>
+
+        <!-- 次のフェーズまでのカウントダウン -->
+        <div style="margin-top: 20px; text-align: center;">
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; max-width: 600px; margin: 0 auto; border: 2px solid #e0e0e0;">
+                <h3 style="color: #2c3e50; margin-bottom: 10px;">⏰ 次のフェーズまで</h3>
+                <div id="countdown" style="font-size: 24px; font-weight: bold; color: #e74c3c;">計算中...</div>
+                <p id="nextPhase" style="color: #7f8c8d; margin: 10px 0 0 0; font-size: 14px;">-</p>
+            </div>
+        </div>
+    </div>
 
 </div>
 
