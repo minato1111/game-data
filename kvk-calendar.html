@@ -116,10 +116,9 @@
 
         .category-pre-kvk { border-left: 4px solid #9b59b6; }
         .category-zone4 { border-left: 4px solid #e74c3c; }
-        .category-zone3 { border-left: 4px solid #f39c12; }
-        .category-zone2 { border-left: 4px solid #f1c40f; }
-        .category-zone1 { border-left: 4px solid #2ecc71; }
-        .category-final { border-left: 4px solid #34495e; }
+        .category-zone5 { border-left: 4px solid #f39c12; }
+        .category-zone6 { border-left: 4px solid #f1c40f; }
+        .category-kingsland { border-left: 4px solid #2ecc71; }
     </style>
 </head>
 <body>
@@ -143,10 +142,9 @@
                 <button class="filter-btn active" onclick="filterByCategory('all')">すべて</button>
                 <button class="filter-btn" onclick="filterByCategory('pre-kvk')">Pre-KvK</button>
                 <button class="filter-btn" onclick="filterByCategory('zone4')">Zone 4</button>
-                <button class="filter-btn" onclick="filterByCategory('zone3')">Zone 3</button>
-                <button class="filter-btn" onclick="filterByCategory('zone2')">Zone 2</button>
-                <button class="filter-btn" onclick="filterByCategory('zone1')">Zone 1</button>
-                <button class="filter-btn" onclick="filterByCategory('final')">Final Zone</button>
+                <button class="filter-btn" onclick="filterByCategory('zone5')">Zone 5</button>
+                <button class="filter-btn" onclick="filterByCategory('zone6')">Zone 6</button>
+                <button class="filter-btn" onclick="filterByCategory('kingsland')">Kingsland</button>
             </div>
         </div>
 
@@ -183,7 +181,7 @@
                 phase: 'KvK ストーリーの選択期間',
                 duration: '72:00:00',
                 startTime: '0:00:01',
-                endTime: '2025/9/18 0:00:00',
+                endTime: '2025/09/15 2025/9/18 0:00:00',
                 description: 'ストーリーモードを選択する期間',
                 category: 'pre-kvk'
             },
@@ -227,348 +225,347 @@
             {
                 zone: 'Zone 4',
                 phase: '征服の旅路',
-                duration: '24:00:00',
+                duration: '3:00:00',
                 startTime: '2025/10/1 0:00:00',
-                endTime: '2025/10/2 0:00:00',
-                description: 'KvK開始！他王国へテレポートします。',
+                endTime: '2025/10/1 3:00:00',
+                description: '同盟要塞を30個建設\n最大24時間 目標が達成されると、ステージは終了します\n※ここで今後の関所開放の時間等をアクティブタイムに調整\n※よくわかんねーよって人は薄水色の部分を終了時間で直接編集してください\n★カルラック(簡単) 解放',
                 category: 'zone4'
             },
             {
                 zone: 'Zone 4',
                 phase: '目には目を',
-                duration: '24:00:00',
-                startTime: '2025/10/2 0:00:00',
-                endTime: '2025/10/3 0:00:00',
-                description: 'Zone4での戦闘開始',
+                duration: '12:00:00',
+                startTime: '2025/10/1 3:00:00',
+                endTime: '2025/10/1 15:00:00',
+                description: '(遠征軍拠点の活性化までの待機時間)',
                 category: 'zone4'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/3 0:00:00',
-                endTime: '2025/10/4 0:00:00',
-                description: '休憩期間',
+                zone: 'Zone 4',
+                phase: '目には目を',
+                duration: '36:00:00',
+                startTime: '2025/10/1 15:00:00',
+                endTime: '2025/10/3 3:00:00',
+                description: '所属軍団が遠征軍拠点を1箇所占領',
                 category: 'zone4'
             },
             {
                 zone: 'Zone 4',
                 phase: '領地争い',
-                duration: '24:00:00',
-                startTime: '2025/10/4 0:00:00',
-                endTime: '2025/10/5 0:00:00',
-                description: 'Zone4領地争い',
+                duration: '12:00:00',
+                startTime: '2025/10/3 3:00:00',
+                endTime: '2025/10/3 15:00:00',
+                description: '(要塞の砦活性化までの待機時間)',
                 category: 'zone4'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/5 0:00:00',
-                endTime: '2025/10/6 0:00:00',
-                description: '休憩期間',
+                zone: 'Zone 4',
+                phase: '領地争い',
+                duration: '36:00:00',
+                startTime: '2025/10/3 15:00:00',
+                endTime: '2025/10/5 3:00:00',
+                description: '所属同盟が味方陣営の陣営要塞占領 (過去の栄光の打ち上げ)\n(軍団枠+1)',
                 category: 'zone4'
             },
             {
                 zone: 'Zone 4',
                 phase: '懲罰',
-                duration: '24:00:00',
-                startTime: '2025/10/6 0:00:00',
-                endTime: '2025/10/7 0:00:00',
-                description: 'Zone4懲罰フェーズ',
+                duration: '12:00:00',
+                startTime: '2025/10/5 3:00:00',
+                endTime: '2025/10/5 15:00:00',
+                description: '(太古の活性化までの待機時間)',
                 category: 'zone4'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/7 0:00:00',
-                endTime: '2025/10/8 0:00:00',
-                description: '休憩期間',
+                zone: 'Zone 4',
+                phase: '懲罰',
+                duration: '12:00:00',
+                startTime: '2025/10/5 15:00:00',
+                endTime: '2025/10/6 3:00:00',
+                description: '太古の遺跡の殺戮者部隊を3体撃破',
                 category: 'zone4'
             },
             {
                 zone: 'Zone 4',
                 phase: '復讐',
-                duration: '24:00:00',
-                startTime: '2025/10/8 0:00:00',
-                endTime: '2025/10/9 0:00:00',
-                description: 'Zone4復讐フェーズ',
+                duration: '48:00:00',
+                startTime: '2025/10/6 3:00:00',
+                endTime: '2025/10/8 3:00:00',
+                description: '所属同盟が野蛮人の集落Lv.11以上を100回撃破\n(軍団枠+1)',
                 category: 'zone4'
             },
             {
                 zone: 'Zone 4',
                 phase: '協力',
                 duration: '24:00:00',
-                startTime: '2025/10/9 0:00:00',
-                endTime: '2025/10/10 0:00:00',
-                description: 'Zone4協力フェーズ',
+                startTime: '2025/10/08 3:00:00',
+                endTime: '10/9/2025 3:00:00',
+                description: 'エピック指揮官が依頼したミッションを10回クリアする\n(軍団枠+1)',
                 category: 'zone4'
             },
+            // Zone 5
             {
-                zone: 'Zone 4',
+                zone: 'Zone 5',
                 phase: '嵐の前の静けさ',
-                duration: '24:00:00',
-                startTime: '2025/10/10 0:00:00',
-                endTime: '2025/10/11 0:00:00',
-                description: 'Zone4最終準備期間',
-                category: 'zone4'
-            },
-            // Zone 3
-            {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/11 0:00:00',
-                endTime: '2025/10/12 0:00:00',
-                description: '休憩期間',
-                category: 'zone3'
+                duration: '12:00:00',
+                startTime: '2025/10/9 3:00:00',
+                endTime: '2025/10/9 15:00:00',
+                description: '(関所Lv.4の開放待機時間 半開放)　(町を略奪)',
+                category: 'zone5'
             },
             {
-                zone: 'Zone 3',
+                zone: 'Zone 5',
+                phase: '嵐の前の静けさ',
+                duration: '36:00:00',
+                startTime: '2025/10/9 15:00:00',
+                endTime: '2025/10/11 3:00:00',
+                description: '所属軍団が関所Lv.4を箇所占領 ※赤四角開戦時間',
+                category: 'zone5'
+            },
+            {
+                zone: 'Zone 5',
                 phase: '攻城',
-                duration: '24:00:00',
-                startTime: '2025/10/12 0:00:00',
-                endTime: '2025/10/13 0:00:00',
-                description: 'Zone3攻城戦開始',
-                category: 'zone3'
+                duration: '12:00:00',
+                startTime: '2025/10/11 3:00:00',
+                endTime: '2025/10/11 15:00:00',
+                description: '(要塞の遺跡開放待機時間)',
+                category: 'zone5'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/13 0:00:00',
-                endTime: '2025/10/14 0:00:00',
-                description: '休憩期間',
-                category: 'zone3'
+                zone: 'Zone 5',
+                phase: '攻城',
+                duration: '36:00:00',
+                startTime: '2025/10/11 15:00:00',
+                endTime: '2025/10/13 3:00:00',
+                description: '所属軍団が要塞を1箇所占領',
+                category: 'zone5'
             },
             {
-                zone: 'Zone 3',
+                zone: 'Zone 5',
                 phase: '衝突',
-                duration: '24:00:00',
-                startTime: '2025/10/14 0:00:00',
-                endTime: '2025/10/15 0:00:00',
-                description: 'Zone3衝突フェーズ',
-                category: 'zone3'
+                duration: '48:00:00',
+                startTime: '2025/10/13 3:00:00',
+                endTime: '2025/10/15 3:00:00',
+                description: '所属軍団が野蛮人集落Lv.12以上を100回撃破\n★カルラック(普通) 解放',
+                category: 'zone5'
             },
+            // Zone 6
             {
-                zone: 'Zone 3',
+                zone: 'Zone 6',
                 phase: '前進',
-                duration: '24:00:00',
-                startTime: '2025/10/15 0:00:00',
-                endTime: '2025/10/16 0:00:00',
-                description: 'Zone3前進フェーズ',
-                category: 'zone3'
+                duration: '12:00:00',
+                startTime: '2025/10/15 3:00:00',
+                endTime: '2025/10/15 15:00:00',
+                description: '(関所Lv.5の開放待機時間 半開放)',
+                category: 'zone6'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/16 0:00:00',
-                endTime: '2025/10/17 0:00:00',
-                description: '休憩期間',
-                category: 'zone3'
+                zone: 'Zone 6',
+                phase: '前進',
+                duration: '36:00:00',
+                startTime: '2025/10/15 15:00:00',
+                endTime: '2025/10/17 3:00:00',
+                description: '所属軍団が関所Lv.5を箇所占領　※戦争無し',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 3',
+                zone: 'Zone 6',
                 phase: '入場券',
-                duration: '24:00:00',
-                startTime: '2025/10/17 0:00:00',
-                endTime: '2025/10/18 0:00:00',
-                description: 'Zone2への入場券獲得戦',
-                category: 'zone3'
-            },
-            // Zone 2
-            {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/18 0:00:00',
-                endTime: '2025/10/19 0:00:00',
-                description: '休憩期間',
-                category: 'zone2'
+                duration: '12:00:00',
+                startTime: '2025/10/17 3:00:00',
+                endTime: '2025/10/17 15:00:00',
+                description: '(関所Lv.6の開放待機時間 半開放)\n(兵法カード追加)',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 2',
+                zone: 'Zone 6',
+                phase: '入場券',
+                duration: '36:00:00',
+                startTime: '2025/10/17 15:00:00',
+                endTime: '2025/10/19 3:00:00',
+                description: '所属軍団が関所Lv.6を箇所占領　※赤四角暗黒開戦時間',
+                category: 'zone6'
+            },
+            {
+                zone: 'Zone 6',
                 phase: '生贄は誰だ',
-                duration: '24:00:00',
-                startTime: '2025/10/19 0:00:00',
-                endTime: '2025/10/20 0:00:00',
-                description: 'Zone2戦闘開始',
-                category: 'zone2'
+                duration: '12:00:00',
+                startTime: '2025/10/19 3:00:00',
+                endTime: '2025/10/19 15:00:00',
+                description: '(暗黒の祭壇活性化までの待機時間)',
+                category: 'zone6'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/20 0:00:00',
-                endTime: '2025/10/21 0:00:00',
-                description: '休憩期間',
-                category: 'zone2'
+                zone: 'Zone 6',
+                phase: '生贄は誰だ',
+                duration: '36:00:00',
+                startTime: '2025/10/19 15:00:00',
+                endTime: '2025/10/21 3:00:00',
+                description: '暗黒の祭壇の殺戮者部隊を3体撃破　※赤四角開戦時間',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 2',
+                zone: 'Zone 6',
                 phase: '究極の一',
-                duration: '24:00:00',
-                startTime: '2025/10/21 0:00:00',
-                endTime: '2025/10/22 0:00:00',
-                description: 'Zone2究極戦',
-                category: 'zone2'
+                duration: '12:00:00',
+                startTime: '2025/10/21 3:00:00',
+                endTime: '2025/10/21 15:00:00',
+                description: '(修道院(レベル7聖地)活性化までの待機時間)',
+                category: 'zone6'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/22 0:00:00',
-                endTime: '2025/10/23 0:00:00',
-                description: '休憩期間',
-                category: 'zone2'
+                zone: 'Zone 6',
+                phase: '究極の一',
+                duration: '36:00:00',
+                startTime: '2025/10/21 15:00:00',
+                endTime: '2025/10/23 3:00:00',
+                description: '所属軍団が修道院(レベル7聖地)を1箇所占領',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 2',
+                zone: 'Zone 6',
                 phase: '一気呵成',
-                duration: '24:00:00',
-                startTime: '2025/10/23 0:00:00',
-                endTime: '2025/10/24 0:00:00',
-                description: 'Zone2一気攻勢',
-                category: 'zone2'
+                duration: '48:00:00',
+                startTime: '2025/10/23 3:00:00',
+                endTime: '10/25/2025 3:00:00',
+                description: '所属軍団が野蛮人集落Lv.13以上を100回撃破',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 2',
+                zone: 'Zone 6',
                 phase: '戦友と共に',
-                duration: '24:00:00',
-                startTime: '2025/10/24 0:00:00',
-                endTime: '2025/10/25 0:00:00',
-                description: 'Zone2連携戦',
-                category: 'zone2'
+                duration: '48:00:00',
+                startTime: '2025/10/25 3:00:00',
+                endTime: '10/27/2025 3:00:00',
+                description: 'レジェンド指揮官が依頼したミッションを10回クリアする\n(軍団枠+1)',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 2',
+                zone: 'Zone 6',
                 phase: '一触即発',
-                duration: '24:00:00',
-                startTime: '2025/10/25 0:00:00',
-                endTime: '2025/10/26 0:00:00',
-                description: 'Zone2緊迫フェーズ',
-                category: 'zone2'
+                duration: '48:00:00',
+                startTime: '2025/10/27 3:00:00',
+                endTime: '10/29/2025 3:00:00',
+                description: '所属軍団が野蛮人集落Lv.14以上を100回撃破 (兵法カード追加)',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 2',
+                zone: 'Zone 6',
                 phase: 'やるかやられるか',
-                duration: '24:00:00',
-                startTime: '2025/10/26 0:00:00',
-                endTime: '2025/10/27 0:00:00',
-                description: 'Zone2決戦フェーズ',
-                category: 'zone2'
-            },
-            // Zone 1
-            {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/27 0:00:00',
-                endTime: '2025/10/28 0:00:00',
-                description: '休憩期間',
-                category: 'zone1'
+                duration: '12:00:00',
+                startTime: '2025/10/29 3:00:00',
+                endTime: '10/29/2025 15:00:00',
+                description: '(関所Lv.7の開放待機時間 半開放)',
+                category: 'zone6'
             },
             {
-                zone: 'Zone 1',
+                zone: 'Zone 6',
+                phase: 'やるかやられるか',
+                duration: '36:00:00',
+                startTime: '2025/10/29 15:00:00',
+                endTime: '10/31/2025 3:00:00',
+                description: '所属軍団が関所Lv.7を1箇所占領　※赤四角開戦時間',
+                category: 'zone6'
+            },
+            {
+                zone: 'Zone 6',
                 phase: '羊と狼',
                 duration: '24:00:00',
-                startTime: '2025/10/28 0:00:00',
-                endTime: '2025/10/29 0:00:00',
-                description: 'Zone1戦闘開始',
-                category: 'zone1'
+                startTime: '2025/10/31 3:00:00',
+                endTime: '11/1/2025 3:00:00',
+                description: '他陣営の戦闘部隊を1,000,000人重傷または撃破',
+                category: 'zone6'
             },
+            // Kingsland
             {
-                zone: 'Zone 1',
+                zone: 'Kingsland',
                 phase: 'バアルの恵み',
-                duration: '24:00:00',
-                startTime: '2025/10/29 0:00:00',
-                endTime: '2025/10/30 0:00:00',
-                description: 'Zone1特殊イベント',
-                category: 'zone1'
+                duration: '12:00:00',
+                startTime: '2025/11/1 3:00:00',
+                endTime: '2025/11/1 15:00:00',
+                description: '(関所Lv.8の開放待機時間 半開放)',
+                category: 'kingsland'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/10/30 0:00:00',
-                endTime: '2025/10/31 0:00:00',
-                description: '休憩期間',
-                category: 'zone1'
+                zone: 'Kingsland',
+                phase: 'バアルの恵み',
+                duration: '36:00:00',
+                startTime: '2025/11/1 15:00:00',
+                endTime: '2025/11/3 3:00:00',
+                description: '所属軍団が関所Lv.8を箇所占領　※赤四角開戦時間',
+                category: 'kingsland'
             },
             {
-                zone: 'Zone 1',
+                zone: 'Kingsland',
                 phase: '羊と狼',
                 duration: '24:00:00',
-                startTime: '2025/10/31 0:00:00',
-                endTime: '2025/11/1 0:00:00',
-                description: 'Zone1戦闘継続',
-                category: 'zone1'
+                startTime: '2025/11/03 3:00:00',
+                endTime: '2025/11/4 3:00:00',
+                description: '他陣営の戦闘部隊を2,000,000人重傷または撃破\n★カルラック(ハード) 解放',
+                category: 'kingsland'
             },
             {
-                zone: 'Zone 1',
+                zone: 'Kingsland',
                 phase: '聖域の名',
-                duration: '24:00:00',
-                startTime: '2025/11/1 0:00:00',
-                endTime: '2025/11/2 0:00:00',
-                description: 'Zone1聖域戦',
-                category: 'zone1'
-            },
-            // Final Zone
-            {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/11/2 0:00:00',
-                endTime: '2025/11/3 0:00:00',
-                description: '休憩期間',
-                category: 'final'
+                duration: '12:00:00',
+                startTime: '2025/11/04 3:00:00',
+                endTime: '2025/11/4 15:00:00',
+                description: '(聖城活性化までの待機時間)',
+                category: 'kingsland'
             },
             {
-                zone: 'Final Zone',
+                zone: 'Kingsland',
+                phase: '聖域の名',
+                duration: '60:00:00',
+                startTime: '2025/11/04 15:00:00',
+                endTime: '2025/11/7 3:00:00',
+                description: '所属軍団が聖城を占領',
+                category: 'kingsland'
+            },
+            {
+                zone: 'Kingsland',
                 phase: '連戦連勝',
-                duration: '24:00:00',
-                startTime: '2025/11/3 0:00:00',
-                endTime: '2025/11/4 0:00:00',
-                description: 'Final Zone戦闘開始',
-                category: 'final'
+                duration: '48:00:00',
+                startTime: '2025/11/07 3:00:00',
+                endTime: '2025/11/9 3:00:00',
+                description: '所属軍団が野蛮人集落Lv.15以上を100回撃破\n★カルラック(ナイトメア) 解放',
+                category: 'kingsland'
             },
             {
-                zone: 'Final Zone',
+                zone: 'Kingsland',
                 phase: '終焉の門',
-                duration: '24:00:00',
-                startTime: '2025/11/4 0:00:00',
-                endTime: '2025/11/5 0:00:00',
-                description: 'Final Zone最終戦',
-                category: 'final'
+                duration: '12:00:00',
+                startTime: '2025/11/09 3:00:00',
+                endTime: '2025/11/9 15:00:00',
+                description: '(関所Lv.9の開放待機時間 完全開放)',
+                category: 'kingsland'
             },
             {
-                zone: '',
-                phase: '',
-                duration: '24:00:00',
-                startTime: '2025/11/5 0:00:00',
-                endTime: '2025/11/6 0:00:00',
-                description: '休憩期間',
-                category: 'final'
+                zone: 'Kingsland',
+                phase: '終焉の門',
+                duration: '36:00:00',
+                startTime: '2025/11/09 15:00:00',
+                endTime: '2025/11/11 3:00:00',
+                description: '所属軍団が関所Lv.9を1箇所占領',
+                category: 'kingsland'
             },
             {
-                zone: 'Final Zone',
+                zone: 'Kingsland',
                 phase: '究極の一',
-                duration: '24:00:00',
-                startTime: '2025/11/6 0:00:00',
-                endTime: '2025/11/7 0:00:00',
-                description: 'KvK最終決戦',
-                category: 'final'
+                duration: '96:00:00',
+                startTime: '2025/11/11 3:00:00',
+                endTime: '2025/11/15 3:00:00',
+                description: '所属陣営が他の陣営の修道院を6箇所占領　★カルラック(地獄) 解放',
+                category: 'kingsland'
             },
             {
-                zone: 'Final Zone',
+                zone: 'Kingsland',
                 phase: '前進の道',
-                duration: '24:00:00',
-                startTime: '2025/11/7 0:00:00',
-                endTime: '2025/11/8 0:00:00',
-                description: 'KvK終了・帰還準備',
-                category: 'final'
+                duration: '96:00:00',
+                startTime: '2025/11/15 3:00:00',
+                endTime: '2025/11/19 3:00:00',
+                description: '所属軍団が要塞を6箇所占領',
+                category: 'kingsland'
             }
         ];
 
