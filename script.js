@@ -305,19 +305,27 @@ window.addEventListener('hashchange', () => {
     }
 });
 
-// CSVファイルを読み込む
+// CSVファイルを読み込む（エラー処理強化版）
 async function loadCSVData() {
     // ローディング表示を開始
     showLoading('CSVファイルを読み込み中...');
-    
+
     try {
-        // CSVファイルを取得（キャッシュ制御付き）
-        const response = await fetch(CSV_FILE_PATH, {
-            cache: 'default',
-            headers: {
-                'Cache-Control': `max-age=${PERFORMANCE_CONFIG.CACHE_DURATION / 1000}` // 設定に基づくキャッシュ
-            }
-        });
+        if (DEBUG_MODE) console.log('CSV読み込み開始:', CSV_FILE_PATH);
+
+        // PapaParseライブラリの存在確認
+        if (typeof Papa === 'undefined') {
+            throw new Error('PapaParseライブラリが読み込まれていません');
+        }
+
+        // CSVファイルを取得（シンプル版）
+        const response = await fetch(CSV_FILE_PATH);
+
+        if (DEBUG_MODE) {
+            console.log('Fetch Response Status:', response.status);
+            console.log('Fetch Response OK:', response.ok);
+            console.log('Content-Type:', response.headers.get('content-type'));
+        }
 
         if (!response.ok) {
             throw new Error(`CSVファイルが見つかりません: ${CSV_FILE_PATH} (Status: ${response.status})`);
@@ -334,28 +342,56 @@ async function loadCSVData() {
             throw new Error('CSVファイルのサイズが小さすぎます');
         }
 
-        // PapaParseでCSVを解析（エラーハンドリング強化版）
-        const parsed = Papa.parse(csvText, {
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            delimitersToGuess: [',', '\t', '|', ';'],
-            fastMode: false, // エラー回避のためfastModeを無効化
-            chunk: (results) => {
-                // チャンク処理でプログレス表示
-                if (results && results.data && results.data.length > PERFORMANCE_CONFIG.CHUNK_SIZE) {
-                    showLoading(`CSVファイル処理中... (${results.data.length}件)`);
-                }
-            },
-            error: (error) => {
-                console.error('PapaParse解析エラー:', error);
-                throw new Error(`CSV解析に失敗しました: ${error.message || error}`);
-            }
-        });
+        if (DEBUG_MODE) console.log('CSVテキスト前半100文字:', csvText.substring(0, 100));
 
-        // parsed結果の安全性チェック
-        if (!parsed || typeof parsed !== 'object') {
-            throw new Error('CSV解析結果が無効です');
+        // PapaParseでCSVを解析（シンプル版）
+        let parsed;
+        try {
+            parsed = Papa.parse(csvText, {
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                delimiter: "", // 自動検出
+                fastMode: false
+            });
+
+            if (DEBUG_MODE) {
+                console.log('PapaParse戻り値の型:', typeof parsed);
+                console.log('PapaParse戻り値:', parsed);
+                console.log('parsed.data存在:', parsed && parsed.data ? 'あり' : 'なし');
+                console.log('parsed.errors存在:', parsed && parsed.errors ? 'あり' : 'なし');
+            }
+
+        } catch (parseError) {
+            console.error('PapaParse実行エラー:', parseError);
+            // より安全なフォールバック処理
+            try {
+                // 最小限の設定でリトライ
+                parsed = Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true
+                });
+                if (DEBUG_MODE) console.log('リトライ成功:', parsed);
+            } catch (retryError) {
+                console.error('リトライも失敗:', retryError);
+                // 最後の手段: 手動CSV解析
+                try {
+                    if (DEBUG_MODE) console.log('手動CSV解析を試行...');
+                    parsed = parseCSVManually(csvText);
+                } catch (manualError) {
+                    console.error('手動解析も失敗:', manualError);
+                    throw new Error(`全ての解析方法が失敗しました: ${parseError.message}`);
+                }
+            }
+        }
+
+        // parsed結果の詳細チェック
+        if (!parsed) {
+            throw new Error('CSV解析結果がnullまたはundefinedです');
+        }
+
+        if (typeof parsed !== 'object') {
+            throw new Error(`CSV解析結果が無効です - 型: ${typeof parsed}, 値: ${String(parsed)}`);
         }
 
         if (!parsed.data || !Array.isArray(parsed.data)) {
@@ -398,7 +434,7 @@ async function loadCSVData() {
         if (typeof updateStats === 'function') updateStats();
         if (typeof setupDateInputs === 'function') setupDateInputs();
         hideLoading(); // ローディングを非表示
-        
+
     } catch (error) {
         console.error('CSVファイル読み込みエラー:', error);
         showError(
@@ -412,6 +448,38 @@ async function loadCSVData() {
             ]
         );
     }
+}
+
+// 手動CSV解析関数（PapaParseのフォールバック）
+function parseCSVManually(csvText) {
+    const lines = csvText.split('\n');
+    if (lines.length < 2) {
+        throw new Error('CSVデータが不足しています');
+    }
+
+    // ヘッダー行を解析
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const data = [];
+
+    // データ行を解析
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+
+        const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+        if (values.length === headers.length) {
+            const row = {};
+            headers.forEach((header, index) => {
+                row[header] = values[index];
+            });
+            data.push(row);
+        }
+    }
+
+    return {
+        data: data,
+        errors: []
+    };
 }
 
 // 日付入力の初期設定
