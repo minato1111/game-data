@@ -639,65 +639,49 @@
     </div>
 
         <!-- KVKカレンダータブ -->
-        <div id="calendarTab" class="tab-content" style="min-height: 500px; background: white; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-            <h2 style="color: #2c3e50; font-size: 32px; margin-bottom: 10px; font-weight: 700;">
-                📅 KVK カレンダー
-            </h2>
-            <p style="color: #7f8c8d; font-size: 16px;">KVKスケジュールとタイムライン</p>
-        </div>
+        <div id="calendarTab" class="tab-content" style="min-height: 500px; background: white; padding: 20px; border: 2px solid red;">
 
-        <!-- カレンダーフィルター -->
-        <div class="filter-section">
-            <div class="date-filter">
-                <label style="font-weight: 600;">フェーズ選択:</label>
-                <select id="phaseFilter" style="padding: 8px 12px; border: 2px solid #e0e0e0; border-radius: 8px; margin: 0 10px;">
+            <!-- テスト用：静的コンテンツ -->
+            <h1 style="color: red; font-size: 48px;">🔴 KVK カレンダー テスト</h1>
+            <p style="color: green; font-size: 24px;">この文字が見えればHTMLは正常です</p>
+
+            <div style="background: yellow; padding: 20px; margin: 20px 0; border: 2px solid black;">
+                <h2>動的コンテンツテスト</h2>
+                <div id="currentPhase" style="color: blue; font-size: 20px;">現在のフェーズ: 読み込み中...</div>
+                <div id="countdown" style="color: purple; font-size: 18px;">カウントダウン: 計算中...</div>
+                <div id="nextPhase" style="color: orange; font-size: 16px;">次のフェーズ: 待機中...</div>
+            </div>
+
+            <!-- 簡単なテーブル -->
+            <div style="background: lightblue; padding: 20px; margin: 20px 0;">
+                <h3>テーブルテスト</h3>
+                <table id="kvkCalendarTable" style="border: 2px solid black; width: 100%;">
+                    <thead>
+                        <tr style="background: gray;">
+                            <th style="border: 1px solid black; padding: 10px;">ゾーン</th>
+                            <th style="border: 1px solid black; padding: 10px;">編年史</th>
+                            <th style="border: 1px solid black; padding: 10px;">時間</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kvkCalendarBody" style="background: white;">
+                        <tr>
+                            <td style="border: 1px solid black; padding: 10px;">テスト行</td>
+                            <td style="border: 1px solid black; padding: 10px;">初期表示</td>
+                            <td style="border: 1px solid black; padding: 10px;">00:00:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- フィルターテスト -->
+            <div style="background: lightgreen; padding: 20px;">
+                <h3>フィルターテスト</h3>
+                <select id="phaseFilter">
                     <option value="all">すべて表示</option>
-                    <option value="pre-kvk">Pre-KvK</option>
-                    <option value="zone4">Zone 4</option>
-                    <option value="zone5">Zone 5</option>
-                    <option value="zone6">Zone 6</option>
-                    <option value="kingsland">Kingsland</option>
+                    <option value="test">テスト</option>
                 </select>
-                <button onclick="filterKvkCalendar()" style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer;">フィルター</button>
+                <button onclick="alert('フィルターボタンが動作しています')" style="padding: 10px; background: blue; color: white;">テストボタン</button>
             </div>
-        </div>
-
-        <!-- カレンダーテーブル -->
-        <div class="table-container">
-            <table id="kvkCalendarTable">
-                <thead>
-                    <tr>
-                        <th>ゾーン</th>
-                        <th>編年史</th>
-                        <th>時間</th>
-                        <th>開始時間</th>
-                        <th>終了時間</th>
-                        <th>説明</th>
-                    </tr>
-                </thead>
-                <tbody id="kvkCalendarBody">
-                    <!-- カレンダーデータはJavaScriptで生成 -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 現在のフェーズ表示 -->
-        <div style="margin-top: 30px; text-align: center;">
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; max-width: 600px; margin: 0 auto;">
-                <h3 style="margin-bottom: 10px;">🔥 現在のフェーズ</h3>
-                <p id="currentPhase" style="font-size: 18px; margin: 0;">読み込み中...</p>
-            </div>
-        </div>
-
-        <!-- 次のフェーズまでのカウントダウン -->
-        <div style="margin-top: 20px; text-align: center;">
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 15px; max-width: 600px; margin: 0 auto; border: 2px solid #e0e0e0;">
-                <h3 style="color: #2c3e50; margin-bottom: 10px;">⏰ 次のフェーズまで</h3>
-                <div id="countdown" style="font-size: 24px; font-weight: bold; color: #e74c3c;">計算中...</div>
-                <p id="nextPhase" style="color: #7f8c8d; margin: 10px 0 0 0; font-size: 14px;">-</p>
-            </div>
-        </div>
         </div>
 
     </div>
