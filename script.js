@@ -761,6 +761,29 @@ function switchTab(tab) {
             });
         }
 
+        // 強制表示
+        if (calendarTabElement) {
+            calendarTabElement.style.display = 'block';
+            calendarTabElement.style.visibility = 'visible';
+            calendarTabElement.style.opacity = '1';
+            calendarTabElement.style.position = 'relative';
+            calendarTabElement.style.zIndex = '999';
+            if (DEBUG_MODE) console.log('カレンダータブ強制表示を実行');
+
+            // 5秒後に再度確認
+            setTimeout(() => {
+                const rect = calendarTabElement.getBoundingClientRect();
+                console.log('5秒後の表示状況:', {
+                    visible: rect.width > 0 && rect.height > 0,
+                    rect: rect,
+                    computed: {
+                        display: window.getComputedStyle(calendarTabElement).display,
+                        visibility: window.getComputedStyle(calendarTabElement).visibility
+                    }
+                });
+            }, 5000);
+        }
+
         initKvkCalendar();
     }
 
