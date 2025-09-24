@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KVKカレンダー - ROK Kingdom Data</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f6fa;
+            color: #2c3e50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .current-phase {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px 10px;
+            font-weight: 600;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-completed { color: #95a5a6; }
+        .status-current { color: #27ae60; font-weight: bold; }
+        .status-upcoming { color: #3498db; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 KVKスケジュール</h1>
+            <p>Rise of Kingdoms - KVK期間中の各フェーズスケジュール</p>
+        </div>
+
+        <div class="current-phase">
+            <h3>現在のフェーズ</h3>
+            <p id="currentPhase">読み込み中...</p>
+            <div style="margin-top: 10px;">
+                <strong>次のフェーズまで:</strong> <span id="countdown">--:--:--</span>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>状態</th>
+                    <th>エリア</th>
+                    <th>フェーズ</th>
+                    <th>期間</th>
+                    <th>開始日時</th>
+                    <th>終了日時</th>
+                    <th>説明</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody">
+                <tr>
+                    <td colspan="7" class="loading">
+                        <div>📅 スケジュールを読み込み中...</div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        console.log('🟢 KVKカレンダー開始');
+
+        // KVKスケジュールデータ
+        const KVK_SCHEDULE = [
+            {
+                zone: 'Home Kingdom',
+                phase: 'KvK ストーリーの選択期間',
+                duration: '72:00:00',
+                startTime: '0:00:01',
+                endTime: '2025/9/18 0:00:00',
+                description: 'ストーリーモードを選択する期間',
+                category: 'pre-kvk'
+            },
+            {
+                zone: '',
+                phase: 'マッチメイキング期間',
+                duration: '168:00:00',
+                startTime: '2025/9/18 0:00:00',
+                endTime: '2025/9/25 0:00:00',
+                description: '他の王国とのマッチングが始まります。',
+                category: 'pre-kvk'
+            },
+            {
+                zone: '',
+                phase: '前夜祭第１段階 "略奪者"',
+                duration: '48:00:00',
+                startTime: '2025/9/25 0:00:00',
+                endTime: '2025/9/27 0:00:00',
+                description: '略奪者を狩ってアイテムを箱と交換しましょう。',
+                category: 'pre-kvk'
+            },
+            {
+                zone: '',
+                phase: '前夜祭第２段階　"訓練"',
+                duration: '48:00:00',
+                startTime: '2025/9/27 0:00:00',
+                endTime: '2025/9/29 0:00:00',
+                description: '部隊訓練フェーズ',
+                category: 'pre-kvk'
+            },
+            {
+                zone: '',
+                phase: '前夜祭第３段階　"集落"',
+                duration: '48:00:00',
+                startTime: '2025/9/29 0:00:00',
+                endTime: '2025/10/1 0:00:00',
+                description: '略奪者集落を狩ってアイテムを手にれられます。',
+                category: 'pre-kvk'
+            }
+        ];
+
+        // 日付解析関数
+        function parseDate(dateStr) {
+            try {
+                const cleanStr = dateStr.replace(/\//g, '/').trim();
+                return new Date(cleanStr);
+            } catch (error) {
+                console.warn('日付解析エラー:', dateStr, error);
+                return null;
+            }
+        }
+
+        // 現在の状態を取得
+        function getStatus(phase) {
+            const now = new Date();
+            const startDate = parseDate(phase.startTime);
+            const endDate = parseDate(phase.endTime);
+
+            if (startDate && endDate) {
+                if (now >= startDate && now <= endDate) {
+                    return { text: '🟢 進行中', class: 'status-current' };
+                } else if (now > endDate) {
+                    return { text: '⚫ 完了', class: 'status-completed' };
+                }
+            }
+            return { text: '🔵 予定', class: 'status-upcoming' };
+        }
+
+        // テーブルを描画
+        function renderSchedule() {
+            console.log('📋 スケジュール描画開始');
+
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = '';
+
+            KVK_SCHEDULE.forEach((phase, index) => {
+                const status = getStatus(phase);
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td class="${status.class}">${status.text}</td>
+                    <td><strong>${phase.zone || ''}</strong></td>
+                    <td><strong>${phase.phase}</strong></td>
+                    <td>${phase.duration}</td>
+                    <td>${phase.startTime}</td>
+                    <td>${phase.endTime}</td>
+                    <td style="text-align: left;">${phase.description}</td>
+                `;
+
+                tbody.appendChild(row);
+                console.log(`✅ 行${index + 1}追加: ${phase.phase}`);
+            });
+
+            console.log(`🎉 スケジュール描画完了: ${KVK_SCHEDULE.length}件`);
+        }
+
+        // 現在のフェーズ表示
+        function updateCurrentPhase() {
+            const currentPhase = KVK_SCHEDULE.find(phase => {
+                const now = new Date();
+                const startDate = parseDate(phase.startTime);
+                const endDate = parseDate(phase.endTime);
+                return startDate && endDate && now >= startDate && now <= endDate;
+            });
+
+            const phaseElement = document.getElementById('currentPhase');
+            if (currentPhase) {
+                phaseElement.textContent = `${currentPhase.phase} (${currentPhase.zone || '準備期間'})`;
+            } else {
+                phaseElement.textContent = 'フェーズ間の休憩期間';
+            }
+        }
+
+        // カウントダウン開始
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+
+            function updateCountdown() {
+                const now = new Date();
+                const nextPhase = KVK_SCHEDULE.find(phase => {
+                    const startDate = parseDate(phase.startTime);
+                    return startDate && startDate > now;
+                });
+
+                if (nextPhase) {
+                    const startDate = parseDate(nextPhase.startTime);
+                    const timeDiff = startDate - now;
+
+                    if (timeDiff > 0) {
+                        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                        countdownElement.textContent = `${days}日 ${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                } else {
+                    countdownElement.textContent = 'KVK終了';
+                }
+            }
+
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 DOM読み込み完了');
+
+            setTimeout(() => {
+                renderSchedule();
+                updateCurrentPhase();
+                startCountdown();
+                console.log('✨ KVKカレンダー初期化完了');
+            }, 100);
+        });
+
+        console.log('📜 スクリプト読み込み完了');
+    </script>
+</body>
+</html>
