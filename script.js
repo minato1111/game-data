@@ -3101,27 +3101,32 @@ function initKvkCalendar() {
 
 // KVKカレンダーテーブルを描画
 function renderKvkCalendar(filter = 'all') {
+    console.log('=== renderKvkCalendar開始 ===', filter);
+
     const tbody = document.getElementById('kvkCalendarBody');
     if (!tbody) {
         console.error('kvkCalendarBodyが見つかりません');
         return;
     }
 
-    if (DEBUG_MODE) {
-        console.log('カレンダー描画開始:', tbody);
-        console.log('テーブル要素:', tbody.parentElement);
-    }
+    console.log('tbody要素:', tbody);
+    console.log('tbody親要素:', tbody.parentElement);
+    console.log('tbody表示状態:', tbody.style.display);
+    console.log('KVK_SCHEDULE配列長:', KVK_SCHEDULE.length);
 
     // フィルタリング
     const filteredSchedule = filter === 'all'
         ? KVK_SCHEDULE
         : KVK_SCHEDULE.filter(item => item.category === filter);
 
-    if (DEBUG_MODE) console.log('フィルター後のデータ数:', filteredSchedule.length);
+    console.log('フィルター後のデータ数:', filteredSchedule.length);
+    console.log('最初の3件データ:', filteredSchedule.slice(0, 3));
 
     tbody.innerHTML = '';
+    console.log('tbody.innerHTML クリア完了');
 
     filteredSchedule.forEach((item, index) => {
+        console.log(`行 ${index + 1} 作成中:`, item.phase);
         const row = document.createElement('tr');
 
         // 現在進行中のフェーズをハイライト
@@ -3131,7 +3136,27 @@ function renderKvkCalendar(filter = 'all') {
             row.style.borderLeft = '5px solid #f39c12';
         }
 
+        // 現在の状態を判定
+        const now = new Date();
+        const startDate = parseKvkDate(item.startTime);
+        const endDate = parseKvkDate(item.endTime);
+        let status = '🔵 予定';
+        let statusColor = '#3498db';
+
+        if (startDate && endDate) {
+            if (now >= startDate && now <= endDate) {
+                status = '🟢 進行中';
+                statusColor = '#27ae60';
+            } else if (now > endDate) {
+                status = '⚫ 完了';
+                statusColor = '#95a5a6';
+            }
+        }
+
         row.innerHTML = `
+            <td style="text-align: center; padding: 12px; color: ${statusColor}; font-weight: 600;">
+                ${status}
+            </td>
             <td style="font-weight: ${item.zone ? 'bold' : 'normal'}; color: ${item.zone ? '#2c3e50' : '#7f8c8d'}; padding: 12px;">
                 ${item.zone || ''}
             </td>
@@ -3153,17 +3178,13 @@ function renderKvkCalendar(filter = 'all') {
         `;
 
         tbody.appendChild(row);
-
-        if (DEBUG_MODE && index < 3) {
-            console.log(`行${index + 1}追加:`, row);
-        }
+        console.log(`行${index + 1}追加完了:`, item.phase);
     });
 
-    if (DEBUG_MODE) {
-        console.log(`カレンダー描画完了: ${filteredSchedule.length}件`);
-        console.log('最終的なtbody.innerHTML.length:', tbody.innerHTML.length);
-        console.log('tbodyの子要素数:', tbody.children.length);
-    }
+    console.log(`=== カレンダー描画完了: ${filteredSchedule.length}件 ===`);
+    console.log('最終的なtbody.innerHTML.length:', tbody.innerHTML.length);
+    console.log('tbodyの子要素数:', tbody.children.length);
+    console.log('tbodyの実際のHTML(最初の200文字):', tbody.innerHTML.substring(0, 200));
 }
 
 // 現在のフェーズかどうかチェック
