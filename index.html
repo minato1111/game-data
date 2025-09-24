@@ -17,19 +17,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js" defer></script>
 </head>
 <body>
-    <!-- パスワード保護画面 -->
-    <div id="passwordProtection" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-        <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); text-align: center; max-width: 400px; width: 90%;">
-            <h2 style="color: #2c3e50; margin-bottom: 20px; font-size: 28px;">🔒 パスワード認証</h2>
-            <p style="color: #7f8c8d; margin-bottom: 30px;">このサイトを閲覧するにはパスワードが必要です</p>
-            <input type="password" id="passwordInput" placeholder="パスワードを入力" style="width: 100%; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; margin-bottom: 20px;">
-            <button id="loginButton" style="width: 100%; padding: 12px 20px; background: #3498db; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">ログイン</button>
-            <div id="passwordError" style="color: #e74c3c; margin-top: 15px; display: none;">パスワードが正しくありません</div>
-        </div>
-    </div>
-
-    <!-- メインコンテンツ（初期状態では非表示） -->
-    <div class="container" id="mainContent" style="display: none;">
+    <!-- メインコンテンツ -->
+    <div class="container" id="mainContent">
         <h1 id="homeTitle" style="cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='#3498db'" onmouseout="this.style.color='#2c3e50'" title="ホームに戻る">⚔️ ROK Kingdom Data 一覧</h1>
         <div class="subtitle">Rise of Kingdoms - データ統計・分析ツール</div>
         <div class="update-info">
@@ -45,24 +34,8 @@
             <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
             <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
             <button class="tab-btn" onclick="switchTab('calendar')" role="tab" aria-controls="calendarTab" aria-selected="false">KVKカレンダー</button>
-            <button class="tab-btn" onclick="switchTab('test')" role="tab" aria-controls="testTab" aria-selected="false">🔴テスト</button>
         </nav>
 
-        <!-- 🔴テストタブ -->
-        <div id="testTab" class="tab-content">
-            <div style="background: red; color: white; padding: 50px; font-size: 48px; text-align: center;">
-                <h1>🔴 完全テスト</h1>
-                <p>この赤い背景が見えればタブ機能は正常です</p>
-                <div style="background: blue; padding: 20px; margin: 20px 0;">
-                    <h2>青いセクション</h2>
-                    <p>複数色のテスト</p>
-                </div>
-                <div style="background: green; padding: 20px; margin: 20px 0;">
-                    <h2>緑のセクション</h2>
-                    <p>レンダリングテスト完了</p>
-                </div>
-            </div>
-        </div>
 
         <!-- データ一覧タブ -->
         <div id="dataTab" class="tab-content active">

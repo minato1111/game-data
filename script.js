@@ -55,67 +55,6 @@ function debounce(func, wait) {
     };
 }
 
-// =====================================
-// パスワード保護機能（セキュリティ強化版）
-// =====================================
-// パスワード設定（セキュリティ強化）
-const CORRECT_PASSWORD_HASH = 'e8b7e2e8c8b4e1b9a2d3c5f6e7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8';
-
-// シンプルなハッシュ関数（本格的なcryptoライブラリに置き換え推奨）
-async function simpleHash(text) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(text);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-async function checkPassword() {
-    const input = getElement('passwordInput').value;
-    const errorMsg = getElement('passwordError');
-
-    try {
-        // 入力されたパスワードをハッシュ化
-        const inputHash = await simpleHash(input);
-
-        if (inputHash === CORRECT_PASSWORD_HASH) {
-            // パスワードが正しい場合
-            getElement('passwordProtection').style.display = 'none';
-            getElement('mainContent').style.display = 'block';
-
-            // セッションストレージに認証状態を保存
-            sessionStorage.setItem('authenticated', 'true');
-
-            // Chart.jsのdatalabelsプラグインを登録
-            if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
-                Chart.register(ChartDataLabels);
-                Chart.defaults.plugins.datalabels = {
-                    display: false
-                };
-            }
-
-            // データの読み込みを開始
-            loadCSVData();
-            setupEventListeners();
-
-        } else {
-            // パスワードが間違っている場合
-            errorMsg.style.display = 'block';
-            getElement('passwordInput').value = '';
-
-            // 入力欄を振動させる
-            const inputBox = getElement('passwordInput');
-            inputBox.style.animation = 'shake 0.5s';
-            setTimeout(() => {
-                inputBox.style.animation = '';
-            }, 500);
-        }
-    } catch (error) {
-        console.error('パスワード認証エラー:', error);
-        errorMsg.style.display = 'block';
-    }
-}
-
 // DOM要素キャッシュ
 const domCache = {};
 const getElement = (id) => {
@@ -253,56 +192,34 @@ function switchToHashTab() {
 
 // ページ読み込み時の処理
 window.addEventListener('DOMContentLoaded', () => {
-    // パスワード認証のイベントリスナーを設定
-    const loginButton = document.getElementById('loginButton');
-    const passwordInput = document.getElementById('passwordInput');
-    
-    if (loginButton) {
-        loginButton.addEventListener('click', checkPassword);
-    }
-    
-    if (passwordInput) {
-        passwordInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                checkPassword();
-            }
-        });
-    }
-    
-    // 既に認証済みかチェック
-    if (sessionStorage.getItem('authenticated') === 'true') {
-        // 認証済みの場合は直接メインコンテンツを表示
-        document.getElementById('passwordProtection').style.display = 'none';
-        document.getElementById('mainContent').style.display = 'block';
-        
-        // Chart.jsのdatalabelsプラグインを登録
-        if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
-            Chart.register(ChartDataLabels);
-            // デフォルトでは無効化（個別のチャートで有効化）
-            Chart.defaults.plugins.datalabels = {
-                display: false
-            };
-        }
-        loadCSVData();
-        setupEventListeners();
+    console.log('🟢 DOM読み込み開始');
 
-        // URLハッシュがある場合は該当タブを表示
-        switchToHashTab();
-
-        // テスト用：contactタブの状態確認
-    } else {
-        // 未認証の場合はパスワード入力画面を表示
-        if (passwordInput) {
-            passwordInput.focus();
-        }
+    // メインコンテンツを表示
+    const mainContent = document.getElementById('mainContent');
+    if (mainContent) {
+        mainContent.style.display = 'block';
     }
+
+    // Chart.jsのdatalabelsプラグインを登録
+    if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+        Chart.register(ChartDataLabels);
+        // デフォルトでは無効化（個別のチャートで有効化）
+        Chart.defaults.plugins.datalabels = {
+            display: false
+        };
+    }
+
+    // データの読み込みを開始
+    loadCSVData();
+    setupEventListeners();
+
+    // URLハッシュがある場合はそのタブに切り替え
+    switchToHashTab();
 });
 
 // ハッシュ変更時の処理
 window.addEventListener('hashchange', () => {
-    if (sessionStorage.getItem('authenticated') === 'true') {
-        switchToHashTab();
-    }
+    switchToHashTab();
 });
 
 // CSVファイルを読み込む（エラー処理強化版）
@@ -788,21 +705,6 @@ function switchTab(tab) {
         }
     } else if (tab === 'kvk') {
         console.log('⚔️ KVKノルマタブが選択されました');
-    } else if (tab === 'test') {
-        console.log('🔴 テストタブが選択されました');
-        alert('🔴 テストタブが動作しています！これが表示されればJavaScriptは正常です。');
-
-        // テストタブ要素を強制表示
-        const testTabElement = document.getElementById('testTab');
-        if (testTabElement) {
-            testTabElement.style.display = 'block';
-            testTabElement.style.visibility = 'visible';
-            testTabElement.style.opacity = '1';
-            testTabElement.style.zIndex = '1000';
-            console.log('テストタブ強制表示完了');
-        } else {
-            console.error('testTab要素が見つかりません');
-        }
         }
 
         console.log('🎯 特別処理完了');
