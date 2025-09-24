@@ -80,6 +80,46 @@
             padding: 40px;
             color: #7f8c8d;
         }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .category-pre-kvk { border-left: 4px solid #9b59b6; }
+        .category-zone4 { border-left: 4px solid #e74c3c; }
+        .category-zone3 { border-left: 4px solid #f39c12; }
+        .category-zone2 { border-left: 4px solid #f1c40f; }
+        .category-zone1 { border-left: 4px solid #2ecc71; }
+        .category-final { border-left: 4px solid #34495e; }
     </style>
 </head>
 <body>
@@ -94,6 +134,19 @@
             <p id="currentPhase">読み込み中...</p>
             <div style="margin-top: 10px;">
                 <strong>次のフェーズまで:</strong> <span id="countdown">--:--:--</span>
+            </div>
+        </div>
+
+        <div class="filter-section">
+            <h3>カテゴリーフィルター</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterByCategory('all')">すべて</button>
+                <button class="filter-btn" onclick="filterByCategory('pre-kvk')">Pre-KvK</button>
+                <button class="filter-btn" onclick="filterByCategory('zone4')">Zone 4</button>
+                <button class="filter-btn" onclick="filterByCategory('zone3')">Zone 3</button>
+                <button class="filter-btn" onclick="filterByCategory('zone2')">Zone 2</button>
+                <button class="filter-btn" onclick="filterByCategory('zone1')">Zone 1</button>
+                <button class="filter-btn" onclick="filterByCategory('final')">Final Zone</button>
             </div>
         </div>
 
@@ -122,8 +175,9 @@
     <script>
         console.log('🟢 KVKカレンダー開始');
 
-        // KVKスケジュールデータ
+        // KVKスケジュールデータ（完全版）
         const KVK_SCHEDULE = [
+            // Pre-KvK
             {
                 zone: 'Home Kingdom',
                 phase: 'KvK ストーリーの選択期間',
@@ -139,7 +193,7 @@
                 duration: '168:00:00',
                 startTime: '2025/9/18 0:00:00',
                 endTime: '2025/9/25 0:00:00',
-                description: '他の王国とのマッチングが始まります。',
+                description: '他の王国とのマッチングが始まります。\n※このタイミングで移民制限が掛かります【！移民受入注意！】\n※アップデやイベで告知がズレるとマッチメイキング時間が変わるときがあります！\n※終了時間-1日にマッチング結果がわかります',
                 category: 'pre-kvk'
             },
             {
@@ -168,6 +222,353 @@
                 endTime: '2025/10/1 0:00:00',
                 description: '略奪者集落を狩ってアイテムを手にれられます。',
                 category: 'pre-kvk'
+            },
+            // Zone 4
+            {
+                zone: 'Zone 4',
+                phase: '征服の旅路',
+                duration: '24:00:00',
+                startTime: '2025/10/1 0:00:00',
+                endTime: '2025/10/2 0:00:00',
+                description: 'KvK開始！他王国へテレポートします。',
+                category: 'zone4'
+            },
+            {
+                zone: 'Zone 4',
+                phase: '目には目を',
+                duration: '24:00:00',
+                startTime: '2025/10/2 0:00:00',
+                endTime: '2025/10/3 0:00:00',
+                description: 'Zone4での戦闘開始',
+                category: 'zone4'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/3 0:00:00',
+                endTime: '2025/10/4 0:00:00',
+                description: '休憩期間',
+                category: 'zone4'
+            },
+            {
+                zone: 'Zone 4',
+                phase: '領地争い',
+                duration: '24:00:00',
+                startTime: '2025/10/4 0:00:00',
+                endTime: '2025/10/5 0:00:00',
+                description: 'Zone4領地争い',
+                category: 'zone4'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/5 0:00:00',
+                endTime: '2025/10/6 0:00:00',
+                description: '休憩期間',
+                category: 'zone4'
+            },
+            {
+                zone: 'Zone 4',
+                phase: '懲罰',
+                duration: '24:00:00',
+                startTime: '2025/10/6 0:00:00',
+                endTime: '2025/10/7 0:00:00',
+                description: 'Zone4懲罰フェーズ',
+                category: 'zone4'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/7 0:00:00',
+                endTime: '2025/10/8 0:00:00',
+                description: '休憩期間',
+                category: 'zone4'
+            },
+            {
+                zone: 'Zone 4',
+                phase: '復讐',
+                duration: '24:00:00',
+                startTime: '2025/10/8 0:00:00',
+                endTime: '2025/10/9 0:00:00',
+                description: 'Zone4復讐フェーズ',
+                category: 'zone4'
+            },
+            {
+                zone: 'Zone 4',
+                phase: '協力',
+                duration: '24:00:00',
+                startTime: '2025/10/9 0:00:00',
+                endTime: '2025/10/10 0:00:00',
+                description: 'Zone4協力フェーズ',
+                category: 'zone4'
+            },
+            {
+                zone: 'Zone 4',
+                phase: '嵐の前の静けさ',
+                duration: '24:00:00',
+                startTime: '2025/10/10 0:00:00',
+                endTime: '2025/10/11 0:00:00',
+                description: 'Zone4最終準備期間',
+                category: 'zone4'
+            },
+            // Zone 3
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/11 0:00:00',
+                endTime: '2025/10/12 0:00:00',
+                description: '休憩期間',
+                category: 'zone3'
+            },
+            {
+                zone: 'Zone 3',
+                phase: '攻城',
+                duration: '24:00:00',
+                startTime: '2025/10/12 0:00:00',
+                endTime: '2025/10/13 0:00:00',
+                description: 'Zone3攻城戦開始',
+                category: 'zone3'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/13 0:00:00',
+                endTime: '2025/10/14 0:00:00',
+                description: '休憩期間',
+                category: 'zone3'
+            },
+            {
+                zone: 'Zone 3',
+                phase: '衝突',
+                duration: '24:00:00',
+                startTime: '2025/10/14 0:00:00',
+                endTime: '2025/10/15 0:00:00',
+                description: 'Zone3衝突フェーズ',
+                category: 'zone3'
+            },
+            {
+                zone: 'Zone 3',
+                phase: '前進',
+                duration: '24:00:00',
+                startTime: '2025/10/15 0:00:00',
+                endTime: '2025/10/16 0:00:00',
+                description: 'Zone3前進フェーズ',
+                category: 'zone3'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/16 0:00:00',
+                endTime: '2025/10/17 0:00:00',
+                description: '休憩期間',
+                category: 'zone3'
+            },
+            {
+                zone: 'Zone 3',
+                phase: '入場券',
+                duration: '24:00:00',
+                startTime: '2025/10/17 0:00:00',
+                endTime: '2025/10/18 0:00:00',
+                description: 'Zone2への入場券獲得戦',
+                category: 'zone3'
+            },
+            // Zone 2
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/18 0:00:00',
+                endTime: '2025/10/19 0:00:00',
+                description: '休憩期間',
+                category: 'zone2'
+            },
+            {
+                zone: 'Zone 2',
+                phase: '生贄は誰だ',
+                duration: '24:00:00',
+                startTime: '2025/10/19 0:00:00',
+                endTime: '2025/10/20 0:00:00',
+                description: 'Zone2戦闘開始',
+                category: 'zone2'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/20 0:00:00',
+                endTime: '2025/10/21 0:00:00',
+                description: '休憩期間',
+                category: 'zone2'
+            },
+            {
+                zone: 'Zone 2',
+                phase: '究極の一',
+                duration: '24:00:00',
+                startTime: '2025/10/21 0:00:00',
+                endTime: '2025/10/22 0:00:00',
+                description: 'Zone2究極戦',
+                category: 'zone2'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/22 0:00:00',
+                endTime: '2025/10/23 0:00:00',
+                description: '休憩期間',
+                category: 'zone2'
+            },
+            {
+                zone: 'Zone 2',
+                phase: '一気呵成',
+                duration: '24:00:00',
+                startTime: '2025/10/23 0:00:00',
+                endTime: '2025/10/24 0:00:00',
+                description: 'Zone2一気攻勢',
+                category: 'zone2'
+            },
+            {
+                zone: 'Zone 2',
+                phase: '戦友と共に',
+                duration: '24:00:00',
+                startTime: '2025/10/24 0:00:00',
+                endTime: '2025/10/25 0:00:00',
+                description: 'Zone2連携戦',
+                category: 'zone2'
+            },
+            {
+                zone: 'Zone 2',
+                phase: '一触即発',
+                duration: '24:00:00',
+                startTime: '2025/10/25 0:00:00',
+                endTime: '2025/10/26 0:00:00',
+                description: 'Zone2緊迫フェーズ',
+                category: 'zone2'
+            },
+            {
+                zone: 'Zone 2',
+                phase: 'やるかやられるか',
+                duration: '24:00:00',
+                startTime: '2025/10/26 0:00:00',
+                endTime: '2025/10/27 0:00:00',
+                description: 'Zone2決戦フェーズ',
+                category: 'zone2'
+            },
+            // Zone 1
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/27 0:00:00',
+                endTime: '2025/10/28 0:00:00',
+                description: '休憩期間',
+                category: 'zone1'
+            },
+            {
+                zone: 'Zone 1',
+                phase: '羊と狼',
+                duration: '24:00:00',
+                startTime: '2025/10/28 0:00:00',
+                endTime: '2025/10/29 0:00:00',
+                description: 'Zone1戦闘開始',
+                category: 'zone1'
+            },
+            {
+                zone: 'Zone 1',
+                phase: 'バアルの恵み',
+                duration: '24:00:00',
+                startTime: '2025/10/29 0:00:00',
+                endTime: '2025/10/30 0:00:00',
+                description: 'Zone1特殊イベント',
+                category: 'zone1'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/10/30 0:00:00',
+                endTime: '2025/10/31 0:00:00',
+                description: '休憩期間',
+                category: 'zone1'
+            },
+            {
+                zone: 'Zone 1',
+                phase: '羊と狼',
+                duration: '24:00:00',
+                startTime: '2025/10/31 0:00:00',
+                endTime: '2025/11/1 0:00:00',
+                description: 'Zone1戦闘継続',
+                category: 'zone1'
+            },
+            {
+                zone: 'Zone 1',
+                phase: '聖域の名',
+                duration: '24:00:00',
+                startTime: '2025/11/1 0:00:00',
+                endTime: '2025/11/2 0:00:00',
+                description: 'Zone1聖域戦',
+                category: 'zone1'
+            },
+            // Final Zone
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/11/2 0:00:00',
+                endTime: '2025/11/3 0:00:00',
+                description: '休憩期間',
+                category: 'final'
+            },
+            {
+                zone: 'Final Zone',
+                phase: '連戦連勝',
+                duration: '24:00:00',
+                startTime: '2025/11/3 0:00:00',
+                endTime: '2025/11/4 0:00:00',
+                description: 'Final Zone戦闘開始',
+                category: 'final'
+            },
+            {
+                zone: 'Final Zone',
+                phase: '終焉の門',
+                duration: '24:00:00',
+                startTime: '2025/11/4 0:00:00',
+                endTime: '2025/11/5 0:00:00',
+                description: 'Final Zone最終戦',
+                category: 'final'
+            },
+            {
+                zone: '',
+                phase: '',
+                duration: '24:00:00',
+                startTime: '2025/11/5 0:00:00',
+                endTime: '2025/11/6 0:00:00',
+                description: '休憩期間',
+                category: 'final'
+            },
+            {
+                zone: 'Final Zone',
+                phase: '究極の一',
+                duration: '24:00:00',
+                startTime: '2025/11/6 0:00:00',
+                endTime: '2025/11/7 0:00:00',
+                description: 'KvK最終決戦',
+                category: 'final'
+            },
+            {
+                zone: 'Final Zone',
+                phase: '前進の道',
+                duration: '24:00:00',
+                startTime: '2025/11/7 0:00:00',
+                endTime: '2025/11/8 0:00:00',
+                description: 'KvK終了・帰還準備',
+                category: 'final'
             }
         ];
 
@@ -198,16 +599,41 @@
             return { text: '🔵 予定', class: 'status-upcoming' };
         }
 
+        // 現在のフィルター
+        let currentFilter = 'all';
+
+        // フィルター関数
+        function filterByCategory(category) {
+            console.log('🔍 フィルター実行:', category);
+            currentFilter = category;
+
+            // フィルターボタンの状態更新
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // テーブル再描画
+            renderSchedule();
+        }
+
         // テーブルを描画
         function renderSchedule() {
-            console.log('📋 スケジュール描画開始');
+            console.log('📋 スケジュール描画開始, フィルター:', currentFilter);
 
             const tbody = document.getElementById('scheduleBody');
             tbody.innerHTML = '';
 
-            KVK_SCHEDULE.forEach((phase, index) => {
+            const filteredSchedule = currentFilter === 'all'
+                ? KVK_SCHEDULE
+                : KVK_SCHEDULE.filter(phase => phase.category === currentFilter);
+
+            console.log(`📊 フィルター後件数: ${filteredSchedule.length}/${KVK_SCHEDULE.length}`);
+
+            filteredSchedule.forEach((phase, index) => {
                 const status = getStatus(phase);
                 const row = document.createElement('tr');
+                row.classList.add(`category-${phase.category}`);
 
                 row.innerHTML = `
                     <td class="${status.class}">${status.text}</td>
@@ -220,10 +646,10 @@
                 `;
 
                 tbody.appendChild(row);
-                console.log(`✅ 行${index + 1}追加: ${phase.phase}`);
+                console.log(`✅ 行${index + 1}追加: ${phase.phase} (${phase.category})`);
             });
 
-            console.log(`🎉 スケジュール描画完了: ${KVK_SCHEDULE.length}件`);
+            console.log(`🎉 スケジュール描画完了: ${filteredSchedule.length}件`);
         }
 
         // 現在のフェーズ表示
