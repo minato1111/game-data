@@ -2246,8 +2246,8 @@ function calculateKvkProgress(latestData, allPlayerData) {
     if (DEBUG_MODE) console.log('全プレイヤーデータ件数:', allPlayerData.length);
 
     // 9/24のデータを探す（複数の日付形式に対応）
-    const kvkStartDate = '2024/09/24';
-    const altFormats = ['2024/9/24', '24/09/2024', '9/24/2024', '2024-09-24', '2024-9-24'];
+    const kvkStartDate = '2025/09/24';
+    const altFormats = ['2025/9/24', '2024/09/24', '2024/9/24', '24/09/2025', '24/09/2024', '9/24/2025', '9/24/2024', '2025-09-24', '2025-9-24', '2024-09-24', '2024-9-24'];
 
     let startData = allPlayerData.find(row => row.Data === kvkStartDate);
 
@@ -2315,7 +2315,7 @@ function calculateKvkProgress(latestData, allPlayerData) {
     updateKvkProgressUI({
         player: currentData,
         norma: norma,
-        startDate: '2024/09/24', // KVK開始日を固定表示
+        startDate: '2025/09/24', // KVK開始日を固定表示
         currentDate: currentData.Data,
         startKills: startKills,
         currentKills: currentKills,
@@ -2435,7 +2435,7 @@ function createKvkProgressCharts(playerData, allPlayerData) {
     }
 
     // 9/24を起点とした日別データを準備
-    const kvkStartDate = new Date('2024/09/24');
+    const kvkStartDate = new Date('2025/09/24');
     const chartData = prepareKvkChartData(allPlayerData, kvkStartDate);
 
     if (chartData.dates.length === 0) {
