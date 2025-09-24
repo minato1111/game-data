@@ -3068,12 +3068,22 @@ function initKvkCalendar() {
 // KVKカレンダーテーブルを描画
 function renderKvkCalendar(filter = 'all') {
     const tbody = document.getElementById('kvkCalendarBody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error('kvkCalendarBodyが見つかりません');
+        return;
+    }
+
+    if (DEBUG_MODE) {
+        console.log('カレンダー描画開始:', tbody);
+        console.log('テーブル要素:', tbody.parentElement);
+    }
 
     // フィルタリング
     const filteredSchedule = filter === 'all'
         ? KVK_SCHEDULE
         : KVK_SCHEDULE.filter(item => item.category === filter);
+
+    if (DEBUG_MODE) console.log('フィルター後のデータ数:', filteredSchedule.length);
 
     tbody.innerHTML = '';
 
@@ -3088,30 +3098,38 @@ function renderKvkCalendar(filter = 'all') {
         }
 
         row.innerHTML = `
-            <td style="font-weight: ${item.zone ? 'bold' : 'normal'}; color: ${item.zone ? '#2c3e50' : '#7f8c8d'};">
+            <td style="font-weight: ${item.zone ? 'bold' : 'normal'}; color: ${item.zone ? '#2c3e50' : '#7f8c8d'}; padding: 12px;">
                 ${item.zone || ''}
             </td>
-            <td style="font-weight: ${item.phase ? '600' : 'normal'};">
+            <td style="font-weight: ${item.phase ? '600' : 'normal'}; padding: 12px;">
                 ${item.phase || ''}
             </td>
-            <td style="text-align: center; font-family: monospace;">
+            <td style="text-align: center; font-family: monospace; padding: 12px;">
                 ${item.duration}
             </td>
-            <td style="text-align: center; font-family: monospace; color: #27ae60;">
+            <td style="text-align: center; font-family: monospace; color: #27ae60; padding: 12px;">
                 ${item.startTime}
             </td>
-            <td style="text-align: center; font-family: monospace; color: #e74c3c;">
+            <td style="text-align: center; font-family: monospace; color: #e74c3c; padding: 12px;">
                 ${item.endTime}
             </td>
-            <td style="line-height: 1.5; white-space: pre-line;">
+            <td style="line-height: 1.5; white-space: pre-line; padding: 12px;">
                 ${item.description}
             </td>
         `;
 
         tbody.appendChild(row);
+
+        if (DEBUG_MODE && index < 3) {
+            console.log(`行${index + 1}追加:`, row);
+        }
     });
 
-    if (DEBUG_MODE) console.log(`カレンダー描画完了: ${filteredSchedule.length}件`);
+    if (DEBUG_MODE) {
+        console.log(`カレンダー描画完了: ${filteredSchedule.length}件`);
+        console.log('最終的なtbody.innerHTML.length:', tbody.innerHTML.length);
+        console.log('tbodyの子要素数:', tbody.children.length);
+    }
 }
 
 // 現在のフェーズかどうかチェック
@@ -3138,16 +3156,27 @@ function parseKvkDate(dateStr) {
 // 現在のフェーズを更新
 function updateCurrentPhase() {
     const currentPhaseElement = document.getElementById('currentPhase');
-    if (!currentPhaseElement) return;
+    if (!currentPhaseElement) {
+        if (DEBUG_MODE) console.warn('currentPhase要素が見つかりません');
+        return;
+    }
 
     const currentPhase = KVK_SCHEDULE.find(phase => isCurrentActivePhase(phase));
+
+    if (DEBUG_MODE) {
+        console.log('現在フェーズ検索結果:', currentPhase);
+    }
 
     if (currentPhase) {
         const zoneName = currentPhase.zone || '継続中';
         const phaseName = currentPhase.phase || '待機期間';
-        currentPhaseElement.textContent = `${zoneName} - ${phaseName}`;
+        const displayText = `${zoneName} - ${phaseName}`;
+        currentPhaseElement.textContent = displayText;
+        if (DEBUG_MODE) console.log('現在フェーズ表示:', displayText);
     } else {
-        currentPhaseElement.textContent = '現在アクティブなフェーズはありません';
+        const message = '現在アクティブなフェーズはありません（開発モード）';
+        currentPhaseElement.textContent = message;
+        if (DEBUG_MODE) console.log('現在フェーズ:', message);
     }
 }
 
@@ -3156,7 +3185,21 @@ function startCountdown() {
     const countdownElement = document.getElementById('countdown');
     const nextPhaseElement = document.getElementById('nextPhase');
 
-    if (!countdownElement || !nextPhaseElement) return;
+    if (!countdownElement || !nextPhaseElement) {
+        if (DEBUG_MODE) {
+            console.warn('カウントダウン要素が見つかりません:', {
+                countdown: !!countdownElement,
+                nextPhase: !!nextPhaseElement
+            });
+        }
+        return;
+    }
+
+    if (DEBUG_MODE) console.log('カウントダウン開始');
+
+    // テスト表示
+    countdownElement.textContent = 'カウントダウン機能が動作中';
+    nextPhaseElement.textContent = 'KVKカレンダー読み込み完了';
 
     function updateCountdown() {
         const now = new Date();
