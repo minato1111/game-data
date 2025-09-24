@@ -721,7 +721,8 @@ function switchTab(tab) {
     allTabContents.forEach(content => {
         if (DEBUG_MODE) console.log('Deactivating:', content.id);
         content.classList.remove('active');
-        content.style.display = 'none';
+        // 強制的に他のタブを非表示
+        content.style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important;';
         content.setAttribute('aria-hidden', 'true');
     });
 
@@ -752,12 +753,32 @@ function switchTab(tab) {
         if (calendarTabElement) {
             console.log('カレンダータブ要素が見つかりました:', calendarTabElement);
 
-            // シンプルな強制表示
-            calendarTabElement.style.display = 'block';
-            calendarTabElement.style.visibility = 'visible';
-            calendarTabElement.style.opacity = '1';
+            // 強制表示（全ての可能な干渉を排除）
+            calendarTabElement.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 400px !important;
+                z-index: 1 !important;
+                background: transparent !important;
+                overflow: visible !important;
+            `;
+
+            // 子要素も強制表示
+            const childDivs = calendarTabElement.querySelectorAll('div');
+            childDivs.forEach(div => {
+                div.style.cssText += `
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                `;
+            });
 
             console.log('カレンダータブ表示完了');
+            console.log('calendarTab最終スタイル:', calendarTabElement.style.cssText);
 
             // KVKカレンダーを初期化
             initKvkCalendar();
@@ -3185,6 +3206,59 @@ function renderKvkCalendar(filter = 'all') {
     console.log('最終的なtbody.innerHTML.length:', tbody.innerHTML.length);
     console.log('tbodyの子要素数:', tbody.children.length);
     console.log('tbodyの実際のHTML(最初の200文字):', tbody.innerHTML.substring(0, 200));
+
+    // テーブル関連要素を強制表示
+    const table = tbody.closest('table');
+    const tableContainer = table?.parentElement;
+    const calendarTab = document.getElementById('calendarTab');
+
+    if (table) {
+        table.style.cssText += `
+            display: table !important;
+            visibility: visible !important;
+            width: 100% !important;
+            border-collapse: collapse !important;
+            background: white !important;
+        `;
+        console.log('テーブル要素を強制表示');
+    }
+
+    if (tableContainer) {
+        tableContainer.style.cssText += `
+            display: block !important;
+            visibility: visible !important;
+            overflow: visible !important;
+            background: white !important;
+        `;
+        console.log('テーブルコンテナを強制表示');
+    }
+
+    tbody.style.cssText += `
+        display: table-row-group !important;
+        visibility: visible !important;
+    `;
+
+    // 各行も強制表示
+    Array.from(tbody.children).forEach((row, index) => {
+        if (index < 3) { // 最初の3行のみログ出力
+            console.log(`行${index + 1}の表示状態:`, row.style.display);
+        }
+        row.style.cssText += `
+            display: table-row !important;
+            visibility: visible !important;
+        `;
+    });
+
+    // calendarTab全体も再度強制表示
+    if (calendarTab) {
+        calendarTab.style.cssText += `
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        `;
+    }
+
+    console.log('=== 全要素強制表示完了 ===');
 }
 
 // 現在のフェーズかどうかチェック
