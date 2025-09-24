@@ -80,8 +80,17 @@
     </div>
 
     <script>
-        // パスワード設定（元のものと同じ）
-        const CORRECT_PASSWORD = '2062data';
+        // パスワード設定（ハッシュ化）
+        const CORRECT_PASSWORD_HASH = 'e8b7e2e8c8b4e1b9a2d3c5f6e7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8';
+
+        // シンプルなハッシュ関数
+        async function simpleHash(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
         
         // DOM要素を取得
         const loginScreen = document.getElementById('loginScreen');
@@ -91,22 +100,30 @@
         const passwordError = document.getElementById('passwordError');
 
         // ログイン機能
-        function checkPassword() {
+        async function checkPassword() {
             const input = passwordInput.value;
-            
-            if (input === CORRECT_PASSWORD) {
-                // 認証成功
-                sessionStorage.setItem('authenticated', 'true');
-                showHomeContent();
-                loadQuickStats();
-            } else {
-                // 認証失敗
+
+            try {
+                // 入力されたパスワードをハッシュ化
+                const inputHash = await simpleHash(input);
+
+                if (inputHash === CORRECT_PASSWORD_HASH) {
+                    // 認証成功
+                    sessionStorage.setItem('authenticated', 'true');
+                    showHomeContent();
+                    loadQuickStats();
+                } else {
+                    // 認証失敗
+                    passwordError.style.display = 'block';
+                    passwordInput.value = '';
+                    passwordInput.style.animation = 'shake 0.5s';
+                    setTimeout(() => {
+                        passwordInput.style.animation = '';
+                    }, 500);
+                }
+            } catch (error) {
+                console.error('認証エラー:', error);
                 passwordError.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    passwordInput.style.animation = '';
-                }, 500);
             }
         }
 

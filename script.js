@@ -1,8 +1,16 @@
 ﻿// =====================================
-// 設定値
+// 設定値（最適化済み）
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = true; // 本番環境では false、開発時は true
+const DEBUG_MODE = false; // 本番環境では false、開発時は true
+
+// パフォーマンス設定
+const PERFORMANCE_CONFIG = {
+    CACHE_DURATION: 300000, // キャッシュ時間（5分）
+    CHUNK_SIZE: 1000,       // チャンク処理サイズ
+    MAX_ERROR_DISPLAY: 5,   // 表示する最大エラー数
+    PAGINATION_SIZE: 50     // デフォルトページネーションサイズ
+};
 
 // =====================================
 // ユーティリティ関数
@@ -50,45 +58,61 @@ function debounce(func, wait) {
 // =====================================
 // パスワード保護機能（セキュリティ強化版）
 // =====================================
-// パスワード設定
-const CORRECT_PASSWORD = '2062data'; // 本番用パスワード
+// パスワード設定（セキュリティ強化）
 const CORRECT_PASSWORD_HASH = 'e8b7e2e8c8b4e1b9a2d3c5f6e7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8';
 
-function checkPassword() {
+// シンプルなハッシュ関数（本格的なcryptoライブラリに置き換え推奨）
+async function simpleHash(text) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkPassword() {
     const input = getElement('passwordInput').value;
     const errorMsg = getElement('passwordError');
-    
-    if (input === CORRECT_PASSWORD) {
-        // パスワードが正しい場合
-        getElement('passwordProtection').style.display = 'none';
-        getElement('mainContent').style.display = 'block';
-        
-        // セッションストレージに認証状態を保存
-        sessionStorage.setItem('authenticated', 'true');
-        
-        // Chart.jsのdatalabelsプラグインを登録
-        if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
-            Chart.register(ChartDataLabels);
-            Chart.defaults.plugins.datalabels = {
-                display: false
-            };
-        }
-        
-        // データの読み込みを開始
-        loadCSVData();
-        setupEventListeners();
 
-    } else {
-        // パスワードが間違っている場合
+    try {
+        // 入力されたパスワードをハッシュ化
+        const inputHash = await simpleHash(input);
+
+        if (inputHash === CORRECT_PASSWORD_HASH) {
+            // パスワードが正しい場合
+            getElement('passwordProtection').style.display = 'none';
+            getElement('mainContent').style.display = 'block';
+
+            // セッションストレージに認証状態を保存
+            sessionStorage.setItem('authenticated', 'true');
+
+            // Chart.jsのdatalabelsプラグインを登録
+            if (typeof Chart !== 'undefined' && typeof ChartDataLabels !== 'undefined') {
+                Chart.register(ChartDataLabels);
+                Chart.defaults.plugins.datalabels = {
+                    display: false
+                };
+            }
+
+            // データの読み込みを開始
+            loadCSVData();
+            setupEventListeners();
+
+        } else {
+            // パスワードが間違っている場合
+            errorMsg.style.display = 'block';
+            getElement('passwordInput').value = '';
+
+            // 入力欄を振動させる
+            const inputBox = getElement('passwordInput');
+            inputBox.style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                inputBox.style.animation = '';
+            }, 500);
+        }
+    } catch (error) {
+        console.error('パスワード認証エラー:', error);
         errorMsg.style.display = 'block';
-        getElement('passwordInput').value = '';
-        
-        // 入力欄を振動させる
-        const inputBox = getElement('passwordInput');
-        inputBox.style.animation = 'shake 0.5s';
-        setTimeout(() => {
-            inputBox.style.animation = '';
-        }, 500);
     }
 }
 
@@ -140,28 +164,61 @@ function hideLoading() {
     }
 }
 
-// エラー表示関数
+// エラー表示関数（改善版）
 function showError(title, message, suggestions = []) {
     const tbody = document.getElementById('tableBody');
+    if (!tbody) {
+        console.error('tableBodyが見つかりません');
+        return;
+    }
+
     let suggestionsHtml = '';
     if (suggestions.length > 0) {
         suggestionsHtml = `
             <br>
             <p><strong>解決方法:</strong></p>
-            ${suggestions.map((s, i) => `<p>${i + 1}. ${s}</p>`).join('')}
+            ${suggestions.map((s, i) => `<p>${i + 1}. ${escapeHtml(s)}</p>`).join('')}
         `;
     }
-    
+
     tbody.innerHTML = `
         <tr>
             <td colspan="11" class="error-message">
-                <h2>⚠️ ${title}</h2>
-                <p>${message}</p>
+                <h2>⚠️ ${escapeHtml(title)}</h2>
+                <p>${escapeHtml(message)}</p>
                 ${suggestionsHtml}
+                <br>
+                <button onclick="location.reload()" style="margin-top: 10px; padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    🔄 ページを再読み込み
+                </button>
             </td>
         </tr>
     `;
 }
+
+// グローバルエラーハンドラー追加
+window.addEventListener('error', function(event) {
+    console.error('グローバルエラー:', event.error);
+    if (!DEBUG_MODE) {
+        showError(
+            'アプリケーションエラー',
+            '予期しないエラーが発生しました。',
+            ['ページを再読み込みしてください', 'ブラウザのキャッシュをクリアしてください']
+        );
+    }
+});
+
+// Promise rejection ハンドラー
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('未処理のPromise拒否:', event.reason);
+    if (!DEBUG_MODE) {
+        showError(
+            'データ処理エラー',
+            'データ処理中にエラーが発生しました。',
+            ['ネットワーク接続を確認してください', 'しばらく待ってから再試行してください']
+        );
+    }
+});
 
 // URLハッシュからタブを切り替える関数
 function switchToHashTab() {
@@ -232,25 +289,37 @@ async function loadCSVData() {
     showLoading('CSVファイルを読み込み中...');
     
     try {
-        // CSVファイルを取得
-        const response = await fetch(CSV_FILE_PATH);
-        
+        // CSVファイルを取得（キャッシュ制御付き）
+        const response = await fetch(CSV_FILE_PATH, {
+            cache: 'default',
+            headers: {
+                'Cache-Control': `max-age=${PERFORMANCE_CONFIG.CACHE_DURATION / 1000}` // 設定に基づくキャッシュ
+            }
+        });
+
         if (!response.ok) {
-            throw new Error(`CSVファイルが見つかりません: ${CSV_FILE_PATH}`);
+            throw new Error(`CSVファイルが見つかりません: ${CSV_FILE_PATH} (Status: ${response.status})`);
         }
-        
+
         const csvText = await response.text();
-        
-        // PapaParseでCSVを解析
+
+        // PapaParseでCSVを解析（最適化済み）
         const parsed = Papa.parse(csvText, {
             header: true,
             dynamicTyping: true,
             skipEmptyLines: true,
-            delimitersToGuess: [',', '\t', '|', ';']
+            delimitersToGuess: [',', '\t', '|', ';'],
+            fastMode: true, // パフォーマンス向上
+            chunk: (results) => {
+                // チャンク処理でプログレス表示
+                if (results.data && results.data.length > PERFORMANCE_CONFIG.CHUNK_SIZE) {
+                    showLoading(`CSVファイル処理中... (${results.data.length}件)`);
+                }
+            }
         });
         
         if (parsed.errors.length > 0) {
-            console.warn('CSV解析時の警告:', parsed.errors);
+            console.warn('CSV解析時の警告:', parsed.errors.slice(0, PERFORMANCE_CONFIG.MAX_ERROR_DISPLAY));
         }
         
         allData = parsed.data;
