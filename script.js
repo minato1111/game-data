@@ -746,45 +746,23 @@ function switchTab(tab) {
     } else if (tab === 'growth') {
         initGrowthTab();
     } else if (tab === 'calendar') {
-        if (DEBUG_MODE) console.log('カレンダータブが選択されました');
+        console.log('📅 KVKカレンダータブが選択されました');
 
-        // カレンダータブの表示状況をチェック
         const calendarTabElement = document.getElementById('calendarTab');
-        if (DEBUG_MODE) {
-            console.log('calendarTab要素:', calendarTabElement);
-            console.log('calendarTab表示状況:', {
-                display: calendarTabElement ? calendarTabElement.style.display : 'N/A',
-                visibility: calendarTabElement ? window.getComputedStyle(calendarTabElement).visibility : 'N/A',
-                opacity: calendarTabElement ? window.getComputedStyle(calendarTabElement).opacity : 'N/A',
-                height: calendarTabElement ? calendarTabElement.offsetHeight : 'N/A',
-                clientRect: calendarTabElement ? calendarTabElement.getBoundingClientRect() : 'N/A'
-            });
-        }
-
-        // 強制表示
         if (calendarTabElement) {
+            console.log('カレンダータブ要素が見つかりました:', calendarTabElement);
+
+            // シンプルな強制表示
             calendarTabElement.style.display = 'block';
             calendarTabElement.style.visibility = 'visible';
             calendarTabElement.style.opacity = '1';
-            calendarTabElement.style.position = 'relative';
-            calendarTabElement.style.zIndex = '999';
-            if (DEBUG_MODE) console.log('カレンダータブ強制表示を実行');
 
-            // 5秒後に再度確認
-            setTimeout(() => {
-                const rect = calendarTabElement.getBoundingClientRect();
-                console.log('5秒後の表示状況:', {
-                    visible: rect.width > 0 && rect.height > 0,
-                    rect: rect,
-                    computed: {
-                        display: window.getComputedStyle(calendarTabElement).display,
-                        visibility: window.getComputedStyle(calendarTabElement).visibility
-                    }
-                });
-            }, 5000);
+            console.log('カレンダータブ表示完了');
+        } else {
+            console.error('calendarTab要素が見つかりません');
         }
 
-        initKvkCalendar();
+        // initKvkCalendar(); // 一時的にコメントアウト
     } else if (tab === 'test') {
         console.log('🔴 テストタブが選択されました');
         alert('🔴 テストタブが動作しています！これが表示されればJavaScriptは正常です。');
