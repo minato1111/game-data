@@ -9,77 +9,119 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
-            background: #f5f6fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             color: #2c3e50;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         }
 
         .header {
             text-align: center;
             margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ecf0f1;
         }
 
         .header h1 {
             color: #2c3e50;
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 16px;
         }
 
         .current-phase {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
             text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .current-phase h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .current-phase p {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 5px 0;
         }
 
         .filter-section {
             background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+
+        .filter-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
         }
 
         .filter-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .filter-btn {
-            padding: 8px 16px;
+            padding: 10px 18px;
             border: 2px solid #e0e0e0;
             background: white;
-            border-radius: 8px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .filter-btn:hover {
-            background: #f0f0f0;
+            background: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
         .filter-btn.active {
-            background: #3498db;
+            background: linear-gradient(135deg, #3498db, #2980b9);
             color: white;
             border-color: #3498db;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        /* タイムラインテーブルスタイル */
+        .table-wrapper {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
+            font-size: 14px;
         }
 
         thead {
@@ -88,77 +130,222 @@
         }
 
         th {
-            padding: 15px 10px;
+            padding: 18px 12px;
             font-weight: 600;
-            font-size: 14px;
-            text-align: center;
+            font-size: 13px;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        th:first-child { width: 80px; }
+        th:nth-child(2) { width: 100px; }
+        th:nth-child(3) { width: 150px; }
+        th:nth-child(4) { width: 90px; }
+        th:nth-child(5) { width: 140px; }
+        th:nth-child(6) { width: 140px; }
+
+        tbody tr {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.002);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         td {
-            padding: 12px 10px;
-            border-bottom: 1px solid #eee;
+            padding: 16px 12px;
+            border-bottom: 1px solid #ecf0f1;
+            position: relative;
+        }
+
+        /* ステータス表示の強化 */
+        .status-completed {
+            color: #95a5a6;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        .status-current {
+            color: #27ae60;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .status-upcoming {
+            color: #3498db;
+            font-weight: 600;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ゾーン別カラー強化 */
+        .category-pre-kvk {
+            border-left: 6px solid #9b59b6;
+            background: linear-gradient(90deg, rgba(155, 89, 182, 0.08), transparent);
+        }
+
+        .category-zone4 {
+            border-left: 6px solid #e74c3c;
+            background: linear-gradient(90deg, rgba(231, 76, 60, 0.08), transparent);
+        }
+
+        .category-zone5 {
+            border-left: 6px solid #f39c12;
+            background: linear-gradient(90deg, rgba(243, 156, 18, 0.08), transparent);
+        }
+
+        .category-zone6 {
+            border-left: 6px solid #f1c40f;
+            background: linear-gradient(90deg, rgba(241, 196, 15, 0.08), transparent);
+        }
+
+        .category-kingsland {
+            border-left: 6px solid #2ecc71;
+            background: linear-gradient(90deg, rgba(46, 204, 113, 0.08), transparent);
+        }
+
+        /* 時間表示の強化 */
+        .time-display {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: 600;
+            font-size: 13px;
+            background: #ecf0f1;
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            min-width: 120px;
             text-align: center;
         }
 
-        tr:hover {
-            background: #f8f9fa;
+        .duration-display {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-weight: 700;
+            font-size: 12px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
         }
 
-        .status-completed { color: #95a5a6; }
-        .status-current { color: #27ae60; font-weight: bold; }
-        .status-upcoming { color: #3498db; }
+        /* フェーズ名の強化 */
+        .phase-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2c3e50;
+        }
 
-        .category-pre-kvk { border-left: 4px solid #9b59b6; }
-        .category-zone4 { border-left: 4px solid #e74c3c; }
-        .category-zone5 { border-left: 4px solid #f39c12; }
-        .category-zone6 { border-left: 4px solid #f1c40f; }
-        .category-kingsland { border-left: 4px solid #2ecc71; }
+        .zone-name {
+            font-weight: 700;
+            font-size: 13px;
+            color: #34495e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
+        /* 説明文の改善 */
+        .description {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #7f8c8d;
+            max-width: 300px;
+        }
+
+        /* 編集可能時間の改善 */
         .editable-time {
-            background-color: #e3f2fd !important;
-            border: 1px dashed #2196f3;
-            padding: 4px 8px;
-            border-radius: 4px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
+            border: 2px dashed #2196f3;
+            padding: 6px 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
         }
 
         .editable-time:hover {
-            background-color: #bbdefb !important;
-            box-shadow: 0 2px 4px rgba(33, 150, 243, 0.3);
+            background: linear-gradient(135deg, #bbdefb, #90caf9) !important;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+            transform: translateY(-2px);
         }
 
         .time-input {
             border: 2px solid #2196f3;
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 8px 12px;
+            border-radius: 8px;
             font-size: 14px;
-            width: 150px;
+            width: 160px;
+            font-family: 'Consolas', 'Monaco', monospace;
         }
 
         .save-btn, .cancel-btn {
-            margin: 2px;
-            padding: 4px 8px;
+            margin: 3px;
+            padding: 6px 12px;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         .save-btn {
-            background: #4caf50;
+            background: linear-gradient(135deg, #27ae60, #219a52);
             color: white;
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
         }
 
         .cancel-btn {
-            background: #f44336;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
             color: white;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+        }
+
+        .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
         }
 
         .loading {
             text-align: center;
-            padding: 40px;
+            padding: 60px;
             color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        /* レスポンシブ改善 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px 6px;
+            }
         }
     </style>
 </head>
@@ -189,26 +376,28 @@
             </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>状態</th>
-                    <th>エリア</th>
-                    <th>フェーズ</th>
-                    <th>期間</th>
-                    <th>開始日時</th>
-                    <th>終了日時</th>
-                    <th>説明</th>
-                </tr>
-            </thead>
-            <tbody id="scheduleBody">
-                <tr>
-                    <td colspan="7" class="loading">
-                        <div>📅 スケジュールを読み込み中...</div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>状態</th>
+                        <th>エリア</th>
+                        <th>フェーズ</th>
+                        <th>期間</th>
+                        <th>開始日時</th>
+                        <th>終了日時</th>
+                        <th>説明</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody">
+                    <tr>
+                        <td colspan="7" class="loading">
+                            <div>📅 スケジュールを読み込み中...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
@@ -676,16 +865,22 @@
                 // 征服の旅路フェーズの終了時間は編集可能にする
                 const endTimeCell = phase.phase === '征服の旅路'
                     ? `<span class="editable-time" onclick="editTime(this, ${index})" title="クリックして編集">${phase.endTime}</span>`
-                    : phase.endTime;
+                    : `<span class="time-display">${phase.endTime}</span>`;
+
+                const startTimeDisplay = `<span class="time-display">${phase.startTime}</span>`;
+                const durationDisplay = `<span class="duration-display">${phase.duration}</span>`;
+                const zoneDisplay = phase.zone ? `<span class="zone-name">${phase.zone}</span>` : '';
+                const phaseDisplay = `<span class="phase-name">${phase.phase}</span>`;
+                const descriptionDisplay = `<div class="description">${phase.description}</div>`;
 
                 row.innerHTML = `
                     <td class="${status.class}">${status.text}</td>
-                    <td><strong>${phase.zone || ''}</strong></td>
-                    <td><strong>${phase.phase}</strong></td>
-                    <td>${phase.duration}</td>
-                    <td>${phase.startTime}</td>
+                    <td>${zoneDisplay}</td>
+                    <td>${phaseDisplay}</td>
+                    <td>${durationDisplay}</td>
+                    <td>${startTimeDisplay}</td>
                     <td>${endTimeCell}</td>
-                    <td style="text-align: left;">${phase.description}</td>
+                    <td style="text-align: left;">${descriptionDisplay}</td>
                 `;
 
                 tbody.appendChild(row);
