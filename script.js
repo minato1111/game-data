@@ -746,6 +746,21 @@ function switchTab(tab) {
     } else if (tab === 'growth') {
         initGrowthTab();
     } else if (tab === 'calendar') {
+        if (DEBUG_MODE) console.log('カレンダータブが選択されました');
+
+        // カレンダータブの表示状況をチェック
+        const calendarTabElement = document.getElementById('calendarTab');
+        if (DEBUG_MODE) {
+            console.log('calendarTab要素:', calendarTabElement);
+            console.log('calendarTab表示状況:', {
+                display: calendarTabElement ? calendarTabElement.style.display : 'N/A',
+                visibility: calendarTabElement ? window.getComputedStyle(calendarTabElement).visibility : 'N/A',
+                opacity: calendarTabElement ? window.getComputedStyle(calendarTabElement).opacity : 'N/A',
+                height: calendarTabElement ? calendarTabElement.offsetHeight : 'N/A',
+                clientRect: calendarTabElement ? calendarTabElement.getBoundingClientRect() : 'N/A'
+            });
+        }
+
         initKvkCalendar();
     }
 
