@@ -44,7 +44,6 @@
             <button class="tab-btn" onclick="switchTab('overall')" role="tab" aria-controls="overallTab" aria-selected="false">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
             <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
-            <button class="tab-btn" onclick="switchTab('contact')" role="tab" aria-controls="contactTab" aria-selected="false">連絡先</button>
         </nav>
 
         <!-- データ一覧タブ -->
@@ -474,7 +473,7 @@
                 <div style="margin-top: 30px;">
                     <div style="text-align: center; margin-bottom: 25px;">
                         <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">📈 日次進捗グラフ</h3>
-                        <p style="color: #7f8c8d; font-size: 14px;">9/22からの撃破数・戦死数の推移</p>
+                        <p style="color: #7f8c8d; font-size: 14px;">9/24からの撃破数・戦死数の推移</p>
                     </div>
 
                     <!-- 撃破数グラフ -->
@@ -503,7 +502,7 @@
                     上の検索ボックスにプレイヤー名またはIDを入力して、KVKノルマの達成状況を確認できます
                 </p>
                 <div style="padding: 15px; background: #e8f4fd; border-radius: 8px; max-width: 400px; margin: 0 auto;">
-                    <p style="color: #34495e; font-size: 14px; margin: 0;">💡 9/22からの最新データまでの進捗を自動計算し、Power帯に応じたノルマを判定します</p>
+                    <p style="color: #34495e; font-size: 14px; margin: 0;">💡 9/24からの最新データまでの進捗を自動計算し、Power帯に応じたノルマを判定します</p>
                 </div>
             </div>
         </div>
@@ -636,92 +635,6 @@
             </div>
         </div>
 
-        <!-- 連絡先タブ -->
-        <div id="contactTab" class="tab-content">
-            <div style="max-width: 800px; margin: 0 auto; padding: 40px 20px;">
-                <!-- ヘッダーセクション -->
-                <div style="text-align: center; margin-bottom: 40px;">
-                    <h2 style="color: #2c3e50; font-size: 34px; margin-bottom: 15px; font-weight: 700;">
-                        📧 連絡先・お問い合わせ
-                    </h2>
-                    <p style="color: #7f8c8d; font-size: 16px;">ツールに関するご質問やご要望はこちらまでお気軽にどうぞ</p>
-                    <div style="width: 80px; height: 2px; background: #3498db; margin: 15px auto;"></div>
-                </div>
-
-                <!-- 連絡先カードグリッド -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; margin-bottom: 40px;">
-
-                    <!-- Twitter連絡先 -->
-                    <div class="contact-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; transition: transform 0.3s;">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                            <span style="font-size: 36px; color: white;">🐦</span>
-                        </div>
-                        <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 20px;">Twitter</h3>
-                        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;">最新情報やアップデートをお知らせします</p>
-                        <a href="#" target="_blank" style="display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s;">
-                            フォローする
-                        </a>
-                    </div>
-
-                    <!-- Discord連絡先 -->
-                    <div class="contact-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; transition: transform 0.3s;">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #7289da 0%, #5865f2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                            <span style="font-size: 36px; color: white;">💬</span>
-                        </div>
-                        <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 20px;">Discord</h3>
-                        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;">リアルタイムでサポートいたします</p>
-                        <a href="#" target="_blank" style="display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #7289da 0%, #5865f2 100%); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s;">
-                            参加する
-                        </a>
-                    </div>
-
-                    <!-- Email連絡先 -->
-                    <div class="contact-card" style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; transition: transform 0.3s;">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                            <span style="font-size: 36px; color: white;">📧</span>
-                        </div>
-                        <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 20px;">Email</h3>
-                        <p style="color: #7f8c8d; font-size: 14px; margin-bottom: 20px;">詳細なお問い合わせはメールで</p>
-                        <a href="mailto:contact@example.com" style="display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s;">
-                            メール送信
-                        </a>
-                    </div>
-                </div>
-
-                <!-- よくある質問セクション -->
-                <div style="background: #f8f9fa; border-radius: 15px; padding: 30px; margin-bottom: 30px;">
-                    <h3 style="color: #2c3e50; text-align: center; margin-bottom: 25px; font-size: 24px; font-weight: 700;">
-                        💡 よくある質問
-                    </h3>
-
-                    <div style="display: grid; gap: 20px;">
-                        <div style="background: white; border-radius: 10px; padding: 20px; border-left: 4px solid #3498db;">
-                            <h4 style="color: #2c3e50; margin-bottom: 10px; font-size: 16px;">Q: データはどのくらいの頻度で更新されますか？</h4>
-                            <p style="color: #7f8c8d; line-height: 1.6; margin: 0;">A: CSVファイルの更新に応じてリアルタイムで反映されます。キャッシュは5分間保持されます。</p>
-                        </div>
-
-                        <div style="background: white; border-radius: 10px; padding: 20px; border-left: 4px solid #e74c3c;">
-                            <h4 style="color: #2c3e50; margin-bottom: 10px; font-size: 16px;">Q: パスワードを忘れてしまいました</h4>
-                            <p style="color: #7f8c8d; line-height: 1.6; margin: 0;">A: 管理者にお問い合わせください。セキュリティのため、パスワードはハッシュ化されています。</p>
-                        </div>
-
-                        <div style="background: white; border-radius: 10px; padding: 20px; border-left: 4px solid #27ae60;">
-                            <h4 style="color: #2c3e50; margin-bottom: 10px; font-size: 16px;">Q: 新しい機能の要望はできますか？</h4>
-                            <p style="color: #7f8c8d; line-height: 1.6; margin: 0;">A: はい！上記の連絡先からご要望をお聞かせください。検討させていただきます。</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 免責事項 -->
-                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 20px; text-align: center;">
-                    <h4 style="color: #856404; margin-bottom: 10px; font-size: 16px;">⚠️ 免責事項</h4>
-                    <p style="color: #856404; font-size: 14px; line-height: 1.6; margin: 0;">
-                        本ツールは非公式のファンサイトです。Rise of Kingdoms公式とは関係ありません。<br>
-                        データの正確性について保証するものではありませんので、参考程度にご利用ください。
-                    </p>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 

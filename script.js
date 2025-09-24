@@ -562,37 +562,11 @@ function switchTab(tab) {
         updateOverallChart();
     } else if (tab === 'growth') {
         initGrowthTab();
-    } else if (tab === 'contact') {
-        // 連絡先タブの初期化
-        initContactTab();
     }
 
     if (DEBUG_MODE) console.log('=== switchTab end ===');
 }
 
-// 連絡先タブ初期化関数
-function initContactTab() {
-    if (DEBUG_MODE) console.log('連絡先タブを初期化中...');
-
-    const contactTab = document.getElementById('contactTab');
-    if (!contactTab) {
-        if (DEBUG_MODE) console.error('contactTabが見つかりません');
-        return;
-    }
-
-    // 連絡先カードにホバー効果を追加
-    const contactCards = contactTab.querySelectorAll('.contact-card');
-    contactCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            card.style.transform = 'translateY(-5px)';
-        });
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'translateY(0)';
-        });
-    });
-
-    if (DEBUG_MODE) console.log('連絡先タブ初期化完了');
-}
 
 // 成長ランキングタブの初期化
 function initGrowthTab() {
@@ -2065,12 +2039,12 @@ function searchKvkPlayer() {
 
 // KVKノルマ進捗計算機能
 function calculateKvkProgress(latestData, allPlayerData) {
-    // 9/22のデータを探す
-    const kvkStartDate = '2025/09/22';
+    // 9/24のデータを探す
+    const kvkStartDate = '2024/09/24';
     let startData = allPlayerData.find(row => row.Data === kvkStartDate);
 
     if (!startData) {
-        // 9/22のデータがない場合、最も古いデータを使用
+        // 9/24のデータがない場合、最も古いデータを使用
         if (DEBUG_MODE) console.warn(`${kvkStartDate} のデータが見つかりません。最も古いデータを使用します。`);
         const oldestData = allPlayerData.length > 0 ? allPlayerData[0] : null;
         if (!oldestData) {
@@ -2217,8 +2191,8 @@ function createKvkProgressCharts(playerData, allPlayerData) {
         return;
     }
 
-    // 9/22を起点とした日別データを準備
-    const kvkStartDate = new Date('2025/09/22');
+    // 9/24を起点とした日別データを準備
+    const kvkStartDate = new Date('2024/09/24');
     const chartData = prepareKvkChartData(allPlayerData, kvkStartDate);
 
     if (chartData.dates.length === 0) {
@@ -2238,7 +2212,7 @@ function prepareKvkChartData(allPlayerData, startDate) {
     // 日付順にソート
     const sortedData = allPlayerData.sort((a, b) => new Date(a.Data) - new Date(b.Data));
 
-    // 9/22以降のデータをフィルター
+    // 9/24以降のデータをフィルター
     const kvkData = sortedData.filter(row => {
         const rowDate = new Date(row.Data);
         return rowDate >= startDate;
@@ -2246,7 +2220,7 @@ function prepareKvkChartData(allPlayerData, startDate) {
 
     if (kvkData.length === 0) return { dates: [], killProgress: [], deathProgress: [] };
 
-    // 起点データ（9/22）
+    // 起点データ（9/24）
     const baseKills = parseInt((kvkData[0]['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
     const baseDeaths = parseInt((kvkData[0]['Dead Troops'] || '0').toString().replace(/,/g, '')) || 0;
 
