@@ -2315,7 +2315,7 @@ function calculateKvkProgress(latestData, allPlayerData) {
     updateKvkProgressUI({
         player: currentData,
         norma: norma,
-        startDate: startData.Data, // kvkStartDateではなく実際に使用したデータの日付
+        startDate: '2024/09/24', // KVK開始日を固定表示
         currentDate: currentData.Data,
         startKills: startKills,
         currentKills: currentKills,
