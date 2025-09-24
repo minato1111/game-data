@@ -785,6 +785,21 @@ function switchTab(tab) {
         }
 
         initKvkCalendar();
+    } else if (tab === 'test') {
+        console.log('🔴 テストタブが選択されました');
+        alert('🔴 テストタブが動作しています！これが表示されればJavaScriptは正常です。');
+
+        // テストタブ要素を強制表示
+        const testTabElement = document.getElementById('testTab');
+        if (testTabElement) {
+            testTabElement.style.display = 'block';
+            testTabElement.style.visibility = 'visible';
+            testTabElement.style.opacity = '1';
+            testTabElement.style.zIndex = '1000';
+            console.log('テストタブ強制表示完了');
+        } else {
+            console.error('testTab要素が見つかりません');
+        }
     }
 
     if (DEBUG_MODE) console.log('=== switchTab end ===');

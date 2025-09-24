@@ -45,7 +45,24 @@
             <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
             <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
             <button class="tab-btn" onclick="switchTab('calendar')" role="tab" aria-controls="calendarTab" aria-selected="false">KVKカレンダー</button>
+            <button class="tab-btn" onclick="switchTab('test')" role="tab" aria-controls="testTab" aria-selected="false">🔴テスト</button>
         </nav>
+
+        <!-- 🔴テストタブ -->
+        <div id="testTab" class="tab-content">
+            <div style="background: red; color: white; padding: 50px; font-size: 48px; text-align: center;">
+                <h1>🔴 完全テスト</h1>
+                <p>この赤い背景が見えればタブ機能は正常です</p>
+                <div style="background: blue; padding: 20px; margin: 20px 0;">
+                    <h2>青いセクション</h2>
+                    <p>複数色のテスト</p>
+                </div>
+                <div style="background: green; padding: 20px; margin: 20px 0;">
+                    <h2>緑のセクション</h2>
+                    <p>レンダリングテスト完了</p>
+                </div>
+            </div>
+        </div>
 
         <!-- データ一覧タブ -->
         <div id="dataTab" class="tab-content active">
