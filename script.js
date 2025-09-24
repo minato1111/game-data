@@ -196,10 +196,17 @@ function showError(title, message, suggestions = []) {
     `;
 }
 
-// グローバルエラーハンドラー追加
+// グローバルエラーハンドラー追加（強化版）
 window.addEventListener('error', function(event) {
+    // Chrome拡張機能のエラーを除外
+    if (event.error && event.error.message &&
+        event.error.message.includes('message channel closed')) {
+        console.warn('Chrome拡張機能関連のエラーを無視します:', event.error.message);
+        return;
+    }
+
     console.error('グローバルエラー:', event.error);
-    if (!DEBUG_MODE) {
+    if (!DEBUG_MODE && event.error) {
         showError(
             'アプリケーションエラー',
             '予期しないエラーが発生しました。',
@@ -208,10 +215,25 @@ window.addEventListener('error', function(event) {
     }
 });
 
-// Promise rejection ハンドラー
+// Promise rejection ハンドラー（強化版）
 window.addEventListener('unhandledrejection', function(event) {
+    // Chrome拡張機能のエラーを除外
+    if (event.reason && typeof event.reason === 'object' &&
+        event.reason.message && event.reason.message.includes('message channel closed')) {
+        console.warn('Chrome拡張機能関連のPromise拒否を無視します:', event.reason.message);
+        event.preventDefault(); // エラー表示を防ぐ
+        return;
+    }
+
+    // 文字列の場合もチェック
+    if (typeof event.reason === 'string' && event.reason.includes('message channel closed')) {
+        console.warn('Chrome拡張機能関連のPromise拒否を無視します:', event.reason);
+        event.preventDefault();
+        return;
+    }
+
     console.error('未処理のPromise拒否:', event.reason);
-    if (!DEBUG_MODE) {
+    if (!DEBUG_MODE && event.reason) {
         showError(
             'データ処理エラー',
             'データ処理中にエラーが発生しました。',
@@ -303,40 +325,78 @@ async function loadCSVData() {
 
         const csvText = await response.text();
 
-        // PapaParseでCSVを解析（最適化済み）
+        // CSVテキストの基本チェック
+        if (!csvText || typeof csvText !== 'string') {
+            throw new Error('CSVファイルが空か無効です');
+        }
+
+        if (csvText.length < 10) {
+            throw new Error('CSVファイルのサイズが小さすぎます');
+        }
+
+        // PapaParseでCSVを解析（エラーハンドリング強化版）
         const parsed = Papa.parse(csvText, {
             header: true,
             dynamicTyping: true,
             skipEmptyLines: true,
             delimitersToGuess: [',', '\t', '|', ';'],
-            fastMode: true, // パフォーマンス向上
+            fastMode: false, // エラー回避のためfastModeを無効化
             chunk: (results) => {
                 // チャンク処理でプログレス表示
-                if (results.data && results.data.length > PERFORMANCE_CONFIG.CHUNK_SIZE) {
+                if (results && results.data && results.data.length > PERFORMANCE_CONFIG.CHUNK_SIZE) {
                     showLoading(`CSVファイル処理中... (${results.data.length}件)`);
                 }
+            },
+            error: (error) => {
+                console.error('PapaParse解析エラー:', error);
+                throw new Error(`CSV解析に失敗しました: ${error.message || error}`);
             }
         });
-        
-        if (parsed.errors.length > 0) {
+
+        // parsed結果の安全性チェック
+        if (!parsed || typeof parsed !== 'object') {
+            throw new Error('CSV解析結果が無効です');
+        }
+
+        if (!parsed.data || !Array.isArray(parsed.data)) {
+            throw new Error('CSVデータが正しく解析されませんでした');
+        }
+
+        // エラーチェック（安全に）
+        if (parsed.errors && Array.isArray(parsed.errors) && parsed.errors.length > 0) {
             console.warn('CSV解析時の警告:', parsed.errors.slice(0, PERFORMANCE_CONFIG.MAX_ERROR_DISPLAY));
         }
         
+        // データの最終チェック
+        if (parsed.data.length === 0) {
+            throw new Error('CSVファイルにデータが含まれていません');
+        }
+
         allData = parsed.data;
         filteredData = [...allData];
-        
+
         // データ更新時にキャッシュをクリア
-        dataCache.clear();
-        
+        if (dataCache && typeof dataCache.clear === 'function') {
+            dataCache.clear();
+        }
+
         if (DEBUG_MODE) console.log(`データ読み込み完了: ${allData.length}件`);
-        
-        // 更新日時を設定
+
+        // 更新日時を設定（安全に）
         const now = new Date();
-        document.getElementById('updateDate').textContent = now.toLocaleString('ja-JP');
-        document.getElementById('dataCount').textContent = allData.length.toLocaleString();
-        
-        updateStats();
-        setupDateInputs();
+        const updateDateElement = document.getElementById('updateDate');
+        const dataCountElement = document.getElementById('dataCount');
+
+        if (updateDateElement) {
+            updateDateElement.textContent = now.toLocaleString('ja-JP');
+        }
+        if (dataCountElement) {
+            dataCountElement.textContent = allData.length.toLocaleString();
+        }
+
+        // 関数が存在することを確認してから呼び出し
+        if (typeof updateStats === 'function') updateStats();
+        if (typeof setupDateInputs === 'function') setupDateInputs();
         hideLoading(); // ローディングを非表示
         
     } catch (error) {
@@ -1969,28 +2029,35 @@ const KVK_NORMA_TABLE = [
     { minPower: 200000000, maxPower: 999999999, killTarget: 600000000, deathTarget: 1340000, deathRate: 0.0067 }
 ];
 
-// Power帯からノルマを取得する関数（戦死ノルマのみ9/22時点のPowerで計算）
+// Power帯からノルマを取得する関数（戦死ノルマのみ9/24時点のPowerで計算）
 function getKvkNormaByPower(power, useDeathRateCalculation = false, startPower = null) {
     const powerNum = parseInt((power || '0').toString().replace(/,/g, '')) || 0;
+
+    if (DEBUG_MODE) console.log('ノルマ検索 - Power:', powerNum, 'startPower:', startPower);
 
     for (const norma of KVK_NORMA_TABLE) {
         if (powerNum >= norma.minPower && powerNum <= norma.maxPower) {
             let deathTarget;
 
             if (useDeathRateCalculation && startPower) {
-                // 戦死ノルマのみ9/22時点のPowerでDeath Rateを使って計算
+                // 戦死ノルマのみ9/24時点のPowerでDeath Rateを使って計算
                 const startPowerNum = parseInt((startPower || '0').toString().replace(/,/g, '')) || 0;
                 deathTarget = Math.round(startPowerNum * norma.deathRate);
+                if (DEBUG_MODE) console.log('計算された戦死ノルマ:', deathTarget, '(startPower:', startPowerNum, '× deathRate:', norma.deathRate, ')');
             } else {
                 // 表示用の固定値
                 deathTarget = norma.deathTarget;
+                if (DEBUG_MODE) console.log('固定戦死ノルマ:', deathTarget);
             }
 
-            return {
+            const result = {
                 killTarget: norma.killTarget, // 撃破ノルマは常にPower帯の固定値
                 deathTarget: deathTarget,
                 deathRate: norma.deathRate
             };
+
+            if (DEBUG_MODE) console.log('決定されたノルマ:', result);
+            return result;
         }
     }
 
@@ -1998,9 +2065,12 @@ function getKvkNormaByPower(power, useDeathRateCalculation = false, startPower =
     return { killTarget: 0, deathTarget: 0, deathRate: 0 };
 }
 
-// KVKノルマチェッカー: プレイヤー検索機能
+// KVKノルマチェッカー: プレイヤー検索機能（デバッグ強化版）
 function searchKvkPlayer() {
     const searchTerm = document.getElementById('kvkPlayerSearch').value.toLowerCase().trim();
+
+    if (DEBUG_MODE) console.log('=== KVK プレイヤー検索開始 ===');
+    if (DEBUG_MODE) console.log('検索語:', searchTerm);
 
     if (!searchTerm) {
         alert('プレイヤー名またはIDを入力してください');
@@ -2012,11 +2082,16 @@ function searchKvkPlayer() {
         return;
     }
 
+    if (DEBUG_MODE) console.log('全データ件数:', allData.length);
+
     // プレイヤーデータを検索
     const playerData = allData.filter(row => {
-        return (row.Name && row.Name.toString().toLowerCase().includes(searchTerm)) ||
-               (row.ID && row.ID.toString().toLowerCase().includes(searchTerm));
+        const nameMatch = row.Name && row.Name.toString().toLowerCase().includes(searchTerm);
+        const idMatch = row.ID && row.ID.toString().toLowerCase().includes(searchTerm);
+        return nameMatch || idMatch;
     });
+
+    if (DEBUG_MODE) console.log('検索結果件数:', playerData.length);
 
     if (playerData.length === 0) {
         alert('該当するプレイヤーが見つかりません');
@@ -2028,20 +2103,46 @@ function searchKvkPlayer() {
         return new Date(b.Data) - new Date(a.Data);
     })[0];
 
+    if (DEBUG_MODE) console.log('最新データ:', latestData);
+
     // 同じプレイヤーの全データを取得（IDまたは名前で照合）
     const allPlayerData = allData.filter(row =>
         row.ID === latestData.ID || row.Name === latestData.Name
     ).sort((a, b) => new Date(a.Data) - new Date(b.Data));
 
+    if (DEBUG_MODE) console.log('同じプレイヤーの全データ件数:', allPlayerData.length);
+
     // KVKノルマ進捗を計算
     calculateKvkProgress(latestData, allPlayerData);
 }
 
-// KVKノルマ進捗計算機能
+// KVKノルマ進捗計算機能（デバッグ強化版）
 function calculateKvkProgress(latestData, allPlayerData) {
-    // 9/24のデータを探す
+    if (DEBUG_MODE) console.log('=== KVKノルマ進捗計算開始 ===');
+    if (DEBUG_MODE) console.log('最新データ:', latestData);
+    if (DEBUG_MODE) console.log('全プレイヤーデータ件数:', allPlayerData.length);
+
+    // 9/24のデータを探す（複数の日付形式に対応）
     const kvkStartDate = '2024/09/24';
+    const altFormats = ['2024/9/24', '24/09/2024', '9/24/2024', '2024-09-24', '2024-9-24'];
+
     let startData = allPlayerData.find(row => row.Data === kvkStartDate);
+
+    // 代替フォーマットでも検索
+    if (!startData) {
+        for (const format of altFormats) {
+            startData = allPlayerData.find(row => row.Data === format);
+            if (startData) {
+                if (DEBUG_MODE) console.log(`${format} 形式でデータが見つかりました`);
+                break;
+            }
+        }
+    }
+
+    if (DEBUG_MODE) console.log('9/24データ検索結果:', startData ? '見つかりました' : '見つかりません');
+    if (DEBUG_MODE && allPlayerData.length > 0) {
+        console.log('利用可能な日付の例:', allPlayerData.slice(0, 5).map(row => row.Data));
+    }
 
     if (!startData) {
         // 9/24のデータがない場合、最も古いデータを使用
@@ -2052,6 +2153,7 @@ function calculateKvkProgress(latestData, allPlayerData) {
             return;
         }
         startData = oldestData;
+        if (DEBUG_MODE) console.log('使用する代替データ:', startData);
     }
 
     // 最新データ
@@ -2082,10 +2184,15 @@ function calculateKvkProgress(latestData, allPlayerData) {
     const overallPercentage = (killPercentage + deathPercentage) / 2;
 
     // UIを更新
+    if (DEBUG_MODE) console.log('UI更新データ:', {
+        killProgress, deathProgress, killRemaining, deathRemaining,
+        killPercentage, deathPercentage, overallPercentage
+    });
+
     updateKvkProgressUI({
         player: currentData,
         norma: norma,
-        startDate: kvkStartDate,
+        startDate: startData.Data, // kvkStartDateではなく実際に使用したデータの日付
         currentDate: currentData.Data,
         startKills: startKills,
         currentKills: currentKills,
@@ -2100,13 +2207,26 @@ function calculateKvkProgress(latestData, allPlayerData) {
         overallPercentage: overallPercentage,
         allPlayerData: allPlayerData
     });
+
+    if (DEBUG_MODE) console.log('=== KVKノルマ進捗計算完了 ===');
 }
 
-// KVKノルマチェッカーのUI更新
+// KVKノルマチェッカーのUI更新（デバッグ強化版）
 function updateKvkProgressUI(data) {
+    if (DEBUG_MODE) console.log('=== UI更新開始 ===');
+    if (DEBUG_MODE) console.log('UI更新用データ:', data);
+
     // 検索ガイドを非表示、結果を表示
-    document.getElementById('kvkSearchGuide').style.display = 'none';
-    document.getElementById('kvkPlayerResult').style.display = 'block';
+    const searchGuide = document.getElementById('kvkSearchGuide');
+    const playerResult = document.getElementById('kvkPlayerResult');
+
+    if (searchGuide) searchGuide.style.display = 'none';
+    if (playerResult) {
+        playerResult.style.display = 'block';
+        if (DEBUG_MODE) console.log('結果表示エリアを表示しました');
+    } else {
+        if (DEBUG_MODE) console.error('kvkPlayerResult要素が見つかりません');
+    }
 
     // プレイヤー基本情報
     document.getElementById('kvkPlayerName').textContent = data.player.Name || 'Unknown';
