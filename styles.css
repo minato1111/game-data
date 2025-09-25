@@ -43,31 +43,6 @@ h1 {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.home-title-hover {
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.home-title-hover:hover {
-    color: #3498db;
-}
-
-/* パフォーマンス最適化 */
-.table-container {
-    contain: layout style paint;
-    will-change: scroll-position;
-}
-
-.loading-spinner {
-    contain: layout style paint;
-}
-
-/* GPU加速を有効化 */
-.chart-wrapper canvas {
-    will-change: transform;
-    transform: translateZ(0);
-}
-
 .subtitle {
     text-align: center;
     color: #7f8c8d;
