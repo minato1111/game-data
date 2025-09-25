@@ -160,6 +160,7 @@
             padding: 16px 12px;
             border-bottom: 1px solid #ecf0f1;
             position: relative;
+            vertical-align: middle;
         }
 
         /* ステータス表示の強化 */
@@ -218,11 +219,14 @@
             font-weight: 600;
             font-size: 13px;
             background: #ecf0f1;
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 6px;
             display: inline-block;
-            min-width: 120px;
+            min-width: 140px;
             text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            line-height: 1.2;
         }
 
         .duration-display {
@@ -263,6 +267,7 @@
 
         /* 編集可能時間の改善 */
         .editable-time {
+            font-family: 'Consolas', 'Monaco', monospace;
             background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
             border: 2px dashed #2196f3;
             padding: 6px 10px;
@@ -270,7 +275,14 @@
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
+            font-size: 13px;
             box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+            display: inline-block;
+            min-width: 140px;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            line-height: 1.2;
         }
 
         .editable-time:hover {
