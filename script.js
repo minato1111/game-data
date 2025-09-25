@@ -317,6 +317,66 @@ function changePage(page) {
     displayData();
 }
 
+// タブ切り替え機能
+function switchTab(tabName) {
+    if (DEBUG_MODE) console.log('タブ切り替え:', tabName);
+
+    try {
+        // すべてのタブボタンを非アクティブにする
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
+
+        // すべてのタブコンテンツを非表示にする
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.style.display = 'none';
+        });
+
+        // 指定されたタブボタンをアクティブにする
+        const activeButton = document.querySelector(`[onclick*="${tabName}"]`);
+        if (activeButton) {
+            activeButton.classList.add('active');
+            activeButton.setAttribute('aria-selected', 'true');
+        }
+
+        // 指定されたタブコンテンツを表示する
+        const tabContent = document.getElementById(tabName + 'Tab');
+        if (tabContent) {
+            tabContent.style.display = 'block';
+        } else {
+            console.warn('タブコンテンツが見つかりません:', tabName + 'Tab');
+        }
+
+        // データタブの場合は表示を更新
+        if (tabName === 'data' && allData.length > 0) {
+            displayData();
+        }
+
+        // 他のタブの場合は準備中メッセージを表示
+        if (tabName !== 'data') {
+            const tbody = tabContent?.querySelector('tbody, .chart-container, .no-data');
+            if (tbody && tabName !== 'kvk') {
+                tbody.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                        <h3>準備中</h3>
+                        <p>この機能は現在復旧作業中です。しばらくお待ちください。</p>
+                    </div>
+                `;
+            }
+        }
+
+    } catch (error) {
+        console.error('タブ切り替えエラー:', error);
+
+        // エラーが発生した場合はデータタブに戻す
+        const dataTab = document.getElementById('dataTab');
+        if (dataTab) {
+            dataTab.style.display = 'block';
+        }
+    }
+}
+
 // 検索機能
 function filterDataBySearch() {
     const searchInput = getElement('searchInput');
@@ -387,6 +447,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (DEBUG_MODE) console.log('DOM読み込み完了');
 
     setupEventListeners();
+
+    // デフォルトでデータタブを表示
+    switchTab('data');
+
     loadCSVData();
 });
 
