@@ -2,14 +2,17 @@
 // 設定値（最適化済み）
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = true; // 本番環境では false、開発時は true（デバッグ中）
+const DEBUG_MODE = false; // 本番環境では false、開発時は true
 
-// パフォーマンス設定
+// パフォーマンス設定（最適化済み）
 const PERFORMANCE_CONFIG = {
     CACHE_DURATION: 300000, // キャッシュ時間（5分）
     CHUNK_SIZE: 1000,       // チャンク処理サイズ
     MAX_ERROR_DISPLAY: 5,   // 表示する最大エラー数
-    PAGINATION_SIZE: 50     // デフォルトページネーションサイズ
+    PAGINATION_SIZE: 50,    // デフォルトページネーションサイズ
+    DEBOUNCE_DELAY: 500,    // デバウンス遅延（ms）
+    MAX_RETRIES: 3,         // 最大リトライ回数
+    RETRY_DELAY: 1000       // リトライ間隔（ms）
 };
 
 // =====================================
@@ -55,14 +58,40 @@ function debounce(func, wait) {
     };
 }
 
-// DOM要素キャッシュ
+// DOM要素キャッシュ（改善版）
 const domCache = {};
 const getElement = (id) => {
     if (!domCache[id]) {
-        domCache[id] = document.getElementById(id);
+        const element = document.getElementById(id);
+        if (element) {
+            domCache[id] = element;
+        }
+        return element;
+    }
+    // 要素が削除されているかチェック
+    if (!document.contains(domCache[id])) {
+        delete domCache[id];
+        return document.getElementById(id);
     }
     return domCache[id];
 };
+
+// キャッシュクリア機能
+const clearDOMCache = () => {
+    Object.keys(domCache).forEach(key => {
+        if (!document.contains(domCache[key])) {
+            delete domCache[key];
+        }
+    });
+};
+
+// 定期的なメモリクリーンアップ（5分間隔）
+setInterval(() => {
+    clearDOMCache();
+    if (DEBUG_MODE) {
+        console.log('DOM cache cleared. Current cache size:', Object.keys(domCache).length);
+    }
+}, 5 * 60 * 1000);
 
 
 // グローバル変数
@@ -94,6 +123,113 @@ function showLoading(message = '読み込み中...') {
         </tr>
     `;
 }
+
+// CSV読み込み用ユーティリティ関数群
+const CSVUtils = {
+    // CSVファイルを取得
+    async fetchCSVFile(filePath) {
+        const response = await fetch(filePath);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.text();
+    },
+
+    // CSVをパースする
+    async parseCSV(csvText, retryCount = 0) {
+        const maxRetries = 3;
+
+        return new Promise((resolve, reject) => {
+            Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    if (results.errors.length > 0 && retryCount < maxRetries) {
+                        console.warn(`CSV解析エラー (試行 ${retryCount + 1}/${maxRetries}):`, results.errors);
+                        setTimeout(() => {
+                            CSVUtils.parseCSV(csvText, retryCount + 1)
+                                .then(resolve)
+                                .catch(reject);
+                        }, 1000);
+                    } else if (results.errors.length > 0) {
+                        reject(new Error(`CSV解析に失敗しました: ${results.errors.map(e => e.message).join(', ')}`));
+                    } else {
+                        resolve(results.data);
+                    }
+                },
+                error: function(error) {
+                    if (retryCount < maxRetries) {
+                        setTimeout(() => {
+                            CSVUtils.parseCSV(csvText, retryCount + 1)
+                                .then(resolve)
+                                .catch(reject);
+                        }, 1000);
+                    } else {
+                        reject(error);
+                    }
+                }
+            });
+        });
+    },
+
+    // データの妥当性をチェック
+    validateData(data) {
+        if (!Array.isArray(data) || data.length === 0) {
+            throw new Error('データが空です');
+        }
+
+        const requiredColumns = ['Data', 'ID', 'Name', 'Power', 'Alliance'];
+        const firstRow = data[0];
+
+        for (const column of requiredColumns) {
+            if (!(column in firstRow)) {
+                throw new Error(`必要な列が見つかりません: ${column}`);
+            }
+        }
+
+        return true;
+    },
+
+    // 統計情報を計算
+    calculateStatistics(data) {
+        const totalRecords = data.length;
+        const lastUpdateDate = data.length > 0 ? data[data.length - 1].Data : null;
+
+        // Power上位300人の合計を計算
+        const powerData = data
+            .map(item => ({
+                ...item,
+                PowerNum: parseInt(item.Power?.toString().replace(/,/g, '')) || 0
+            }))
+            .sort((a, b) => b.PowerNum - a.PowerNum)
+            .slice(0, 300);
+
+        const top300Power = powerData.reduce((sum, item) => sum + item.PowerNum, 0);
+
+        return {
+            totalRecords,
+            lastUpdateDate,
+            top300Power: formatNumber(top300Power)
+        };
+    },
+
+    // UI更新
+    updateUI(statistics) {
+        const elements = {
+            totalRecords: getElement('totalRecords'),
+            top300Power: getElement('top300Power'),
+            lastUpdate: getElement('lastUpdate'),
+            updateDate: getElement('updateDate'),
+            dataCount: getElement('dataCount')
+        };
+
+        if (elements.totalRecords) elements.totalRecords.textContent = formatNumber(statistics.totalRecords);
+        if (elements.top300Power) elements.top300Power.textContent = statistics.top300Power;
+        if (elements.lastUpdate) elements.lastUpdate.textContent = statistics.lastUpdateDate || '-';
+        if (elements.updateDate) elements.updateDate.textContent = statistics.lastUpdateDate || '不明';
+        if (elements.dataCount) elements.dataCount.textContent = formatNumber(statistics.totalRecords);
+    }
+};
 
 // ローディング非表示関数
 function hideLoading() {
@@ -135,19 +271,38 @@ function showError(title, message, suggestions = []) {
     `;
 }
 
-// グローバルエラーハンドラー追加（強化版）
+// 統合グローバルエラーハンドラー（改善版）
 window.addEventListener('error', function(event) {
-    // Chrome拡張機能のエラーを除外
-    if (event.error && event.error.message &&
-        event.error.message.includes('message channel closed')) {
-        console.warn('Chrome拡張機能関連のエラーを無視します:', event.error.message);
+    // 無視すべきエラーのフィルタリング
+    const ignoredErrors = [
+        'message channel closed',
+        'Non-Error promise rejection captured',
+        'Script error',
+        'ResizeObserver loop limit exceeded'
+    ];
+
+    const errorMessage = event.error?.message || event.message || '';
+
+    if (ignoredErrors.some(ignored => errorMessage.includes(ignored))) {
+        if (DEBUG_MODE) {
+            console.warn('無視されたエラー:', errorMessage);
+        }
         return;
     }
 
-    console.error('グローバルエラー:', event.error);
-    if (!DEBUG_MODE && event.error) {
+    // 重要なエラーをログ
+    console.error('アプリケーションエラー:', {
+        message: errorMessage,
+        filename: event.filename,
+        line: event.lineno,
+        column: event.colno,
+        stack: event.error?.stack
+    });
+
+    // エラー通知の表示
+    if (errorMessage) {
         showError(
-            'アプリケーションエラー',
+            'システムエラー',
             '予期しないエラーが発生しました。',
             ['ページを再読み込みしてください', 'ブラウザのキャッシュをクリアしてください']
         );
@@ -223,8 +378,8 @@ window.addEventListener('hashchange', () => {
 });
 
 // CSVファイルを読み込む（エラー処理強化版）
+// リファクタリング後のloadCSVData関数（簡潔版）
 async function loadCSVData() {
-    // ローディング表示を開始
     showLoading('CSVファイルを読み込み中...');
 
     try {
@@ -235,54 +390,65 @@ async function loadCSVData() {
             throw new Error('PapaParseライブラリが読み込まれていません');
         }
 
-        // CSVファイルを取得（シンプル版）
-        const response = await fetch(CSV_FILE_PATH);
+        // CSVファイル取得とパース
+        const csvText = await CSVUtils.fetchCSVFile(CSV_FILE_PATH);
+        const data = await CSVUtils.parseCSV(csvText);
+
+        // データ妥当性チェック
+        CSVUtils.validateData(data);
+
+        // グローバル変数に設定
+        allData = data;
+        filteredData = [...allData];
+
+        // 統計情報計算とUI更新
+        const statistics = CSVUtils.calculateStatistics(data);
+        CSVUtils.updateUI(statistics);
+
+        // 初期データ表示
+        displayData();
 
         if (DEBUG_MODE) {
-            console.log('Fetch Response Status:', response.status);
-            console.log('Fetch Response OK:', response.ok);
-            console.log('Content-Type:', response.headers.get('content-type'));
+            console.log('CSV読み込み完了:', {
+                totalRecords: statistics.totalRecords,
+                lastUpdate: statistics.lastUpdateDate
+            });
         }
 
-        if (!response.ok) {
-            throw new Error(`CSVファイルが見つかりません: ${CSV_FILE_PATH} (Status: ${response.status})`);
+    } catch (error) {
+        console.error('CSV読み込みエラー:', error);
+
+        const tbody = document.getElementById('tableBody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="error-message">
+                        <h3>データ読み込みエラー</h3>
+                        <p>${escapeHtml(error.message)}</p>
+                        <button onclick="location.reload()">ページを再読み込み</button>
+                    </td>
+                </tr>
+            `;
         }
 
-        let csvText = await response.text();
+        // エラー状況をUIに反映
+        const errorElements = ['totalRecords', 'top300Power', 'lastUpdate', 'dataCount'];
+        errorElements.forEach(id => {
+            const element = getElement(id);
+            if (element) element.textContent = 'エラー';
+        });
+    }
+}
 
-        // CSVテキストの基本チェック
-        if (!csvText || typeof csvText !== 'string') {
-            throw new Error('CSVファイルが空か無効です');
-        }
+// ローディング非表示関数
+function hideLoading() {
+    // ローディングを非表示にしてデータ表示を更新
+    if (allData.length > 0) {
+        displayData();
+    }
+}
 
-        if (csvText.length < 10) {
-            throw new Error('CSVファイルのサイズが小さすぎます');
-        }
-
-        if (DEBUG_MODE) {
-            console.log('CSVテキスト前半100文字:', csvText.substring(0, 100));
-            console.log('CSVファイルサイズ:', csvText.length);
-            console.log('先頭文字の文字コード:', csvText.substring(0, 10).split('').map(c => c.charCodeAt(0)));
-            // BOM検出と除去
-            const hasBOM = csvText.charCodeAt(0) === 0xFEFF;
-            console.log('BOM検出:', hasBOM);
-            if (hasBOM) {
-                console.log('BOMを除去しました');
-                csvText = csvText.substring(1);
-                console.log('BOM除去後のサイズ:', csvText.length);
-            }
-        }
-
-        // PapaParseでCSVを解析（デバッグ詳細版）
-        let parsed;
-        try {
-            if (DEBUG_MODE) console.log('=== PapaParse実行開始 ===');
-
-            parsed = Papa.parse(csvText, {
-                header: true,
-                dynamicTyping: true,
-                skipEmptyLines: true,
-                delimiter: "", // 自動検出
+// エラー表示関数（改善版）
                 fastMode: false
             });
 
@@ -506,20 +672,18 @@ function setDataPreset(preset) {
         // 最新データのみ（最新日付の1日分）
         startDate = latestDate;
     } else if (preset === 'week') {
-        // 7日前を計算
+        // 7日前を計算（安全な日付計算）
         const latest = new Date(latestDate);
-        const weekAgo = new Date(latest);
-        weekAgo.setDate(latest.getDate() - 7);
+        const weekAgo = new Date(latest.getTime() - 7 * 24 * 60 * 60 * 1000);
         
         // 実際のデータで最も近い日付を探す
         startDate = dates.reduce((prev, curr) => {
             return Math.abs(new Date(curr) - weekAgo) < Math.abs(new Date(prev) - weekAgo) ? curr : prev;
         });
     } else if (preset === 'month') {
-        // 30日前を計算
+        // 30日前を計算（安全な日付計算）
         const latest = new Date(latestDate);
-        const monthAgo = new Date(latest);
-        monthAgo.setDate(latest.getDate() - 30);
+        const monthAgo = new Date(latest.getTime() - 30 * 24 * 60 * 60 * 1000);
         
         startDate = dates.reduce((prev, curr) => {
             return Math.abs(new Date(curr) - monthAgo) < Math.abs(new Date(prev) - monthAgo) ? curr : prev;
@@ -788,10 +952,9 @@ function setGrowthPreset(preset) {
             startDate = latestDate;
         }
     } else if (preset === 'week') {
-        // 7日前を計算
+        // 7日前を計算（安全な日付計算）
         const latest = new Date(latestDate);
-        const weekAgo = new Date(latest);
-        weekAgo.setDate(latest.getDate() - 7);
+        const weekAgo = new Date(latest.getTime() - 7 * 24 * 60 * 60 * 1000);
         const weekAgoStr = weekAgo.toISOString().split('T')[0].replace(/-/g, '/');
         
         // 実際のデータで最も近い日付を探す
@@ -799,10 +962,9 @@ function setGrowthPreset(preset) {
             return Math.abs(new Date(curr) - weekAgo) < Math.abs(new Date(prev) - weekAgo) ? curr : prev;
         });
     } else if (preset === 'month') {
-        // 30日前を計算
+        // 30日前を計算（安全な日付計算）
         const latest = new Date(latestDate);
-        const monthAgo = new Date(latest);
-        monthAgo.setDate(latest.getDate() - 30);
+        const monthAgo = new Date(latest.getTime() - 30 * 24 * 60 * 60 * 1000);
         const monthAgoStr = monthAgo.toISOString().split('T')[0].replace(/-/g, '/');
         
         startDate = dates.reduce((prev, curr) => {
@@ -1314,7 +1476,7 @@ function navigateToPlayer(playerName, playerId) {
 
 function setupEventListeners() {
     // 検索機能にデバウンスを適用してパフォーマンス改善
-    const debouncedSearch = debounce(filterDataBySearch, 300);
+    const debouncedSearch = debounce(filterDataBySearch, PERFORMANCE_CONFIG.DEBOUNCE_DELAY);
     getElement('searchInput').addEventListener('input', debouncedSearch);
     
     // ホームボタン（タイトル）のクリックイベント

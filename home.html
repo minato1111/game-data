@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROK Kingdom Data - ホーム</title>
     <meta name="description" content="Rise of Kingdoms ゲームデータ統計・分析ツール - ホーム">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
 
     <!-- Favicon設定 -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏰</text></svg>">
@@ -67,16 +71,33 @@
     </div>
 
     <script>
-        // パスワード設定（ハッシュ化）
+        // パスワード設定（ソルト付きハッシュ）
         const CORRECT_PASSWORD_HASH = '4181190cdaee12e3c055f82abc95ac52a39852c7f0b28c1366e7baf7f99f9d08';
+        const PASSWORD_SALT = 'ROK_DATA_SALT_2024';
 
-        // シンプルなハッシュ関数
-        async function simpleHash(text) {
+        // ブルートフォース攻撃対策
+        let loginAttempts = 0;
+        const MAX_LOGIN_ATTEMPTS = 5;
+        let lockoutUntil = 0;
+
+        // 強化されたハッシュ関数（ソルト付き）
+        async function secureHash(text) {
             const encoder = new TextEncoder();
-            const data = encoder.encode(text);
+            const saltedText = PASSWORD_SALT + text + PASSWORD_SALT;
+            const data = encoder.encode(saltedText);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // レート制限チェック
+        function checkRateLimit() {
+            const now = Date.now();
+            if (lockoutUntil > now) {
+                const remainingTime = Math.ceil((lockoutUntil - now) / 1000);
+                throw new Error(`ログイン試行回数が上限を超えました。${remainingTime}秒後に再試行してください。`);
+            }
+            return true;
         }
         
         // DOM要素を取得
@@ -86,21 +107,37 @@
         const loginButton = document.getElementById('loginButton');
         const passwordError = document.getElementById('passwordError');
 
-        // ログイン機能
+        // ログイン機能（強化版）
         async function checkPassword() {
-            const input = passwordInput.value;
+            const input = passwordInput.value.trim();
 
             try {
+                // レート制限チェック
+                checkRateLimit();
+
                 // 入力されたパスワードをハッシュ化
-                const inputHash = await simpleHash(input);
+                const inputHash = await secureHash(input);
 
                 if (inputHash === CORRECT_PASSWORD_HASH) {
                     // 認証成功
+                    loginAttempts = 0;
+                    lockoutUntil = 0;
                     sessionStorage.setItem('authenticated', 'true');
+                    sessionStorage.setItem('authTime', Date.now().toString());
                     showHomeContent();
                     loadQuickStats();
                 } else {
                     // 認証失敗
+                    loginAttempts++;
+
+                    if (loginAttempts >= MAX_LOGIN_ATTEMPTS) {
+                        lockoutUntil = Date.now() + (30 * 1000); // 30秒ロックアウト
+                        passwordError.textContent = 'ログイン試行回数が上限を超えました。30秒後に再試行してください。';
+                    } else {
+                        const remainingAttempts = MAX_LOGIN_ATTEMPTS - loginAttempts;
+                        passwordError.textContent = `パスワードが正しくありません。残り試行回数: ${remainingAttempts}`;
+                    }
+
                     passwordError.style.display = 'block';
                     passwordInput.value = '';
                     passwordInput.style.animation = 'shake 0.5s';
@@ -110,6 +147,7 @@
                 }
             } catch (error) {
                 console.error('認証エラー:', error);
+                passwordError.textContent = error.message;
                 passwordError.style.display = 'block';
             }
         }
@@ -153,12 +191,33 @@
             }
         });
 
-        // 認証済みかチェック
+        // セッション有効性チェック（24時間）
+        function isSessionValid() {
+            const authenticated = sessionStorage.getItem('authenticated');
+            const authTime = sessionStorage.getItem('authTime');
+
+            if (!authenticated || !authTime) return false;
+
+            const now = Date.now();
+            const sessionAge = now - parseInt(authTime);
+            const maxAge = 24 * 60 * 60 * 1000; // 24時間
+
+            return sessionAge < maxAge;
+        }
+
+        // セッションクリア
+        function clearSession() {
+            sessionStorage.removeItem('authenticated');
+            sessionStorage.removeItem('authTime');
+        }
+
+        // 認証済みかチェック（強化版）
         window.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('authenticated') === 'true') {
+            if (isSessionValid()) {
                 showHomeContent();
                 loadQuickStats();
             } else {
+                clearSession();
                 passwordInput.focus();
             }
         });

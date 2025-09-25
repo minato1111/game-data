@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ROK Kingdom Data 一覧</title>
     <meta name="description" content="Rise of Kingdoms ゲームデータ統計・分析ツール">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
 
     <!-- Favicon設定 -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏰</text></svg>">
@@ -19,7 +23,7 @@
 <body>
     <!-- メインコンテンツ -->
     <div class="container" id="mainContent">
-        <h1 id="homeTitle" style="cursor: pointer; transition: color 0.3s;" onmouseover="this.style.color='#3498db'" onmouseout="this.style.color='#2c3e50'" title="ホームに戻る">⚔️ ROK Kingdom Data 一覧</h1>
+        <h1 id="homeTitle" class="home-title-hover" title="ホームに戻る">⚔️ ROK Kingdom Data 一覧</h1>
         <div class="subtitle">Rise of Kingdoms - データ統計・分析ツール</div>
         <div class="update-info">
             CSVファイル最終更新: <span id="updateDate">確認中...</span> | 
