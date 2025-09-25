@@ -2,7 +2,7 @@
 // 設定値（最適化済み）
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = false; // 本番環境では false、開発時は true
+const DEBUG_MODE = true; // 緊急デバッグモード - 問題解決後は false に戻す
 
 // パフォーマンス設定（最適化済み）
 const PERFORMANCE_CONFIG = {
@@ -128,47 +128,58 @@ function showLoading(message = '読み込み中...') {
 const CSVUtils = {
     // CSVファイルを取得
     async fetchCSVFile(filePath) {
-        const response = await fetch(filePath);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            console.log('CSV読み込み開始:', filePath);
+            const response = await fetch(filePath);
+
+            console.log('Fetch応答:', {
+                status: response.status,
+                ok: response.ok,
+                headers: response.headers.get('content-type')
+            });
+
+            if (!response.ok) {
+                throw new Error(`CSVファイル取得エラー: ${response.status} - ${response.statusText}`);
+            }
+
+            const text = await response.text();
+            console.log('CSVファイル読み込み成功:', {
+                length: text.length,
+                first100chars: text.substring(0, 100)
+            });
+
+            return text;
+        } catch (error) {
+            console.error('fetchCSVFile エラー:', error);
+            throw new Error(`CSVファイルの読み込みに失敗しました: ${error.message}`);
         }
-        return await response.text();
     },
 
-    // CSVをパースする
-    async parseCSV(csvText, retryCount = 0) {
-        const maxRetries = 3;
-
+    // CSVをパースする（シンプル版）
+    parseCSV(csvText) {
         return new Promise((resolve, reject) => {
-            Papa.parse(csvText, {
-                header: true,
-                skipEmptyLines: true,
-                complete: function(results) {
-                    if (results.errors.length > 0 && retryCount < maxRetries) {
-                        console.warn(`CSV解析エラー (試行 ${retryCount + 1}/${maxRetries}):`, results.errors);
-                        setTimeout(() => {
-                            CSVUtils.parseCSV(csvText, retryCount + 1)
-                                .then(resolve)
-                                .catch(reject);
-                        }, 1000);
-                    } else if (results.errors.length > 0) {
-                        reject(new Error(`CSV解析に失敗しました: ${results.errors.map(e => e.message).join(', ')}`));
-                    } else {
-                        resolve(results.data);
+            try {
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        if (results.errors && results.errors.length > 0) {
+                            console.warn('CSV解析警告:', results.errors.slice(0, 3));
+                        }
+
+                        if (results.data && results.data.length > 0) {
+                            resolve(results.data);
+                        } else {
+                            reject(new Error('CSVデータが空か無効です'));
+                        }
+                    },
+                    error: function(error) {
+                        reject(new Error(`CSV解析エラー: ${error.message}`));
                     }
-                },
-                error: function(error) {
-                    if (retryCount < maxRetries) {
-                        setTimeout(() => {
-                            CSVUtils.parseCSV(csvText, retryCount + 1)
-                                .then(resolve)
-                                .catch(reject);
-                        }, 1000);
-                    } else {
-                        reject(error);
-                    }
-                }
-            });
+                });
+            } catch (error) {
+                reject(error);
+            }
         });
     },
 
