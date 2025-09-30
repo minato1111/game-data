@@ -165,6 +165,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             border-left: 4px solid;
+            transition: all 0.2s;
         }
 
         .phase-content:hover {
@@ -189,6 +190,25 @@
 
         .phase-content.kingsland {
             border-color: #2ecc71;
+        }
+
+        /* 完了済みフェーズのスタイル */
+        .phase-content.completed-phase {
+            background: #f8f9fa;
+            opacity: 0.7;
+        }
+
+        .phase-content.completed-phase .phase-title {
+            color: #7f8c8d;
+        }
+
+        .phase-content.completed-phase .phase-zone {
+            opacity: 0.6;
+        }
+
+        .phase-content.completed-phase .phase-description {
+            background: #e9ecef;
+            color: #95a5a6;
         }
 
         /* フェーズヘッダー */
@@ -546,9 +566,11 @@
                     ? `<span class="editable-time" onclick="editTime(this, ${KVK_SCHEDULE.indexOf(phase)})" title="クリックして編集">${phase.endTime}</span>`
                     : phase.endTime;
 
+                const completedClass = status.class === 'completed' ? 'completed-phase' : '';
+
                 card.innerHTML = `
                     <div class="phase-dot ${status.class}"></div>
-                    <div class="phase-content ${phase.category}">
+                    <div class="phase-content ${phase.category} ${completedClass}">
                         <div class="phase-header">
                             <div>
                                 <div class="phase-zone zone-${phase.category}">${icon} ${phase.zone}</div>
