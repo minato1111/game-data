@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            background: #f5f7fa;
             color: #2c3e50;
             min-height: 100vh;
             padding: 20px;
@@ -24,173 +24,127 @@
             margin: 0 auto;
         }
 
-        /* ヘッダーセクション */
+        /* ヘッダー */
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
 
         .header h1 {
-            color: white;
-            font-size: 42px;
+            color: #2c3e50;
+            font-size: 32px;
             font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin-bottom: 8px;
         }
 
         .header p {
-            color: rgba(255,255,255,0.8);
-            font-size: 16px;
-        }
-
-        /* 全体進捗バー */
-        .overall-progress {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .progress-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .progress-percentage {
-            font-size: 24px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .progress-bar-container {
-            height: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.5s ease;
+            color: #7f8c8d;
+            font-size: 14px;
         }
 
         /* 現在のフェーズカード */
         .current-phase-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 15px 40px rgba(240, 147, 251, 0.4);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
 
         .current-phase-card h3 {
-            font-size: 16px;
+            font-size: 14px;
             opacity: 0.9;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .current-phase-card .phase-name {
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .current-phase-card .countdown {
-            font-size: 36px;
+            font-size: 28px;
             font-weight: 700;
             font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
         }
 
-        /* フィルターセクション */
+        /* フィルター */
         .filter-section {
             background: white;
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
 
         .filter-buttons {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .filter-btn {
-            padding: 12px 24px;
-            border: 2px solid transparent;
-            background: #f8f9fa;
-            border-radius: 25px;
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s;
             font-size: 14px;
             font-weight: 600;
-            color: #2c3e50;
+            color: #5a6c7d;
+            transition: all 0.2s;
         }
 
         .filter-btn:hover {
-            background: #e9ecef;
+            background: #f8f9fa;
+            border-color: #667eea;
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             color: white;
-            border-color: transparent;
+            border-color: #667eea;
         }
 
-        /* タイムライン型カードレイアウト */
+        /* タイムライン */
         .timeline-container {
             position: relative;
-            padding: 20px 0 20px 60px;
+            padding-left: 40px;
         }
 
         .timeline-line {
             position: absolute;
-            left: 30px;
+            left: 16px;
             top: 0;
             bottom: 0;
-            width: 4px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            width: 3px;
+            background: #e0e0e0;
             z-index: 0;
         }
 
         .phase-card {
             position: relative;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .phase-dot {
             position: absolute;
-            left: -44px;
-            top: 25px;
-            width: 24px;
-            height: 24px;
+            left: -31px;
+            top: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            border: 4px solid white;
+            border: 3px solid white;
             z-index: 2;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
         .phase-dot.completed {
@@ -206,63 +160,55 @@
         }
 
         .phase-content {
-            flex: 1;
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-left: 6px solid;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid;
         }
 
         .phase-content:hover {
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
         }
 
         .phase-content.pre-kvk {
             border-color: #9b59b6;
-            background: linear-gradient(135deg, rgba(155, 89, 182, 0.05), white);
         }
 
         .phase-content.zone4 {
             border-color: #e74c3c;
-            background: linear-gradient(135deg, rgba(231, 76, 60, 0.05), white);
         }
 
         .phase-content.zone5 {
             border-color: #f39c12;
-            background: linear-gradient(135deg, rgba(243, 156, 18, 0.05), white);
         }
 
         .phase-content.zone6 {
             border-color: #f1c40f;
-            background: linear-gradient(135deg, rgba(241, 196, 15, 0.05), white);
         }
 
         .phase-content.kingsland {
             border-color: #2ecc71;
-            background: linear-gradient(135deg, rgba(46, 204, 113, 0.05), white);
         }
 
+        /* フェーズヘッダー */
         .phase-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 15px;
-        }
-
-        .phase-info {
-            flex: 1;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .phase-zone {
             display: inline-block;
             padding: 4px 12px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .zone-pre-kvk {
@@ -291,19 +237,18 @@
         }
 
         .phase-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #2c3e50;
-            margin-bottom: 5px;
+            margin: 8px 0;
         }
 
         .phase-status {
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
             font-weight: 600;
-            margin-top: 5px;
         }
 
         .status-completed {
@@ -321,31 +266,23 @@
             color: #3498db;
         }
 
-        .phase-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .detail-item {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .detail-label {
-            font-size: 11px;
+        /* フェーズ詳細 */
+        .phase-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            font-size: 13px;
             color: #7f8c8d;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        .detail-value {
-            font-size: 14px;
-            font-weight: 700;
+        .phase-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .phase-meta-item strong {
             color: #2c3e50;
             font-family: 'Courier New', monospace;
         }
@@ -354,53 +291,53 @@
             font-size: 13px;
             line-height: 1.6;
             color: #5a6c7d;
-            padding: 15px;
             background: #f8f9fa;
-            border-radius: 10px;
-            border-left: 3px solid #3498db;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
         }
 
         .editable-time {
-            background: #e3f2fd;
-            padding: 4px 8px;
-            border-radius: 6px;
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.3s;
-            display: inline-block;
+            color: #856404;
+            font-weight: 600;
         }
 
         .editable-time:hover {
-            background: #bbdefb;
+            background: #ffeaa7;
         }
 
-        /* レスポンシブ対応 */
+        /* レスポンシブ */
         @media (max-width: 768px) {
             .timeline-container {
-                padding-left: 50px;
+                padding-left: 35px;
             }
 
             .timeline-line {
-                left: 20px;
+                left: 12px;
             }
 
             .phase-dot {
-                left: -34px;
-            }
-
-            .phase-content {
-                max-width: 100%;
+                left: -26px;
             }
 
             .header h1 {
-                font-size: 28px;
+                font-size: 24px;
             }
 
             .current-phase-card .phase-name {
-                font-size: 20px;
+                font-size: 18px;
             }
 
             .current-phase-card .countdown {
-                font-size: 24px;
+                font-size: 22px;
+            }
+
+            .phase-title {
+                font-size: 16px;
             }
         }
 
@@ -408,49 +345,33 @@
         .loading {
             text-align: center;
             padding: 60px;
-            color: white;
-            font-size: 18px;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            color: #7f8c8d;
         }
 
         /* 編集UI */
         .edit-container {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
             margin-top: 10px;
         }
 
         .time-input {
-            padding: 8px 12px;
+            padding: 6px 10px;
             border: 2px solid #3498db;
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .save-btn, .cancel-btn {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
+            font-size: 12px;
+            transition: all 0.2s;
         }
 
         .save-btn {
@@ -476,24 +397,13 @@
     <div class="container">
         <!-- ヘッダー -->
         <div class="header">
-            <h1>📅 KVKタイムライン</h1>
-            <p>Rise of Kingdoms - 視覚的スケジュール管理</p>
-        </div>
-
-        <!-- 全体進捗バー -->
-        <div class="overall-progress">
-            <div class="progress-header">
-                <div class="progress-title">KVK全体進捗</div>
-                <div class="progress-percentage" id="overallPercentage">0%</div>
-            </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
-            </div>
+            <h1>📅 KVKスケジュール</h1>
+            <p>Rise of Kingdoms - フェーズ管理カレンダー</p>
         </div>
 
         <!-- 現在のフェーズ -->
         <div class="current-phase-card">
-            <h3>🔥 現在進行中のフェーズ</h3>
+            <h3>現在進行中</h3>
             <div class="phase-name" id="currentPhase">読み込み中...</div>
             <div class="countdown" id="countdown">--:--:--</div>
         </div>
@@ -501,7 +411,7 @@
         <!-- フィルター -->
         <div class="filter-section">
             <div class="filter-buttons">
-                <button class="filter-btn active" onclick="filterByCategory('all')">🌐 すべて</button>
+                <button class="filter-btn active" onclick="filterByCategory('all')">すべて</button>
                 <button class="filter-btn" onclick="filterByCategory('pre-kvk')">🏰 Pre-KvK</button>
                 <button class="filter-btn" onclick="filterByCategory('zone4')">⚔️ Zone 4</button>
                 <button class="filter-btn" onclick="filterByCategory('zone5')">🛡️ Zone 5</button>
@@ -513,10 +423,7 @@
         <!-- タイムライン -->
         <div class="timeline-container" id="timelineContainer">
             <div class="timeline-line"></div>
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <div>スケジュールを読み込み中...</div>
-            </div>
+            <div class="loading">スケジュールを読み込み中...</div>
         </div>
     </div>
 
@@ -599,12 +506,12 @@
 
             if (startDate && endDate) {
                 if (now >= startDate && now <= endDate) {
-                    return { text: '🔥 進行中', class: 'current' };
+                    return { text: '進行中', class: 'current' };
                 } else if (now > endDate) {
-                    return { text: '✅ 完了', class: 'completed' };
+                    return { text: '完了', class: 'completed' };
                 }
             }
-            return { text: '📅 予定', class: 'upcoming' };
+            return { text: '予定', class: 'upcoming' };
         }
 
         // カテゴリーアイコン
@@ -636,32 +543,23 @@
                 card.className = 'phase-card';
 
                 const endTimeDisplay = phase.editable
-                    ? `<span class="editable-time" onclick="editTime(this, ${KVK_SCHEDULE.indexOf(phase)})">${phase.endTime}</span>`
+                    ? `<span class="editable-time" onclick="editTime(this, ${KVK_SCHEDULE.indexOf(phase)})" title="クリックして編集">${phase.endTime}</span>`
                     : phase.endTime;
 
                 card.innerHTML = `
                     <div class="phase-dot ${status.class}"></div>
                     <div class="phase-content ${phase.category}">
                         <div class="phase-header">
-                            <div class="phase-info">
+                            <div>
                                 <div class="phase-zone zone-${phase.category}">${icon} ${phase.zone}</div>
                                 <div class="phase-title">${phase.phase}</div>
-                                <div class="phase-status status-${status.class}">${status.text}</div>
                             </div>
+                            <div class="phase-status status-${status.class}">${status.text}</div>
                         </div>
-                        <div class="phase-details">
-                            <div class="detail-item">
-                                <div class="detail-label">⏱️ 期間</div>
-                                <div class="detail-value">${phase.duration}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">🚀 開始</div>
-                                <div class="detail-value">${phase.startTime.split(' ')[1]}</div>
-                            </div>
-                            <div class="detail-item">
-                                <div class="detail-label">🏁 終了</div>
-                                <div class="detail-value">${endTimeDisplay.includes('span') ? phase.endTime.split(' ')[1] : phase.endTime.split(' ')[1]}</div>
-                            </div>
+                        <div class="phase-meta">
+                            <div class="phase-meta-item">⏱️ 期間: <strong>${phase.duration}</strong></div>
+                            <div class="phase-meta-item">🚀 開始: <strong>${phase.startTime.split(' ')[1]}</strong></div>
+                            <div class="phase-meta-item">🏁 終了: <strong>${phase.endTime.split(' ')[1]}</strong></div>
                         </div>
                         <div class="phase-description">${phase.description}</div>
                     </div>
@@ -677,20 +575,6 @@
             document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             renderTimeline();
-        }
-
-        // 全体進捗計算
-        function updateOverallProgress() {
-            const now = new Date();
-            const totalPhases = KVK_SCHEDULE.length;
-            const completedPhases = KVK_SCHEDULE.filter(phase => {
-                const endDate = parseDate(phase.endTime);
-                return endDate && now > endDate;
-            }).length;
-
-            const percentage = Math.round((completedPhases / totalPhases) * 100);
-            document.getElementById('overallPercentage').textContent = percentage + '%';
-            document.getElementById('progressBarFill').style.width = percentage + '%';
         }
 
         // 現在フェーズ表示
@@ -804,7 +688,6 @@
 
             renderTimeline();
             updateCurrentPhase();
-            updateOverallProgress();
         }
 
         function cancelEdit(button) {
@@ -816,7 +699,6 @@
             setTimeout(() => {
                 renderTimeline();
                 updateCurrentPhase();
-                updateOverallProgress();
                 startCountdown();
                 console.log('✨ KVKカレンダー初期化完了');
             }, 100);
