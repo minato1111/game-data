@@ -702,18 +702,13 @@
             const newDate = new Date(inputValue);
             const newTime = `${newDate.getFullYear()}/${newDate.getMonth() + 1}/${newDate.getDate()} ${newDate.getHours()}:${String(newDate.getMinutes()).padStart(2, '0')}:00`;
 
-            const originalDate = new Date(KVK_SCHEDULE[phaseIndex].endTime);
-            const timeDiff = newDate - originalDate;
+            const originalEndDate = new Date(KVK_SCHEDULE[phaseIndex].endTime);
+            const timeDiff = newDate - originalEndDate;
 
             // 編集したフェーズの終了時間を更新
             KVK_SCHEDULE[phaseIndex].endTime = newTime;
 
-            // 次のフェーズの開始時間を編集したフェーズの終了時間に合わせる
-            if (phaseIndex + 1 < KVK_SCHEDULE.length) {
-                KVK_SCHEDULE[phaseIndex + 1].startTime = newTime;
-            }
-
-            // 以降のすべてのフェーズの時間を連動調整
+            // 以降のすべてのフェーズの時間を連動調整（開始時間と終了時間の両方）
             for (let i = phaseIndex + 1; i < KVK_SCHEDULE.length; i++) {
                 const currentStartDate = new Date(KVK_SCHEDULE[i].startTime);
                 const currentEndDate = new Date(KVK_SCHEDULE[i].endTime);
