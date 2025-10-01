@@ -324,10 +324,20 @@
             cursor: pointer;
             color: #856404;
             font-weight: 600;
+            transition: all 0.2s;
+            border: 1px dashed #ffc107;
         }
 
         .editable-time:hover {
-            background: #ffeaa7;
+            background: #ffc107;
+            color: white;
+            border-color: #ff9800;
+            transform: scale(1.05);
+        }
+
+        .editable-time::after {
+            content: ' ✏️';
+            font-size: 10px;
         }
 
         /* レスポンシブ */
@@ -581,7 +591,7 @@
                         <div class="phase-meta">
                             <div class="phase-meta-item">⏱️ 期間: <strong>${phase.duration}</strong></div>
                             <div class="phase-meta-item">🚀 開始: <strong>${phase.startTime.split(' ')[1]}</strong></div>
-                            <div class="phase-meta-item">🏁 終了: <strong>${phase.endTime.split(' ')[1]}</strong></div>
+                            <div class="phase-meta-item">🏁 終了: <strong>${endTimeDisplay}</strong></div>
                         </div>
                         <div class="phase-description">${phase.description}</div>
                     </div>
@@ -695,8 +705,15 @@
             const originalDate = new Date(KVK_SCHEDULE[phaseIndex].endTime);
             const timeDiff = newDate - originalDate;
 
+            // 編集したフェーズの終了時間を更新
             KVK_SCHEDULE[phaseIndex].endTime = newTime;
 
+            // 次のフェーズの開始時間を編集したフェーズの終了時間に合わせる
+            if (phaseIndex + 1 < KVK_SCHEDULE.length) {
+                KVK_SCHEDULE[phaseIndex + 1].startTime = newTime;
+            }
+
+            // 以降のすべてのフェーズの時間を連動調整
             for (let i = phaseIndex + 1; i < KVK_SCHEDULE.length; i++) {
                 const currentStartDate = new Date(KVK_SCHEDULE[i].startTime);
                 const currentEndDate = new Date(KVK_SCHEDULE[i].endTime);
@@ -710,6 +727,7 @@
 
             renderTimeline();
             updateCurrentPhase();
+            alert('時間を更新しました。以降のフェーズも自動調整されました。');
         }
 
         function cancelEdit(button) {
