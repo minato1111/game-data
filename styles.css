@@ -32,6 +32,12 @@ body {
     font-weight: 600;
 }
 
+.header-title:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
+
 .tabs {
     display: flex;
     background: #f8f9fa;
@@ -93,6 +99,39 @@ body {
     font-size: 1.8rem;
     border-bottom: 3px solid #667eea;
     padding-bottom: 10px;
+}
+
+.quick-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.quick-filter-btn,
+.quick-filter-btn-comp {
+    padding: 10px 20px;
+    background: #fff;
+    border: 2px solid #667eea;
+    color: #667eea;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.quick-filter-btn:hover,
+.quick-filter-btn-comp:hover {
+    background: #f0f0ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.2);
+}
+
+.quick-filter-btn.active,
+.quick-filter-btn-comp.active {
+    background: #667eea;
+    color: white;
 }
 
 .filters {
@@ -184,6 +223,50 @@ table th {
     font-weight: 600;
     font-size: 14px;
     white-space: nowrap;
+}
+
+.sortable,
+.sortable-comp {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background 0.2s ease;
+}
+
+.sortable:hover,
+.sortable-comp:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sort-icon {
+    font-size: 12px;
+    opacity: 0.5;
+    margin-left: 5px;
+}
+
+.sortable.sort-asc .sort-icon::after,
+.sortable-comp.sort-asc .sort-icon::after {
+    content: ' ▲';
+    opacity: 1;
+}
+
+.sortable.sort-desc .sort-icon::after,
+.sortable-comp.sort-desc .sort-icon::after {
+    content: ' ▼';
+    opacity: 1;
+}
+
+.player-name-link {
+    color: #667eea;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.player-name-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
 }
 
 table tbody tr {

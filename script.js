@@ -5,6 +5,10 @@ let charts = {
     top300: null,
     personal: null
 };
+let currentSortColumn = 'date';
+let currentSortOrder = 'desc';
+let currentSortColumnComp = 'growth';
+let currentSortOrderComp = 'desc';
 
 // KVKノルマ基準値
 const KVK_QUOTAS = [
@@ -25,8 +29,93 @@ const KVK_QUOTAS = [
 document.addEventListener('DOMContentLoaded', () => {
     initializeTabs();
     initializeFilters();
+    initializeHeaderClick();
+    initializeTableSorting();
+    initializeQuickFilters();
     loadCSVData();
 });
+
+// ヘッダークリックでTOPに戻る
+function initializeHeaderClick() {
+    const headerTitle = document.querySelector('.header-title');
+    if (headerTitle) {
+        headerTitle.addEventListener('click', () => {
+            switchTab('data-list');
+            // フィルターをリセット
+            document.getElementById('period-filter-list').value = 'latest';
+            document.getElementById('search-list').value = '';
+            updateDataList();
+        });
+    }
+}
+
+// テーブルソート機能の初期化
+function initializeTableSorting() {
+    // データ一覧タブ
+    document.querySelectorAll('.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+            const column = th.dataset.column;
+            if (currentSortColumn === column) {
+                currentSortOrder = currentSortOrder === 'desc' ? 'asc' : 'desc';
+            } else {
+                currentSortColumn = column;
+                currentSortOrder = 'desc';
+            }
+            updateSortIcons('.sortable', currentSortColumn, currentSortOrder);
+            updateDataList();
+        });
+    });
+
+    // 比較データタブ
+    document.querySelectorAll('.sortable-comp').forEach(th => {
+        th.addEventListener('click', () => {
+            const column = th.dataset.column;
+            if (currentSortColumnComp === column) {
+                currentSortOrderComp = currentSortOrderComp === 'desc' ? 'asc' : 'desc';
+            } else {
+                currentSortColumnComp = column;
+                currentSortOrderComp = 'desc';
+            }
+            updateSortIcons('.sortable-comp', currentSortColumnComp, currentSortOrderComp);
+            updateComparisonData();
+        });
+    });
+}
+
+// ソートアイコン更新
+function updateSortIcons(selector, column, order) {
+    document.querySelectorAll(selector).forEach(th => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        if (th.dataset.column === column) {
+            th.classList.add(`sort-${order}`);
+        }
+    });
+}
+
+// クイックフィルターボタンの初期化
+function initializeQuickFilters() {
+    // データ一覧タブ
+    document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.quick-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const period = btn.dataset.period;
+            document.getElementById('period-filter-list').value = period;
+            updateDataList();
+        });
+    });
+
+    // 比較データタブ
+    document.querySelectorAll('.quick-filter-btn-comp').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.quick-filter-btn-comp').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const period = btn.dataset.period;
+            document.getElementById('period-filter-comp').value = period;
+            updateComparisonData();
+        });
+    });
+}
 
 // タブ切り替え
 function initializeTabs() {
@@ -197,6 +286,12 @@ function showError(message) {
 function applyPeriodFilter(data, periodType, startDate, endDate) {
     if (periodType === 'all') return data;
 
+    // 最新データの日付を取得
+    if (periodType === 'latest' && data.length > 0) {
+        const latestDate = data[0].date; // データは既に降順ソート済み
+        return data.filter(row => row.date === latestDate);
+    }
+
     const now = new Date();
     let filterDate;
 
@@ -231,8 +326,8 @@ function updateDataList() {
     const startDate = document.getElementById('start-date-list').value;
     const endDate = document.getElementById('end-date-list').value;
     const displayCount = document.getElementById('display-count-list').value;
-    const sortColumn = document.getElementById('sort-column-list').value;
-    const sortOrder = document.getElementById('sort-order-list').value;
+    const sortColumn = currentSortColumn; // グローバル変数を使用
+    const sortOrder = currentSortOrder; // グローバル変数を使用
     const searchText = document.getElementById('search-list').value.toLowerCase();
 
     // フィルタリング
@@ -254,6 +349,18 @@ function updateDataList() {
                 aVal = a.dateObj.getTime();
                 bVal = b.dateObj.getTime();
                 break;
+            case 'id':
+                aVal = a.id;
+                bVal = b.id;
+                return sortOrder === 'desc' ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+            case 'name':
+                aVal = a.name;
+                bVal = b.name;
+                return sortOrder === 'desc' ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+            case 'alliance':
+                aVal = a.alliance;
+                bVal = b.alliance;
+                return sortOrder === 'desc' ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
             case 'power':
                 aVal = a.power;
                 bVal = b.power;
@@ -299,7 +406,7 @@ function updateDataList() {
             <td>${index + 1}</td>
             <td>${row.date}</td>
             <td>${row.id}</td>
-            <td>${row.name}</td>
+            <td><span class="player-name-link" data-player-name="${row.name}">${row.name}</span></td>
             <td>${formatNumber(row.power)}</td>
             <td>${row.alliance}</td>
             <td>${formatNumber(row.t4kill)}</td>
@@ -309,6 +416,14 @@ function updateDataList() {
             <td>${formatNumber(row.troopspower)}</td>
         `;
         tbody.appendChild(tr);
+    });
+
+    // 名前クリックイベント
+    document.querySelectorAll('.player-name-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const playerName = e.target.dataset.playerName;
+            openPlayerAnalysis(playerName);
+        });
     });
 
     if (filteredData.length === 0) {
@@ -324,8 +439,8 @@ function updateComparisonData() {
     const startDate = document.getElementById('start-date-comp').value;
     const endDate = document.getElementById('end-date-comp').value;
     const displayCount = document.getElementById('display-count-comp').value;
-    const sortColumn = document.getElementById('sort-column-comp').value;
-    const sortOrder = document.getElementById('sort-order-comp').value;
+    const sortColumn = currentSortColumnComp; // グローバル変数を使用
+    const sortOrder = currentSortOrderComp; // グローバル変数を使用
     const searchText = document.getElementById('search-comp').value.toLowerCase();
 
     // プレイヤーごとにデータをグループ化
@@ -379,6 +494,18 @@ function updateComparisonData() {
     filteredData.sort((a, b) => {
         let aVal, bVal;
         switch (sortColumn) {
+            case 'id':
+                aVal = a.id;
+                bVal = b.id;
+                return sortOrder === 'desc' ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+            case 'name':
+                aVal = a.name;
+                bVal = b.name;
+                return sortOrder === 'desc' ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
+            case 'alliance':
+                aVal = a.alliance;
+                bVal = b.alliance;
+                return sortOrder === 'desc' ? bVal.localeCompare(aVal) : aVal.localeCompare(bVal);
             case 'growth':
                 aVal = a.growth;
                 bVal = b.growth;
@@ -415,7 +542,7 @@ function updateComparisonData() {
         tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${row.id}</td>
-            <td>${row.name}</td>
+            <td><span class="player-name-link" data-player-name="${row.name}">${row.name}</span></td>
             <td>${row.alliance}</td>
             <td>${formatNumber(row.startPower)}</td>
             <td>${formatNumber(row.endPower)}</td>
@@ -423,6 +550,14 @@ function updateComparisonData() {
             <td>${row.rate.toFixed(2)}%</td>
         `;
         tbody.appendChild(tr);
+    });
+
+    // 名前クリックイベント
+    document.querySelectorAll('#comparison-tbody .player-name-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const playerName = e.target.dataset.playerName;
+            openPlayerAnalysis(playerName);
+        });
     });
 
     if (filteredData.length === 0) {
@@ -794,4 +929,16 @@ function getKVKQuota(power) {
         }
     }
     return null;
+}
+
+// 個人分析タブを開く
+function openPlayerAnalysis(playerName) {
+    // 個人分析タブに切り替え
+    switchTab('personal');
+
+    // 検索フィールドにプレイヤー名を入力
+    document.getElementById('player-search').value = playerName;
+
+    // 検索実行
+    searchPlayer();
 }
