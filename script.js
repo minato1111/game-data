@@ -135,12 +135,16 @@ function showError(title, message, suggestions = []) {
     `;
 }
 
-// グローバルエラーハンドラー追加（強化版）
+// グローバルエラーハンドラー追加（Chrome拡張機能エラー除外版）
 window.addEventListener('error', function(event) {
     // Chrome拡張機能のエラーを除外
-    if (event.error && event.error.message &&
-        event.error.message.includes('message channel closed')) {
-        console.warn('Chrome拡張機能関連のエラーを無視します:', event.error.message);
+    const errorMessage = event.error?.message || event.message || '';
+    if (errorMessage.includes('message channel closed') ||
+        errorMessage.includes('Extension context invalidated') ||
+        event.filename?.includes('extensions/') ||
+        event.filename?.includes('chrome-extension://')) {
+        if (DEBUG_MODE) console.warn('Chrome拡張機能エラーを無視:', errorMessage);
+        event.preventDefault();
         return;
     }
 
@@ -154,20 +158,19 @@ window.addEventListener('error', function(event) {
     }
 });
 
-// Promise rejection ハンドラー（強化版）
+// Promise rejection ハンドラー（Chrome拡張機能エラー除外版）
 window.addEventListener('unhandledrejection', function(event) {
     // Chrome拡張機能のエラーを除外
-    if (event.reason && typeof event.reason === 'object' &&
-        event.reason.message && event.reason.message.includes('message channel closed')) {
-        console.warn('Chrome拡張機能関連のPromise拒否を無視します:', event.reason.message);
-        event.preventDefault(); // エラー表示を防ぐ
-        return;
-    }
+    const reason = event.reason;
+    const reasonMessage = typeof reason === 'string' ? reason :
+                         (reason?.message || JSON.stringify(reason || ''));
 
-    // 文字列の場合もチェック
-    if (typeof event.reason === 'string' && event.reason.includes('message channel closed')) {
-        console.warn('Chrome拡張機能関連のPromise拒否を無視します:', event.reason);
-        event.preventDefault();
+    if (reasonMessage.includes('message channel closed') ||
+        reasonMessage.includes('Extension context invalidated') ||
+        reasonMessage.includes('Could not establish connection') ||
+        reasonMessage.includes('Receiving end does not exist')) {
+        if (DEBUG_MODE) console.warn('Chrome拡張機能Promise拒否を無視:', reasonMessage);
+        event.preventDefault(); // エラー表示を防ぐ
         return;
     }
 
@@ -3301,8 +3304,18 @@ function filterKvkCalendar() {
 // デバッグ用: エラー検出とタブ状態確認
 // =============================================================================
 
-// グローバルエラーハンドラー
+// グローバルエラーハンドラー（Chrome拡張機能エラー除外）
 window.addEventListener('error', (event) => {
+    // Chrome拡張機能のエラーを無視
+    const errorMessage = event.error?.message || event.message || '';
+    if (errorMessage.includes('message channel closed') ||
+        errorMessage.includes('Extension context invalidated') ||
+        event.filename?.includes('extensions/')) {
+        if (DEBUG_MODE) console.warn('Chrome拡張機能エラーを無視:', errorMessage);
+        event.preventDefault();
+        return;
+    }
+
     console.error('🚨 JavaScript Error:', {
         message: event.message,
         filename: event.filename,
@@ -3312,8 +3325,21 @@ window.addEventListener('error', (event) => {
     });
 });
 
-// Promise拒否エラーハンドラー
+// Promise拒否エラーハンドラー（Chrome拡張機能エラー除外）
 window.addEventListener('unhandledrejection', (event) => {
+    // Chrome拡張機能のエラーを無視
+    const reason = event.reason;
+    const reasonMessage = typeof reason === 'string' ? reason :
+                         (reason?.message || JSON.stringify(reason));
+
+    if (reasonMessage.includes('message channel closed') ||
+        reasonMessage.includes('Extension context invalidated') ||
+        reasonMessage.includes('Could not establish connection')) {
+        if (DEBUG_MODE) console.warn('Chrome拡張機能Promise拒否を無視:', reasonMessage);
+        event.preventDefault();
+        return;
+    }
+
     console.error('🚨 Unhandled Promise Rejection:', event.reason);
 });
 
