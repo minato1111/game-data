@@ -737,8 +737,6 @@ function switchTab(tab) {
         }
     } else if (tab === 'kvk') {
         console.log('⚔️ KVKノルマタブが選択されました');
-    } else if (tab === 'contact') {
-        console.log('📧 問い合わせタブが選択されました');
     }
 
         console.log('🎯 特別処理完了');

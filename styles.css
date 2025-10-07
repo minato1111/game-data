@@ -673,20 +673,3 @@ td {
     font-weight: bold;
 }
 
-/* ========================================
-   問い合わせタブ
-======================================== */
-#contactTab a:hover {
-    background: rgba(255,255,255,0.3) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-#contactTab img {
-    transition: transform 0.3s ease;
-}
-
-#contactTab img:hover {
-    transform: scale(1.05);
-}
-
