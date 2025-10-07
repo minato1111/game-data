@@ -89,23 +89,31 @@ function initializeFilters() {
 
     // 個人分析用タブ
     document.getElementById('player-search-btn').addEventListener('click', searchPlayer);
+    document.getElementById('player-search').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchPlayer();
+    });
     document.getElementById('metric-personal').addEventListener('change', updatePersonalChart);
 
     // KVKノルマタブ
     document.getElementById('kvk-search-btn').addEventListener('click', searchKVKPlayer);
+    document.getElementById('kvk-player-search').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') searchKVKPlayer();
+    });
 }
 
 // CSVデータ読み込み
 function loadCSVData() {
+    showLoading();
     Papa.parse('Master_Data.csv', {
         download: true,
         header: true,
         complete: (results) => {
             masterData = results.data.filter(row => row.Data && row.Data.trim() !== '');
-            // データの数値変換
+            // データの数値変換と日付の正規化
             masterData = masterData.map((row, index) => ({
                 no: index + 1,
                 date: row.Data || '',
+                dateObj: parseDate(row.Data), // 日付オブジェクトを保持
                 id: row.ID || '',
                 name: row.Name || '',
                 power: parseNumber(row.Power),
@@ -116,14 +124,20 @@ function loadCSVData() {
                 dead: parseNumber(row['Dead Troops']),
                 troopspower: parseNumber(row['Troops Power'])
             }));
+
+            // 日付でソート（降順：新しい順）
+            masterData.sort((a, b) => b.dateObj - a.dateObj);
+
             console.log('読み込んだデータ数:', masterData.length);
             console.log('サンプルデータ:', masterData[0]);
+            hideLoading();
             updateDataList();
             updateComparisonData();
             updateTop300Chart();
         },
         error: (error) => {
             console.error('CSV読み込みエラー:', error);
+            hideLoading();
             showError('データの読み込みに失敗しました。Master_Data.csvファイルが存在することを確認してください。');
         }
     });
@@ -137,9 +151,37 @@ function parseNumber(value) {
     return isNaN(num) ? 0 : num;
 }
 
+// 日付パース関数（2025/07/29形式に対応）
+function parseDate(dateStr) {
+    if (!dateStr) return new Date(0);
+    // 2025/07/29形式をパース
+    const parts = dateStr.split('/');
+    if (parts.length === 3) {
+        return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+    }
+    return new Date(dateStr);
+}
+
 // 数値フォーマット関数
 function formatNumber(num) {
     return num.toLocaleString('ja-JP');
+}
+
+// ローディング表示
+function showLoading() {
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'loading-indicator';
+    loadingDiv.className = 'loading';
+    loadingDiv.textContent = 'データを読み込んでいます...';
+    document.querySelector('.content').prepend(loadingDiv);
+}
+
+// ローディング非表示
+function hideLoading() {
+    const loadingDiv = document.getElementById('loading-indicator');
+    if (loadingDiv) {
+        loadingDiv.remove();
+    }
 }
 
 // エラー表示
@@ -148,6 +190,7 @@ function showError(message) {
     errorDiv.className = 'error-message';
     errorDiv.textContent = message;
     document.querySelector('.content').prepend(errorDiv);
+    setTimeout(() => errorDiv.remove(), 5000); // 5秒後に自動削除
 }
 
 // 期間フィルター適用
@@ -167,14 +210,17 @@ function applyPeriodFilter(data, periodType, startDate, endDate) {
         case 'custom':
             if (startDate && endDate) {
                 return data.filter(row => {
-                    const rowDate = new Date(row.date);
-                    return rowDate >= new Date(startDate) && rowDate <= new Date(endDate);
+                    const rowDate = row.dateObj;
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    end.setHours(23, 59, 59, 999); // 終了日の最後まで含める
+                    return rowDate >= start && rowDate <= end;
                 });
             }
             return data;
     }
 
-    return data.filter(row => new Date(row.date) >= filterDate);
+    return data.filter(row => row.dateObj >= filterDate);
 }
 
 // データ一覧の更新
@@ -205,8 +251,8 @@ function updateDataList() {
         let aVal, bVal;
         switch (sortColumn) {
             case 'date':
-                aVal = new Date(a.date);
-                bVal = new Date(b.date);
+                aVal = a.dateObj.getTime();
+                bVal = b.dateObj.getTime();
                 break;
             case 'power':
                 aVal = a.power;
@@ -300,7 +346,7 @@ function updateComparisonData() {
     const comparisonData = [];
     Object.values(playerData).forEach(player => {
         let filteredRecords = applyPeriodFilter(player.records, periodType, startDate, endDate);
-        filteredRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+        filteredRecords.sort((a, b) => a.dateObj - b.dateObj);
 
         if (filteredRecords.length >= 2) {
             const startRecord = filteredRecords[0];
@@ -489,9 +535,9 @@ function updateTop300Chart() {
 
 // プレイヤー検索（個人分析用）
 function searchPlayer() {
-    const searchText = document.getElementById('player-search').value.toLowerCase();
+    const searchText = document.getElementById('player-search').value.trim().toLowerCase();
     if (!searchText) {
-        alert('プレイヤー名またはIDを入力してください');
+        showError('プレイヤー名またはIDを入力してください');
         return;
     }
 
@@ -501,7 +547,7 @@ function searchPlayer() {
     );
 
     if (playerRecords.length === 0) {
-        alert('該当するプレイヤーが見つかりませんでした');
+        showError('該当するプレイヤーが見つかりませんでした');
         return;
     }
 
@@ -551,7 +597,7 @@ function updatePersonalChart(playerRecords = null) {
     const metric = document.getElementById('metric-personal').value;
 
     // 日付順にソート
-    playerRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+    playerRecords.sort((a, b) => a.dateObj - b.dateObj);
 
     // グラフデータ作成
     const chartData = playerRecords.map(record => {
@@ -637,9 +683,9 @@ function updatePersonalChart(playerRecords = null) {
 
 // KVKプレイヤー検索
 function searchKVKPlayer() {
-    const searchText = document.getElementById('kvk-player-search').value.toLowerCase();
+    const searchText = document.getElementById('kvk-player-search').value.trim().toLowerCase();
     if (!searchText) {
-        alert('プレイヤー名またはIDを入力してください');
+        showError('プレイヤー名またはIDを入力してください');
         return;
     }
 
@@ -649,17 +695,18 @@ function searchKVKPlayer() {
     );
 
     if (playerRecords.length === 0) {
-        alert('該当するプレイヤーが見つかりませんでした');
+        showError('該当するプレイヤーが見つかりませんでした');
         return;
     }
 
-    // 9/24以降のデータを抽出
+    // KVK開始日を取得（データの中で最も古い日付、または手動で設定）
+    // ここでは2024-09-24を基準にしていますが、実際のデータに合わせて調整してください
     const kvkStartDate = new Date('2024-09-24');
-    const kvkRecords = playerRecords.filter(row => new Date(row.date) >= kvkStartDate);
-    kvkRecords.sort((a, b) => new Date(a.date) - new Date(b.date));
+    const kvkRecords = playerRecords.filter(row => row.dateObj >= kvkStartDate);
+    kvkRecords.sort((a, b) => a.dateObj - b.dateObj);
 
     if (kvkRecords.length === 0) {
-        alert('9/24以降のデータがありません');
+        showError('KVK期間のデータがありません。データの日付範囲を確認してください。');
         return;
     }
 
@@ -674,7 +721,7 @@ function searchKVKPlayer() {
     const quota = getKVKQuota(latestRecord.power);
 
     if (!quota) {
-        alert('該当するPower帯のノルマが見つかりませんでした');
+        showError(`該当するPower帯のノルマが見つかりませんでした（現在のPower: ${formatNumber(latestRecord.power)}）`);
         return;
     }
 

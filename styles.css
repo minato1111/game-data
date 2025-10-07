@@ -142,11 +142,17 @@ body {
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .filter-group button:hover {
     background: #5568d3;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.filter-group button:active {
+    transform: translateY(0);
 }
 
 .custom-period {
@@ -185,13 +191,28 @@ table tbody tr {
     transition: background 0.2s ease;
 }
 
-table tbody tr:hover {
+table tbody tr:nth-child(even) {
     background: #f8f9fa;
+}
+
+table tbody tr:hover {
+    background: #e9ecef;
+    cursor: pointer;
 }
 
 table td {
     padding: 12px 15px;
     font-size: 14px;
+    text-align: left;
+}
+
+table td:nth-child(5),
+table td:nth-child(7),
+table td:nth-child(8),
+table td:nth-child(9),
+table td:nth-child(10),
+table td:nth-child(11) {
+    text-align: right;
 }
 
 .chart-container {
@@ -200,6 +221,12 @@ table td {
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
+    min-height: 400px;
+    position: relative;
+}
+
+.chart-container canvas {
+    max-height: 500px;
 }
 
 .player-info {
@@ -338,14 +365,19 @@ table td {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
     .header h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+        padding: 20px;
     }
 
     .tab-btn {
-        min-width: 120px;
-        font-size: 14px;
-        padding: 12px 15px;
+        min-width: 100px;
+        font-size: 13px;
+        padding: 10px 12px;
     }
 
     .content {
@@ -355,20 +387,50 @@ table td {
     .filters {
         flex-direction: column;
         align-items: stretch;
+        gap: 10px;
     }
 
     .filter-group {
         flex-direction: column;
         align-items: stretch;
+        gap: 5px;
+    }
+
+    .filter-group label {
+        font-size: 14px;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        font-size: 14px;
     }
 
     table {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     table th,
     table td {
-        padding: 8px;
+        padding: 6px 4px;
+        white-space: nowrap;
+    }
+
+    .chart-container {
+        padding: 10px;
+    }
+
+    .player-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+    .tab-content h2 {
+        font-size: 1.5rem;
     }
 }
 
@@ -386,6 +448,17 @@ table td {
     padding: 40px;
     color: #667eea;
     font-size: 1.2rem;
+    font-weight: 600;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
 }
 
 .no-data {
