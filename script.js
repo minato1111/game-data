@@ -1295,32 +1295,20 @@ function filterGrowthBySearch() {
 // 名前クリックで個人分析へ遷移
 function navigateToPlayer(playerName, playerId) {
     // 個人分析タブに切り替え
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-btn')[3].classList.add('active'); // 個人分析タブ（4番目）
-    
-    document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-    });
-    document.getElementById('individualTab').classList.add('active');
-    
+    switchTab('individual');
+
     // 検索ボックスに名前を設定して検索実行
-    document.getElementById('playerSearch').value = playerName;
-    searchPlayer();
+    setTimeout(() => {
+        document.getElementById('playerSearch').value = playerName;
+        searchPlayer();
+    }, 100);
 }
 
 function setupEventListeners() {
     // 検索機能にデバウンスを適用してパフォーマンス改善
     const debouncedSearch = debounce(filterDataBySearch, 300);
     getElement('searchInput').addEventListener('input', debouncedSearch);
-    
-    // ホームボタン（タイトル）のクリックイベント
-    const homeTitle = document.getElementById('homeTitle');
-    if (homeTitle) {
-        homeTitle.addEventListener('click', navigateToHome);
-    }
-    
+
     // データ一覧タブのソート設定
     document.getElementById('dataSortColumn').addEventListener('change', (e) => {
         if (e.target.value) {
@@ -2613,11 +2601,6 @@ function createKvkDeathChart(chartData) {
     });
 }
 
-// ホーム画面への遷移機能
-function navigateToHome() {
-    // 認証状態は維持したままホーム画面に戻る
-    window.location.href = 'home.html';
-}
 
 // =============================================================================
 // KVK カレンダー機能
