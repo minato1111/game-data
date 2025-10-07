@@ -638,14 +638,30 @@ function updateTop300Chart() {
                 data: chartData.map(d => d.value),
                 backgroundColor: chartType === 'bar' ? 'rgba(102, 126, 234, 0.6)' : 'rgba(102, 126, 234, 0.2)',
                 borderColor: 'rgba(102, 126, 234, 1)',
-                borderWidth: 2,
-                fill: chartType === 'line'
+                borderWidth: chartType === 'line' ? 3 : 2,
+                fill: chartType === 'line',
+                tension: chartType === 'line' ? 0.4 : 0,
+                pointRadius: chartType === 'line' ? 4 : 0,
+                pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
             scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
@@ -656,6 +672,10 @@ function updateTop300Chart() {
                 }
             },
             plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -676,7 +696,7 @@ function searchPlayer() {
         return;
     }
 
-    const playerRecords = masterData.filter(row =>
+    let playerRecords = masterData.filter(row =>
         row.name.toLowerCase().includes(searchText) ||
         row.id.toLowerCase().includes(searchText)
     );
@@ -686,8 +706,21 @@ function searchPlayer() {
         return;
     }
 
+    // 日付でソート（昇順：古い順）
+    playerRecords.sort((a, b) => a.dateObj - b.dateObj);
+
+    // 重複する日付を削除（同じ日付の場合は最新のレコードを保持）
+    const uniqueRecords = [];
+    const seenDates = new Set();
+    playerRecords.forEach(record => {
+        if (!seenDates.has(record.date)) {
+            seenDates.add(record.date);
+            uniqueRecords.push(record);
+        }
+    });
+
     // プレイヤー情報表示
-    const player = playerRecords[0];
+    const player = uniqueRecords[uniqueRecords.length - 1]; // 最新のデータを使用
     const playerInfo = document.getElementById('player-info');
     playerInfo.className = 'player-info show';
     playerInfo.innerHTML = `
@@ -707,32 +740,45 @@ function searchPlayer() {
             </div>
             <div class="info-item">
                 <label>データ数:</label>
-                <span>${playerRecords.length}件</span>
+                <span>${uniqueRecords.length}件</span>
             </div>
         </div>
     `;
 
-    updatePersonalChart(playerRecords);
+    updatePersonalChart(uniqueRecords);
 }
 
 // 個人分析グラフの更新
 function updatePersonalChart(playerRecords = null) {
     if (!playerRecords) {
-        const searchText = document.getElementById('player-search').value.toLowerCase();
+        const searchText = document.getElementById('player-search').value.trim().toLowerCase();
         if (!searchText) return;
 
-        playerRecords = masterData.filter(row =>
+        let records = masterData.filter(row =>
             row.name.toLowerCase().includes(searchText) ||
             row.id.toLowerCase().includes(searchText)
         );
+
+        if (records.length === 0) return;
+
+        // 日付でソート
+        records.sort((a, b) => a.dateObj - b.dateObj);
+
+        // 重複する日付を削除
+        const uniqueRecords = [];
+        const seenDates = new Set();
+        records.forEach(record => {
+            if (!seenDates.has(record.date)) {
+                seenDates.add(record.date);
+                uniqueRecords.push(record);
+            }
+        });
+        playerRecords = uniqueRecords;
     }
 
     if (playerRecords.length === 0) return;
 
     const metric = document.getElementById('metric-personal').value;
-
-    // 日付順にソート
-    playerRecords.sort((a, b) => a.dateObj - b.dateObj);
 
     // グラフデータ作成
     const chartData = playerRecords.map(record => {
@@ -785,15 +831,30 @@ function updatePersonalChart(playerRecords = null) {
                 data: chartData.map(d => d.value),
                 backgroundColor: 'rgba(102, 126, 234, 0.2)',
                 borderColor: 'rgba(102, 126, 234, 1)',
-                borderWidth: 2,
+                borderWidth: 3,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
             scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
@@ -804,6 +865,10 @@ function updatePersonalChart(playerRecords = null) {
                 }
             },
             plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
