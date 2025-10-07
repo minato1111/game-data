@@ -2,7 +2,7 @@
 // 設定値（最適化済み）
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = true; // 本番環境では false、開発時は true（デバッグ中）
+const DEBUG_MODE = false; // 本番環境では false、開発時は true
 
 // パフォーマンス設定
 const PERFORMANCE_CONFIG = {
@@ -259,18 +259,16 @@ async function loadCSVData() {
             throw new Error('CSVファイルのサイズが小さすぎます');
         }
 
+        // BOM検出と除去（常に実行）
+        if (csvText.charCodeAt(0) === 0xFEFF) {
+            csvText = csvText.substring(1);
+            if (DEBUG_MODE) console.log('BOMを除去しました');
+        }
+
         if (DEBUG_MODE) {
             console.log('CSVテキスト前半100文字:', csvText.substring(0, 100));
             console.log('CSVファイルサイズ:', csvText.length);
             console.log('先頭文字の文字コード:', csvText.substring(0, 10).split('').map(c => c.charCodeAt(0)));
-            // BOM検出と除去
-            const hasBOM = csvText.charCodeAt(0) === 0xFEFF;
-            console.log('BOM検出:', hasBOM);
-            if (hasBOM) {
-                console.log('BOMを除去しました');
-                csvText = csvText.substring(1);
-                console.log('BOM除去後のサイズ:', csvText.length);
-            }
         }
 
         // PapaParseでCSVを解析（デバッグ詳細版）
