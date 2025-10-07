@@ -101,21 +101,23 @@ function loadCSVData() {
         download: true,
         header: true,
         complete: (results) => {
-            masterData = results.data.filter(row => row.date && row.date.trim() !== '');
+            masterData = results.data.filter(row => row.Data && row.Data.trim() !== '');
             // データの数値変換
-            masterData = masterData.map(row => ({
-                no: row.no || '',
-                date: row.date || '',
-                id: row.id || '',
-                name: row.name || '',
-                power: parseNumber(row.power),
-                alliance: row.alliance || '',
-                t4kill: parseNumber(row.t4kill),
-                t5kill: parseNumber(row.t5kill),
-                totalkill: parseNumber(row.totalkill),
-                dead: parseNumber(row.dead),
-                troopspower: parseNumber(row.troopspower)
+            masterData = masterData.map((row, index) => ({
+                no: index + 1,
+                date: row.Data || '',
+                id: row.ID || '',
+                name: row.Name || '',
+                power: parseNumber(row.Power),
+                alliance: row.Alliance || '',
+                t4kill: parseNumber(row['T4-Kills']),
+                t5kill: parseNumber(row['T5-Kills']),
+                totalkill: parseNumber(row['Total Kill Points']),
+                dead: parseNumber(row['Dead Troops']),
+                troopspower: parseNumber(row['Troops Power'])
             }));
+            console.log('読み込んだデータ数:', masterData.length);
+            console.log('サンプルデータ:', masterData[0]);
             updateDataList();
             updateComparisonData();
             updateTop300Chart();
