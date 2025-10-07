@@ -458,36 +458,46 @@ function setupDateInputs() {
         const dates = allData.map(row => row.Data).filter(d => d).sort();
         const minDate = dates[0];
         const maxDate = dates[dates.length - 1];
-        
+
         const formatDate = (dateStr) => {
             const parts = dateStr.split('/');
             return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
         };
-        
+
         // データ一覧タブの日付入力
         const dataStartInput = document.getElementById('dataStartDate');
         const dataEndInput = document.getElementById('dataEndDate');
-        
-        if (minDate) {
-            dataStartInput.min = formatDate(minDate);
-            dataEndInput.min = formatDate(minDate);
-        }
-        if (maxDate) {
-            dataStartInput.max = formatDate(maxDate);
-            dataEndInput.max = formatDate(maxDate);
+
+        if (minDate && maxDate) {
+            const formattedMin = formatDate(minDate);
+            const formattedMax = formatDate(maxDate);
+
+            dataStartInput.min = formattedMin;
+            dataStartInput.max = formattedMax;
+            dataEndInput.min = formattedMin;
+            dataEndInput.max = formattedMax;
+
+            if (DEBUG_MODE) {
+                console.log('データ一覧 日付範囲設定:', formattedMin, '～', formattedMax);
+            }
         }
 
         // 成長ランキングタブの日付入力も同様に設定
         const growthStartInput = document.getElementById('growthStartDate');
         const growthEndInput = document.getElementById('growthEndDate');
-        
-        if (minDate) {
-            growthStartInput.min = formatDate(minDate);
-            growthEndInput.min = formatDate(minDate);
-        }
-        if (maxDate) {
-            growthStartInput.max = formatDate(maxDate);
-            growthEndInput.max = formatDate(maxDate);
+
+        if (minDate && maxDate) {
+            const formattedMin = formatDate(minDate);
+            const formattedMax = formatDate(maxDate);
+
+            growthStartInput.min = formattedMin;
+            growthStartInput.max = formattedMax;
+            growthEndInput.min = formattedMin;
+            growthEndInput.max = formattedMax;
+
+            if (DEBUG_MODE) {
+                console.log('成長ランキング 日付範囲設定:', formattedMin, '～', formattedMax);
+            }
         }
     }
 }
@@ -2221,7 +2231,7 @@ function calculateKvkProgress(latestData, allPlayerData) {
 
     // 9/24のデータを探す（複数の日付形式に対応）
     const kvkStartDate = '2025/09/24';
-    const altFormats = ['2025/9/24', '2024/09/24', '2024/9/24', '24/09/2025', '24/09/2024', '9/24/2025', '9/24/2024', '2025-09-24', '2025-9-24', '2024-09-24', '2024-9-24'];
+    const altFormats = ['2025/9/24', '2025-09-24', '2025-9-24'];
 
     let startData = allPlayerData.find(row => row.Data === kvkStartDate);
 
