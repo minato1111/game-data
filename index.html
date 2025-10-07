@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rise of Kingdoms - スコアデータ管理システム</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Rise of Kingdoms - スコアデータ管理システム</h1>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="data-list">データ一覧</button>
+            <button class="tab-btn" data-tab="comparison">比較データ</button>
+            <button class="tab-btn" data-tab="top300">上位300人統計</button>
+            <button class="tab-btn" data-tab="personal">個人分析用</button>
+            <button class="tab-btn" data-tab="kvk-quota">KVKノルマ</button>
+            <button class="tab-btn" data-tab="contact">問い合わせ先</button>
+        </nav>
+
+        <main class="content">
+            <!-- データ一覧タブ -->
+            <div id="data-list" class="tab-content active">
+                <h2>データ一覧</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>期間選択:</label>
+                        <select id="period-filter-list">
+                            <option value="all">全期間</option>
+                            <option value="7days">直近7日</option>
+                            <option value="30days">直近30日</option>
+                            <option value="custom">カスタム期間</option>
+                        </select>
+                        <div id="custom-period-list" class="custom-period" style="display: none;">
+                            <input type="date" id="start-date-list">
+                            <span>～</span>
+                            <input type="date" id="end-date-list">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>表示件数:</label>
+                        <select id="display-count-list">
+                            <option value="50">50件</option>
+                            <option value="100" selected>100件</option>
+                            <option value="200">200件</option>
+                            <option value="all">全件</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>並び替え:</label>
+                        <select id="sort-column-list">
+                            <option value="date">日付</option>
+                            <option value="power">Power</option>
+                            <option value="t4kill">T4kill</option>
+                            <option value="t5kill">T5kill</option>
+                            <option value="totalkill">Total kill points</option>
+                            <option value="dead">Dead Troops</option>
+                            <option value="troopspower">Troops Power</option>
+                        </select>
+                        <select id="sort-order-list">
+                            <option value="desc">降順</option>
+                            <option value="asc">昇順</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>検索:</label>
+                        <input type="text" id="search-list" placeholder="名前、IDで検索">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>日付</th>
+                                <th>ID</th>
+                                <th>名前</th>
+                                <th>Power</th>
+                                <th>同盟</th>
+                                <th>T4kill</th>
+                                <th>T5kill</th>
+                                <th>Total kill points</th>
+                                <th>Dead Troops</th>
+                                <th>Troops Power</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 比較データタブ -->
+            <div id="comparison" class="tab-content">
+                <h2>比較データ</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>期間選択:</label>
+                        <select id="period-filter-comp">
+                            <option value="all">全期間</option>
+                            <option value="7days">直近7日</option>
+                            <option value="30days">直近30日</option>
+                            <option value="custom">カスタム期間</option>
+                        </select>
+                        <div id="custom-period-comp" class="custom-period" style="display: none;">
+                            <input type="date" id="start-date-comp">
+                            <span>～</span>
+                            <input type="date" id="end-date-comp">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>表示件数:</label>
+                        <select id="display-count-comp">
+                            <option value="50">50件</option>
+                            <option value="100" selected>100件</option>
+                            <option value="200">200件</option>
+                            <option value="all">全件</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>並び替え:</label>
+                        <select id="sort-column-comp">
+                            <option value="growth" selected>増加力</option>
+                            <option value="rate">成長率</option>
+                            <option value="startpower">開始時Power</option>
+                            <option value="endpower">終了時Power</option>
+                        </select>
+                        <select id="sort-order-comp">
+                            <option value="desc">降順</option>
+                            <option value="asc">昇順</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>検索:</label>
+                        <input type="text" id="search-comp" placeholder="名前、IDで検索">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>順位</th>
+                                <th>ID</th>
+                                <th>名前</th>
+                                <th>同盟</th>
+                                <th>期間開始時のPower</th>
+                                <th>期間終了時のPower</th>
+                                <th>増加力</th>
+                                <th>成長率(%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 上位300人統計タブ -->
+            <div id="top300" class="tab-content">
+                <h2>上位300人統計</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>グラフタイプ:</label>
+                        <select id="chart-type-top300">
+                            <option value="line">折れ線グラフ</option>
+                            <option value="bar">棒グラフ</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>指標:</label>
+                        <select id="metric-top300">
+                            <option value="power">Power</option>
+                            <option value="t4kill">T4kill</option>
+                            <option value="t5kill">T5kill</option>
+                            <option value="totalkill">Total kill points</option>
+                            <option value="dead">Dead Troops</option>
+                            <option value="troopspower">Troops Power</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="top300-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- 個人分析用タブ -->
+            <div id="personal" class="tab-content">
+                <h2>個人分析用</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>プレイヤー指定:</label>
+                        <input type="text" id="player-search" placeholder="名前またはIDを入力">
+                        <button id="player-search-btn">検索</button>
+                    </div>
+                    <div class="filter-group">
+                        <label>指標:</label>
+                        <select id="metric-personal">
+                            <option value="power">Power</option>
+                            <option value="t4kill">T4kill</option>
+                            <option value="t5kill">T5kill</option>
+                            <option value="totalkill">Total kill points</option>
+                            <option value="dead">Dead Troops</option>
+                            <option value="troopspower">Troops Power</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="player-info" class="player-info"></div>
+                <div class="chart-container">
+                    <canvas id="personal-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- KVKノルマタブ -->
+            <div id="kvk-quota" class="tab-content">
+                <h2>KVKノルマ</h2>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>プレイヤー指定:</label>
+                        <input type="text" id="kvk-player-search" placeholder="名前またはIDを入力">
+                        <button id="kvk-search-btn">検索</button>
+                    </div>
+                </div>
+
+                <div id="kvk-result" class="kvk-result">
+                    <div id="kvk-player-info"></div>
+
+                    <h3>Power帯別ノルマ基準値</h3>
+                    <div class="table-container">
+                        <table class="kvk-quota-table">
+                            <thead>
+                                <tr>
+                                    <th>Power帯</th>
+                                    <th>撃破ノルマ</th>
+                                    <th>戦死ノルマ</th>
+                                    <th>Death Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>45M - 59.9M</td>
+                                    <td>75,000,000</td>
+                                    <td>198,000</td>
+                                    <td>0.0033</td>
+                                </tr>
+                                <tr>
+                                    <td>60M - 64.9M</td>
+                                    <td>150,000,000</td>
+                                    <td>214,500</td>
+                                    <td>0.0033</td>
+                                </tr>
+                                <tr>
+                                    <td>65M - 69.9M</td>
+                                    <td>150,000,000</td>
+                                    <td>231,000</td>
+                                    <td>0.0033</td>
+                                </tr>
+                                <tr>
+                                    <td>70M - 74.9M</td>
+                                    <td>187,500,000</td>
+                                    <td>315,000</td>
+                                    <td>0.0042</td>
+                                </tr>
+                                <tr>
+                                    <td>75M - 79.9M</td>
+                                    <td>187,500,000</td>
+                                    <td>336,000</td>
+                                    <td>0.0042</td>
+                                </tr>
+                                <tr>
+                                    <td>80M - 84.9M</td>
+                                    <td>200,000,000</td>
+                                    <td>425,000</td>
+                                    <td>0.0050</td>
+                                </tr>
+                                <tr>
+                                    <td>85M - 89.9M</td>
+                                    <td>200,000,000</td>
+                                    <td>450,000</td>
+                                    <td>0.0050</td>
+                                </tr>
+                                <tr>
+                                    <td>90M - 94.9M</td>
+                                    <td>300,000,000</td>
+                                    <td>551,000</td>
+                                    <td>0.0058</td>
+                                </tr>
+                                <tr>
+                                    <td>95M - 99.9M</td>
+                                    <td>300,000,000</td>
+                                    <td>580,000</td>
+                                    <td>0.0058</td>
+                                </tr>
+                                <tr>
+                                    <td>100M - 149.9M</td>
+                                    <td>600,000,000</td>
+                                    <td>1,005,000</td>
+                                    <td>0.0067</td>
+                                </tr>
+                                <tr>
+                                    <td>150M - 199.9M</td>
+                                    <td>600,000,000</td>
+                                    <td>1,340,000</td>
+                                    <td>0.0067</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div id="kvk-progress" class="kvk-progress"></div>
+                </div>
+            </div>
+
+            <!-- 問い合わせ先タブ -->
+            <div id="contact" class="tab-content">
+                <h2>問い合わせ先</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <img src="lJOc64cA_400x400.jpg" alt="アイコン" class="contact-icon">
+                    </div>
+                    <div class="contact-item">
+                        <h3>Twitter</h3>
+                        <a href="https://x.com/boo_vazi" target="_blank">https://x.com/boo_vazi</a>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Discord</h3>
+                        <a href="https://discord.gg/Tkh6eUw37x" target="_blank">https://discord.gg/Tkh6eUw37x</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

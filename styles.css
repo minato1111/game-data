@@ -1,0 +1,396 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.tabs {
+    display: flex;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 15px 20px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+    background: #e9ecef;
+}
+
+.tab-btn.active {
+    color: #667eea;
+    border-bottom: 3px solid #667eea;
+    background: white;
+}
+
+.content {
+    padding: 30px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tab-content h2 {
+    color: #667eea;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.filters {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group label {
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.filter-group select,
+.filter-group input[type="text"],
+.filter-group input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.filter-group button {
+    padding: 8px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+}
+
+.filter-group button:hover {
+    background: #5568d3;
+}
+
+.custom-period {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+table thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+table th {
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+table tbody tr {
+    border-bottom: 1px solid #dee2e6;
+    transition: background 0.2s ease;
+}
+
+table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+table td {
+    padding: 12px 15px;
+    font-size: 14px;
+}
+
+.chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.player-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.player-info.show {
+    display: block;
+}
+
+.player-info h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.player-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.info-item span {
+    font-size: 18px;
+    color: #212529;
+}
+
+.kvk-result {
+    display: none;
+}
+
+.kvk-result.show {
+    display: block;
+}
+
+.kvk-quota-table {
+    margin: 20px 0;
+}
+
+.kvk-progress {
+    margin-top: 30px;
+}
+
+.progress-item {
+    margin-bottom: 30px;
+}
+
+.progress-item h4 {
+    color: #495057;
+    margin-bottom: 10px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 40px;
+    background: #e9ecef;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    transition: width 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+}
+
+.progress-bar.completed {
+    background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+}
+
+.progress-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #495057;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 40px;
+}
+
+.contact-item {
+    text-align: center;
+}
+
+.contact-icon {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.contact-item h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.contact-item a {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .tab-btn {
+        min-width: 120px;
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    table th,
+    table td {
+        padding: 8px;
+    }
+}
+
+.error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 20px 0;
+    border: 1px solid #f5c6cb;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-size: 1.1rem;
+}
