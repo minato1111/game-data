@@ -33,6 +33,7 @@
             <button class="tab-btn" onclick="switchTab('overall')" role="tab" aria-controls="overallTab" aria-selected="false">上位300人統計</button>
             <button class="tab-btn" onclick="switchTab('individual')" role="tab" aria-controls="individualTab" aria-selected="false">個人分析</button>
             <button class="tab-btn" onclick="switchTab('kvk')" role="tab" aria-controls="kvkTab" aria-selected="false">KVKノルマ</button>
+            <button class="tab-btn" onclick="switchTab('kvkList')" role="tab" aria-controls="kvkListTab" aria-selected="false">KVKノルマ一覧</button>
         </nav>
 
 
@@ -627,6 +628,101 @@
 
     </div>
 </div>
+
+        <!-- KVKノルマ一覧タブ -->
+        <div id="kvkListTab" class="tab-content">
+            <div style="max-width: 1400px; margin: 0 auto; padding: 40px 20px;">
+                <!-- ヘッダーセクション -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h2 style="color: #2c3e50; font-size: 34px; margin-bottom: 15px; font-weight: 700;">
+                        📊 KVKノルマ一覧表示
+                    </h2>
+                    <p style="color: #7f8c8d; font-size: 16px;">参加メンバー全員のKVKノルマ達成状況を一覧表示</p>
+                    <div style="width: 80px; height: 2px; background: #3498db; margin: 15px auto;"></div>
+                </div>
+
+                <!-- 統計サマリー -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">分析期間</div>
+                        <div id="kvkListPeriod" style="font-size: 18px; font-weight: 700;">9/24 - 最新</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #27ae60 0%, #16a085 100%); color: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">分析対象者数</div>
+                        <div id="kvkListCount" style="font-size: 18px; font-weight: 700;">-</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%); color: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">撃破ノルマ達成者</div>
+                        <div id="kvkListKillAchievers" style="font-size: 18px; font-weight: 700;">-</div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%); color: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center;">
+                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 5px;">戦死ノルマ達成者</div>
+                        <div id="kvkListDeathAchievers" style="font-size: 18px; font-weight: 700;">-</div>
+                    </div>
+                </div>
+
+                <!-- フィルターセクション -->
+                <div class="filter-section" style="margin-bottom: 20px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="font-weight: 600;">表示:</label>
+                            <select id="kvkListFilter" onchange="updateKvkList()">
+                                <option value="all">全員</option>
+                                <option value="achieved">両方達成</option>
+                                <option value="kill-achieved">撃破ノルマ達成</option>
+                                <option value="death-achieved">戦死ノルマ達成</option>
+                                <option value="not-achieved">未達成</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <label style="font-weight: 600;">並び順:</label>
+                            <select id="kvkListSort" onchange="updateKvkList()">
+                                <option value="power-desc">Power降順</option>
+                                <option value="power-asc">Power昇順</option>
+                                <option value="kill-progress">撃破達成率順</option>
+                                <option value="death-progress">戦死達成率順</option>
+                                <option value="name">名前順</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- 検索機能 -->
+                    <div style="margin-top: 15px;">
+                        <div class="search-box">
+                            <input type="text" id="kvkListSearch" placeholder="🔍 名前、ID、同盟で検索..." oninput="updateKvkList()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- テーブル -->
+                <div class="table-container">
+                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                        <thead style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+                            <tr>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 50px;">No.</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 80px;">ID</th>
+                                <th style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;">名前</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 80px;">Power</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;">T4増加</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;">T5増加</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 140px;">Kill Points<br>増加</th>
+                                <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 130px;">Dead Troops<br>増加</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 180px;">撃破ノルマ</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 180px;">戦死ノルマ</th>
+                                <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 80px;">達成</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kvkListTableBody">
+                            <tr>
+                                <td colspan="11" style="text-align: center; padding: 60px 20px; color: #7f8c8d;">
+                                    <div class="loading-spinner"></div>
+                                    <p style="margin-top: 20px;">データを読み込み中...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
     <script src="script.js" defer></script>
 
