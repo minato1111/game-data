@@ -2,7 +2,7 @@
 // 設定値（最適化済み）
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';  // 同じフォルダにCSVファイルを配置
-const DEBUG_MODE = false; // 本番環境では false、開発時は true
+const DEBUG_MODE = true; // 本番環境では false、開発時は true
 
 // パフォーマンス設定
 const PERFORMANCE_CONFIG = {
@@ -745,13 +745,50 @@ function switchTab(tab) {
         console.log('⚔️ KVKノルマタブが選択されました');
     } else if (tab === 'kvkList') {
         console.log('📊 KVKノルマ一覧タブが選択されました');
-        if (allData.length > 0) {
-            // データが既に初期化されている場合は更新のみ、そうでなければ初期化
-            if (kvkListData.length === 0) {
-                initKvkList();
-            } else {
-                updateKvkList();
+
+        const kvkListTabElement = document.getElementById('kvkListTab');
+        if (kvkListTabElement) {
+            console.log('KVKノルマ一覧タブ要素が見つかりました:', kvkListTabElement);
+
+            // 強制表示（全ての可能な干渉を排除）
+            kvkListTabElement.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 400px !important;
+                z-index: 10 !important;
+                background: transparent !important;
+                overflow: visible !important;
+            `;
+
+            // 子要素も強制表示
+            const childDivs = kvkListTabElement.querySelectorAll('div');
+            childDivs.forEach(div => {
+                div.style.cssText += `
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                `;
+            });
+
+            console.log('KVKノルマ一覧タブ表示完了');
+            console.log('kvkListTab最終スタイル:', kvkListTabElement.style.cssText);
+
+            if (allData.length > 0) {
+                // データが既に初期化されている場合は更新のみ、そうでなければ初期化
+                if (kvkListData.length === 0) {
+                    initKvkList();
+                } else {
+                    updateKvkList();
+                }
             }
+        } else {
+            console.error('kvkListTab要素が見つかりません');
         }
     }
 
