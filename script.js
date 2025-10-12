@@ -408,6 +408,12 @@ async function loadCSVData() {
         if (typeof setupDateInputs === 'function') setupDateInputs();
         hideLoading(); // ローディングを非表示
 
+        // KVKノルマ一覧データを初期化（データ読み込み完了後）
+        if (typeof initKvkList === 'function') {
+            initKvkList();
+            if (DEBUG_MODE) console.log('✅ KVKノルマ一覧データ初期化完了');
+        }
+
     } catch (error) {
         console.error('CSVファイル読み込みエラー:', error);
         showError(
@@ -740,7 +746,12 @@ function switchTab(tab) {
     } else if (tab === 'kvkList') {
         console.log('📊 KVKノルマ一覧タブが選択されました');
         if (allData.length > 0) {
-            initKvkList();
+            // データが既に初期化されている場合は更新のみ、そうでなければ初期化
+            if (kvkListData.length === 0) {
+                initKvkList();
+            } else {
+                updateKvkList();
+            }
         }
     }
 
@@ -3399,7 +3410,8 @@ let kvkListData = [];
 
 // KVKノルマ一覧を初期化
 function initKvkList() {
-    if (DEBUG_MODE) console.log('KVKノルマ一覧初期化開始');
+    console.log('🚀 KVKノルマ一覧初期化開始');
+    console.log('allData件数:', allData.length);
 
     // 9/24から最新データまでの増加量を計算
     const kvkStartDate = '2025/09/24';
@@ -3416,6 +3428,8 @@ function initKvkList() {
         }
         playerDataMap.get(playerId).push(row);
     });
+
+    console.log('プレイヤー数:', playerDataMap.size);
 
     // 各プレイヤーの9/24からの増加を計算
     kvkListData = [];
@@ -3474,7 +3488,19 @@ function initKvkList() {
         });
     });
 
-    if (DEBUG_MODE) console.log('KVKノルマ一覧データ:', kvkListData);
+    console.log('✅ KVKノルマ一覧データ件数:', kvkListData.length);
+    if (DEBUG_MODE && kvkListData.length > 0) {
+        console.log('サンプルデータ:', kvkListData[0]);
+    }
+
+    // 期間表示を更新
+    const periodElem = document.getElementById('kvkListPeriod');
+    if (periodElem && allData.length > 0) {
+        // 最新の日付を取得
+        const dates = allData.map(row => row.Data).filter(d => d).sort();
+        const latestDate = dates[dates.length - 1];
+        periodElem.textContent = `9/24 - ${latestDate}`;
+    }
 
     // 初期表示を更新
     updateKvkList();
@@ -3515,8 +3541,13 @@ function getKvkQuota(power) {
 
 // KVKノルマ一覧を更新
 function updateKvkList() {
+    console.log('🔄 updateKvkList実行');
     const tbody = document.getElementById('kvkListTableBody');
-    if (!tbody) return;
+    if (!tbody) {
+        console.error('❌ kvkListTableBodyが見つかりません');
+        return;
+    }
+    console.log('kvkListData件数:', kvkListData.length);
 
     if (kvkListData.length === 0) {
         tbody.innerHTML = `
@@ -3570,6 +3601,8 @@ function updateKvkList() {
     // 統計を更新
     updateKvkListStats(filteredList);
 
+    console.log('フィルター後の件数:', filteredList.length);
+
     // テーブルを描画
     if (filteredList.length === 0) {
         tbody.innerHTML = `
@@ -3597,7 +3630,7 @@ function updateKvkList() {
         }
 
         return `
-            <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;">
+            <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background=''">
                 <td style="padding: 12px 15px; text-align: center; font-weight: 500; color: #7f8c8d;">${index + 1}</td>
                 <td style="padding: 12px 15px; text-align: center; font-family: monospace; color: #34495e;">${escapeHtml(player.id)}</td>
                 <td style="padding: 12px 15px; font-weight: 600; color: #2c3e50;">${escapeHtml(player.name)}</td>
@@ -3619,6 +3652,8 @@ function updateKvkList() {
             </tr>
         `;
     }).join('');
+
+    console.log('✅ テーブル描画完了: ' + filteredList.length + '件');
 }
 
 // プログレスバーを作成する関数
