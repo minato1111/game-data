@@ -669,18 +669,9 @@ function switchTab(tab) {
             return;
         }
 
-        // kvkListTabは特別処理で完全にカスタマイズするため、ここでは基本設定のみ
+        // kvkListTabは特別処理で完全にカスタマイズするため、ここでは何もしない
         if (tab === 'kvkList') {
-            targetContent.style.cssText = `
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                position: static !important;
-                width: 100% !important;
-                height: auto !important;
-                min-height: 400px !important;
-                z-index: 10 !important;
-            `;
+            // 何もしない - 特別処理で完全に制御
         } else {
             // 完全強制表示（全ての干渉を排除）
             targetContent.style.cssText = `
@@ -764,16 +755,15 @@ function switchTab(tab) {
         if (kvkListTabElement) {
             console.log('KVKノルマ一覧タブ要素が見つかりました:', kvkListTabElement);
 
-            // 親要素のみシンプルに表示（子要素には一切触らない）
-            kvkListTabElement.style.removeProperty('display');
-            kvkListTabElement.style.removeProperty('visibility');
-            kvkListTabElement.style.removeProperty('opacity');
-            kvkListTabElement.style.removeProperty('position');
+            // CSSTextを完全にクリアして、新しく設定
+            kvkListTabElement.style.cssText = '';
 
-            // 明示的に表示状態に設定
-            kvkListTabElement.style.display = 'block';
-            kvkListTabElement.style.visibility = 'visible';
-            kvkListTabElement.style.opacity = '1';
+            // 最小限のスタイルのみ設定
+            kvkListTabElement.style.setProperty('display', 'block', 'important');
+            kvkListTabElement.style.setProperty('visibility', 'visible', 'important');
+            kvkListTabElement.style.setProperty('opacity', '1', 'important');
+            kvkListTabElement.style.setProperty('position', 'relative', 'important');
+            kvkListTabElement.style.setProperty('z-index', '1', 'important');
 
             console.log('KVKノルマ一覧タブ表示完了');
             console.log('kvkListTab最終スタイル:', kvkListTabElement.style.cssText);
