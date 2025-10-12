@@ -764,42 +764,16 @@ function switchTab(tab) {
         if (kvkListTabElement) {
             console.log('KVKノルマ一覧タブ要素が見つかりました:', kvkListTabElement);
 
-            // 強制表示（padding/marginも保持）
+            // 親要素のみシンプルに表示（子要素には一切触らない）
+            kvkListTabElement.style.removeProperty('display');
+            kvkListTabElement.style.removeProperty('visibility');
+            kvkListTabElement.style.removeProperty('opacity');
+            kvkListTabElement.style.removeProperty('position');
+
+            // 明示的に表示状態に設定
             kvkListTabElement.style.display = 'block';
             kvkListTabElement.style.visibility = 'visible';
             kvkListTabElement.style.opacity = '1';
-            kvkListTabElement.style.position = 'static';
-            kvkListTabElement.style.width = '100%';
-            kvkListTabElement.style.height = 'auto';
-            kvkListTabElement.style.minHeight = '400px';
-            kvkListTabElement.style.zIndex = '10';
-
-            // 重要な子要素のみ強制表示（display: gridやflexを維持）
-            const childDivs = kvkListTabElement.querySelectorAll('div');
-            childDivs.forEach(div => {
-                // display: noneを解除するが、既存のdisplay設定を維持
-                const currentDisplay = window.getComputedStyle(div).display;
-                if (currentDisplay === 'none') {
-                    div.style.display = 'block';
-                }
-                div.style.visibility = 'visible';
-                div.style.opacity = '1';
-            });
-
-            // テーブル関連要素も強制表示
-            const table = kvkListTabElement.querySelector('table');
-            if (table) {
-                table.style.display = 'table';
-                table.style.visibility = 'visible';
-                table.style.opacity = '1';
-            }
-
-            const tbody = kvkListTabElement.querySelector('tbody');
-            if (tbody) {
-                tbody.style.display = 'table-row-group';
-                tbody.style.visibility = 'visible';
-                tbody.style.opacity = '1';
-            }
 
             console.log('KVKノルマ一覧タブ表示完了');
             console.log('kvkListTab最終スタイル:', kvkListTabElement.style.cssText);
