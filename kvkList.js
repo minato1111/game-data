@@ -9,6 +9,7 @@ const DEBUG_MODE = false;
 // =====================================
 let allData = [];
 let kvkListData = [];
+let currentSort = { column: 'power', direction: 'desc' };
 
 // =====================================
 // ユーティリティ関数
@@ -239,6 +240,21 @@ function initKvkList() {
 }
 
 // =====================================
+// テーブルソート機能
+// =====================================
+function sortTable(column) {
+    // 同じ列をクリックした場合は昇順/降順を切り替え
+    if (currentSort.column === column) {
+        currentSort.direction = currentSort.direction === 'desc' ? 'asc' : 'desc';
+    } else {
+        currentSort.column = column;
+        currentSort.direction = 'desc';
+    }
+
+    updateKvkList();
+}
+
+// =====================================
 // KVKノルマ一覧更新
 // =====================================
 function updateKvkList() {
@@ -282,18 +298,51 @@ function updateKvkList() {
         return true;
     });
 
-    // ソート処理
-    const sortValue = document.getElementById('kvkListSort')?.value || 'power-desc';
-
+    // ソート処理（クリックされた列でソート）
     filteredList.sort((a, b) => {
-        switch (sortValue) {
-            case 'power-desc': return b.power - a.power;
-            case 'power-asc': return a.power - b.power;
-            case 'kill-progress': return b.killProgress - a.killProgress;
-            case 'death-progress': return b.deathProgress - a.deathProgress;
-            case 'name': return a.name.localeCompare(b.name);
-            default: return 0;
+        let comparison = 0;
+
+        switch (currentSort.column) {
+            case 'name':
+                comparison = a.name.localeCompare(b.name);
+                break;
+            case 'power':
+                comparison = a.power - b.power;
+                break;
+            case 't4':
+                comparison = a.t4Increase - b.t4Increase;
+                break;
+            case 't5':
+                comparison = a.t5Increase - b.t5Increase;
+                break;
+            case 'killPoints':
+                comparison = a.killPointsIncrease - b.killPointsIncrease;
+                break;
+            case 'deadTroops':
+                comparison = a.deadTroopsIncrease - b.deadTroopsIncrease;
+                break;
+            case 'killProgress':
+                comparison = a.killProgress - b.killProgress;
+                break;
+            case 'deathProgress':
+                comparison = a.deathProgress - b.deathProgress;
+                break;
+            case 'achievement':
+                // 達成状況でソート: 両方達成 > 撃破のみ > 戦死のみ > 未達成
+                const getAchievementScore = (p) => {
+                    if (p.bothAchieved) return 4;
+                    if (p.killAchieved) return 3;
+                    if (p.deathAchieved) return 2;
+                    return 1;
+                };
+                comparison = getAchievementScore(a) - getAchievementScore(b);
+                break;
+            default:
+                comparison = a.power - b.power;
         }
+
+        // 昇順/降順を適用
+        return currentSort.direction === 'desc' ? -comparison : comparison;
     });
 
     // 統計を更新

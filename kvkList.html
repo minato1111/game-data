@@ -27,7 +27,7 @@
         </nav>
 
         <!-- KVKノルマ一覧コンテンツ -->
-        <div style="max-width: 1400px; margin: 0 auto; padding: 40px 20px;">
+        <div style="max-width: 100%; margin: 0 auto; padding: 40px 20px;">
             <!-- ヘッダーセクション -->
             <div style="text-align: center; margin-bottom: 30px;">
                 <h2 style="color: #2c3e50; font-size: 34px; margin-bottom: 15px; font-weight: 700;">
@@ -90,21 +90,21 @@
             </div>
 
             <!-- テーブル -->
-            <div class="table-container">
-                <table style="width: 100%; border-collapse: collapse; background: white;">
+            <div class="table-container" style="overflow-x: auto;">
+                <table style="width: 100%; min-width: 1600px; border-collapse: collapse; background: white;">
                     <thead style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
                         <tr>
                             <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 50px;">No.</th>
                             <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 80px;">ID</th>
-                            <th style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;">名前</th>
-                            <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 80px;">Power</th>
-                            <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;">T4増加</th>
-                            <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px;">T5増加</th>
-                            <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 140px;">Kill Points<br>増加</th>
-                            <th style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 130px;">Dead Troops<br>増加</th>
-                            <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 180px;">撃破ノルマ</th>
-                            <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 180px;">戦死ノルマ</th>
-                            <th style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 80px;">達成</th>
+                            <th onclick="sortTable('name')" style="padding: 15px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px; cursor: pointer; user-select: none;">名前 <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('power')" style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 100px; cursor: pointer; user-select: none;">Power <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('t4')" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px; cursor: pointer; user-select: none;">T4増加 <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('t5')" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 120px; cursor: pointer; user-select: none;">T5増加 <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('killPoints')" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 140px; cursor: pointer; user-select: none;">Kill Points<br>増加 <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('deadTroops')" style="padding: 15px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 130px; cursor: pointer; user-select: none;">Dead Troops<br>増加 <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('killProgress')" style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 200px; cursor: pointer; user-select: none;">撃破ノルマ <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('deathProgress')" style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 200px; cursor: pointer; user-select: none;">戦死ノルマ <span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('achievement')" style="padding: 15px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; min-width: 100px; cursor: pointer; user-select: none;">達成 <span style="font-size: 10px;">▼</span></th>
                         </tr>
                     </thead>
                     <tbody id="kvkListTableBody">
