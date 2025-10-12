@@ -669,26 +669,40 @@ function switchTab(tab) {
             return;
         }
 
-        // 完全強制表示（全ての干渉を排除）
-        targetContent.style.cssText = `
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: static !important;
-            left: auto !important;
-            top: auto !important;
-            right: auto !important;
-            bottom: auto !important;
-            width: 100% !important;
-            height: auto !important;
-            min-height: 400px !important;
-            z-index: 10 !important;
-            background: transparent !important;
-            overflow: visible !important;
-            transform: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        `;
+        // kvkListTabは特別処理で完全にカスタマイズするため、ここでは基本設定のみ
+        if (tab === 'kvkList') {
+            targetContent.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: static !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 400px !important;
+                z-index: 10 !important;
+            `;
+        } else {
+            // 完全強制表示（全ての干渉を排除）
+            targetContent.style.cssText = `
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: static !important;
+                left: auto !important;
+                top: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 400px !important;
+                z-index: 10 !important;
+                background: transparent !important;
+                overflow: visible !important;
+                transform: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            `;
+        }
         targetContent.classList.add('active');
 
         console.log('✅ タブ表示完了:', tabId);
@@ -750,31 +764,42 @@ function switchTab(tab) {
         if (kvkListTabElement) {
             console.log('KVKノルマ一覧タブ要素が見つかりました:', kvkListTabElement);
 
-            // 強制表示（全ての可能な干渉を排除）
-            kvkListTabElement.style.cssText = `
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                position: static !important;
-                left: auto !important;
-                top: auto !important;
-                width: 100% !important;
-                height: auto !important;
-                min-height: 400px !important;
-                z-index: 10 !important;
-                background: transparent !important;
-                overflow: visible !important;
-            `;
+            // 強制表示（padding/marginも保持）
+            kvkListTabElement.style.display = 'block';
+            kvkListTabElement.style.visibility = 'visible';
+            kvkListTabElement.style.opacity = '1';
+            kvkListTabElement.style.position = 'static';
+            kvkListTabElement.style.width = '100%';
+            kvkListTabElement.style.height = 'auto';
+            kvkListTabElement.style.minHeight = '400px';
+            kvkListTabElement.style.zIndex = '10';
 
-            // 子要素も強制表示
+            // 重要な子要素のみ強制表示（display: gridやflexを維持）
             const childDivs = kvkListTabElement.querySelectorAll('div');
             childDivs.forEach(div => {
-                div.style.cssText += `
-                    display: block !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                `;
+                // display: noneを解除するが、既存のdisplay設定を維持
+                const currentDisplay = window.getComputedStyle(div).display;
+                if (currentDisplay === 'none') {
+                    div.style.display = 'block';
+                }
+                div.style.visibility = 'visible';
+                div.style.opacity = '1';
             });
+
+            // テーブル関連要素も強制表示
+            const table = kvkListTabElement.querySelector('table');
+            if (table) {
+                table.style.display = 'table';
+                table.style.visibility = 'visible';
+                table.style.opacity = '1';
+            }
+
+            const tbody = kvkListTabElement.querySelector('tbody');
+            if (tbody) {
+                tbody.style.display = 'table-row-group';
+                tbody.style.visibility = 'visible';
+                tbody.style.opacity = '1';
+            }
 
             console.log('KVKノルマ一覧タブ表示完了');
             console.log('kvkListTab最終スタイル:', kvkListTabElement.style.cssText);
@@ -793,6 +818,29 @@ function switchTab(tab) {
     }
 
         console.log('🎯 特別処理完了');
+
+        // 最終確認：ターゲットタブが確実に表示されているか確認
+        setTimeout(() => {
+            const finalCheck = document.getElementById(tabId);
+            if (finalCheck) {
+                const computedStyle = window.getComputedStyle(finalCheck);
+                console.log('🔍 最終チェック - タブ表示状態:', {
+                    display: computedStyle.display,
+                    visibility: computedStyle.visibility,
+                    opacity: computedStyle.opacity
+                });
+
+                // もし非表示になっていたら再度強制表示
+                if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden') {
+                    console.warn('⚠️ タブが非表示に戻されていたため再表示します');
+                    finalCheck.style.display = 'block';
+                    finalCheck.style.visibility = 'visible';
+                    finalCheck.style.opacity = '1';
+                    finalCheck.style.position = 'static';
+                    finalCheck.style.zIndex = '10';
+                }
+            }
+        }, 50);
 
     } catch (error) {
         console.error('❌ switchTab エラー:', error);
