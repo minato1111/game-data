@@ -191,15 +191,30 @@ function switchToHashTab() {
         // individual-{ID} の形式をチェック
         if (hash.startsWith('individual-')) {
             const playerId = hash.substring('individual-'.length);
-            // 個人分析タブに切り替え
-            switchTab('individual');
-            // データロード後にIDで検索
+
+            // データロード後に全てのタブの検索ボックスに自動入力
             setTimeout(() => {
-                const searchInput = document.getElementById('individualSearch');
-                if (searchInput) {
-                    searchInput.value = playerId;
-                    searchIndividual();
+                // KVKノルマタブの検索ボックス
+                const kvkSearch = document.getElementById('kvkSearch');
+                if (kvkSearch) {
+                    kvkSearch.value = playerId;
                 }
+
+                // KVKノルマチェッカータブの検索ボックス
+                const kvkCheckerSearch = document.getElementById('kvkCheckerSearch');
+                if (kvkCheckerSearch) {
+                    kvkCheckerSearch.value = playerId;
+                }
+
+                // 個人分析タブの検索ボックス
+                const individualSearch = document.getElementById('individualSearch');
+                if (individualSearch) {
+                    individualSearch.value = playerId;
+                }
+
+                // 個人分析タブに切り替えて検索実行
+                switchTab('individual');
+                searchIndividual();
             }, 500);
         } else {
             // 通常のタブ切り替え
