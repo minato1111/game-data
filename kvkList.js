@@ -375,7 +375,7 @@ function updateKvkList() {
         return `
             <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background=''">
                 <td style="padding: 12px 8px; text-align: center; font-weight: 500; color: #7f8c8d;">${index + 1}</td>
-                <td style="padding: 12px 8px; text-align: center; font-family: monospace; color: #34495e;">${escapeHtml(player.id)}</td>
+                <td style="padding: 12px 8px; text-align: center; color: #34495e;">${escapeHtml(player.id)}</td>
                 <td style="padding: 12px 10px; text-align: center; font-weight: 600; color: #2c3e50; word-break: break-word;">${escapeHtml(player.name)}</td>
                 <td style="padding: 12px 8px; text-align: center;">
                     <div style="font-weight: 600; color: #3498db;">${formatNumber(player.power)}</div>
