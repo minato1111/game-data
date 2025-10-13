@@ -188,8 +188,23 @@ window.addEventListener('unhandledrejection', function(event) {
 function switchToHashTab() {
     const hash = window.location.hash.substring(1); // #を除去
     if (hash) {
-        // ハッシュがある場合は該当タブに切り替え
-        switchTab(hash);
+        // individual-{ID} の形式をチェック
+        if (hash.startsWith('individual-')) {
+            const playerId = hash.substring('individual-'.length);
+            // 個人分析タブに切り替え
+            switchTab('individual');
+            // データロード後にIDで検索
+            setTimeout(() => {
+                const searchInput = document.getElementById('individualSearch');
+                if (searchInput) {
+                    searchInput.value = playerId;
+                    searchIndividual();
+                }
+            }, 500);
+        } else {
+            // 通常のタブ切り替え
+            switchTab(hash);
+        }
     }
 }
 
