@@ -192,8 +192,8 @@ function switchToHashTab() {
         if (hash.startsWith('individual-')) {
             const playerId = hash.substring('individual-'.length);
 
-            // 個人分析タブに切り替え
-            switchTab('individual');
+            // KVKノルマタブに切り替え
+            switchTab('kvk');
 
             // データロード後に全てのタブの検索ボックスに自動入力
             setTimeout(() => {
@@ -207,8 +207,11 @@ function switchToHashTab() {
                 const playerSearch = document.getElementById('playerSearch');
                 if (playerSearch) {
                     playerSearch.value = playerId;
-                    // 個人分析タブで検索実行
-                    searchPlayer();
+                }
+
+                // KVKノルマタブで検索実行
+                if (typeof checkKvkQuota === 'function') {
+                    checkKvkQuota();
                 }
             }, 500);
         } else {
