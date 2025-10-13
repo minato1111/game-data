@@ -74,14 +74,14 @@ function createProgressBar(progress, current, target, color) {
 
     return `
         <div style="width: 100%;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 11px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 2px; font-size: 9px;">
                 <span style="color: #7f8c8d;">${formatNumber(current)}</span>
                 <span style="color: ${color}; font-weight: 600;">${percentage.toFixed(1)}%</span>
             </div>
-            <div style="background: #e0e0e0; border-radius: 8px; height: 8px; overflow: hidden; position: relative;">
-                <div style="background: ${isAchieved ? '#27ae60' : color}; height: 100%; width: ${percentage}%; transition: width 0.3s ease; border-radius: 8px;"></div>
+            <div style="background: #e0e0e0; border-radius: 6px; height: 6px; overflow: hidden; position: relative;">
+                <div style="background: ${isAchieved ? '#27ae60' : color}; height: 100%; width: ${percentage}%; transition: width 0.3s ease; border-radius: 6px;"></div>
             </div>
-            <div style="font-size: 10px; color: #7f8c8d; margin-top: 2px; text-align: right;">目標: ${formatNumber(target)}</div>
+            <div style="font-size: 8px; color: #7f8c8d; margin-top: 1px; text-align: right;">目標: ${formatNumber(target)}</div>
         </div>
     `;
 }
@@ -365,35 +365,35 @@ function updateKvkList() {
     tbody.innerHTML = filteredList.map((player, index) => {
         let achievementBadge = '';
         if (player.bothAchieved) {
-            achievementBadge = '<span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">✓ 達成</span>';
+            achievementBadge = '<span style="background: #27ae60; color: white; padding: 3px 6px; border-radius: 10px; font-size: 10px; font-weight: 600;">✓達成</span>';
         } else if (player.killAchieved) {
-            achievementBadge = '<span style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">撃破のみ</span>';
+            achievementBadge = '<span style="background: #e74c3c; color: white; padding: 3px 6px; border-radius: 10px; font-size: 10px; font-weight: 600;">撃破</span>';
         } else if (player.deathAchieved) {
-            achievementBadge = '<span style="background: #f39c12; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">戦死のみ</span>';
+            achievementBadge = '<span style="background: #f39c12; color: white; padding: 3px 6px; border-radius: 10px; font-size: 10px; font-weight: 600;">戦死</span>';
         } else {
-            achievementBadge = '<span style="background: #95a5a6; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">未達成</span>';
+            achievementBadge = '<span style="background: #95a5a6; color: white; padding: 3px 6px; border-radius: 10px; font-size: 10px; font-weight: 600;">未達成</span>';
         }
 
         return `
             <tr style="border-bottom: 1px solid #e0e0e0; transition: background 0.2s;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background=''">
-                <td style="padding: 12px 15px; text-align: center; font-weight: 500; color: #7f8c8d;">${index + 1}</td>
-                <td style="padding: 12px 15px; text-align: center; font-family: monospace; color: #34495e;">${escapeHtml(player.id)}</td>
-                <td style="padding: 12px 15px; font-weight: 600; color: #2c3e50;">${escapeHtml(player.name)}</td>
-                <td style="padding: 12px 15px; text-align: center;">
-                    <div style="font-weight: 600; color: #3498db;">${formatNumber(player.power)}</div>
-                    <div style="font-size: 11px; color: #7f8c8d;">${player.powerBand}</div>
+                <td style="padding: 8px 4px; text-align: center; font-weight: 500; color: #7f8c8d; font-size: 12px;">${index + 1}</td>
+                <td style="padding: 8px 4px; text-align: center; font-family: monospace; color: #34495e; font-size: 11px;">${escapeHtml(player.id)}</td>
+                <td style="padding: 8px 6px; text-align: center; font-weight: 600; color: #2c3e50; font-size: 12px; word-break: break-word;">${escapeHtml(player.name)}</td>
+                <td style="padding: 8px 4px; text-align: center;">
+                    <div style="font-weight: 600; color: #3498db; font-size: 11px;">${formatNumber(player.power)}</div>
+                    <div style="font-size: 9px; color: #7f8c8d;">${player.powerBand}</div>
                 </td>
-                <td style="padding: 12px 15px; text-align: right; color: #34495e;">${formatNumber(player.t4Increase)}</td>
-                <td style="padding: 12px 15px; text-align: right; color: #34495e;">${formatNumber(player.t5Increase)}</td>
-                <td style="padding: 12px 15px; text-align: right; font-weight: 600; color: #e74c3c;">${formatNumber(player.killPointsIncrease)}</td>
-                <td style="padding: 12px 15px; text-align: right; font-weight: 600; color: #f39c12;">${formatNumber(player.deadTroopsIncrease)}</td>
-                <td style="padding: 12px 15px;">
+                <td style="padding: 8px 4px; text-align: center; color: #34495e; font-size: 11px;">${formatNumber(player.t4Increase)}</td>
+                <td style="padding: 8px 4px; text-align: center; color: #34495e; font-size: 11px;">${formatNumber(player.t5Increase)}</td>
+                <td style="padding: 8px 4px; text-align: center; font-weight: 600; color: #e74c3c; font-size: 11px;">${formatNumber(player.killPointsIncrease)}</td>
+                <td style="padding: 8px 4px; text-align: center; font-weight: 600; color: #f39c12; font-size: 11px;">${formatNumber(player.deadTroopsIncrease)}</td>
+                <td style="padding: 8px 6px;">
                     ${createProgressBar(player.killProgress, player.killPointsIncrease, player.killQuota, '#e74c3c')}
                 </td>
-                <td style="padding: 12px 15px;">
+                <td style="padding: 8px 6px;">
                     ${createProgressBar(player.deathProgress, player.deadTroopsIncrease, player.deathQuota, '#f39c12')}
                 </td>
-                <td style="padding: 12px 15px; text-align: center;">${achievementBadge}</td>
+                <td style="padding: 8px 4px; text-align: center;">${achievementBadge}</td>
             </tr>
         `;
     }).join('');

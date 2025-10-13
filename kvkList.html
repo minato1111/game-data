@@ -90,21 +90,21 @@
             </div>
 
             <!-- テーブル -->
-            <div class="table-container" style="overflow-x: auto;">
-                <table style="width: 100%; min-width: 1400px; border-collapse: collapse; background: white;">
+            <div class="table-container">
+                <table style="width: 100%; border-collapse: collapse; background: white; table-layout: fixed;">
                     <thead style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
                         <tr>
-                            <th style="padding: 10px 8px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 40px;">No.</th>
-                            <th style="padding: 10px 8px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 75px;">ID</th>
-                            <th onclick="sortTable('name')" style="padding: 10px 12px; text-align: left; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 110px; cursor: pointer; user-select: none;">名前 <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('power')" style="padding: 10px 8px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 90px; cursor: pointer; user-select: none;">Power <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('t4')" style="padding: 10px 8px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 95px; cursor: pointer; user-select: none;">T4増加 <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('t5')" style="padding: 10px 8px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 95px; cursor: pointer; user-select: none;">T5増加 <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('killPoints')" style="padding: 10px 8px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 110px; cursor: pointer; user-select: none;">撃破P<br>増加 <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('deadTroops')" style="padding: 10px 8px; text-align: right; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 100px; cursor: pointer; user-select: none;">戦死<br>増加 <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('killProgress')" style="padding: 10px 12px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 170px; cursor: pointer; user-select: none;">撃破ノルマ <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('deathProgress')" style="padding: 10px 12px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 170px; cursor: pointer; user-select: none;">戦死ノルマ <span style="font-size: 10px;">▼</span></th>
-                            <th onclick="sortTable('achievement')" style="padding: 10px 8px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 80px; cursor: pointer; user-select: none;">達成 <span style="font-size: 10px;">▼</span></th>
+                            <th style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 3%;">No.</th>
+                            <th style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 5%;">ID</th>
+                            <th onclick="sortTable('name')" style="padding: 8px 6px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 8%; cursor: pointer; user-select: none;">名前<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('power')" style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 7%; cursor: pointer; user-select: none;">Power<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('t4')" style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 7%; cursor: pointer; user-select: none;">T4<br>増加<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('t5')" style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 7%; cursor: pointer; user-select: none;">T5<br>増加<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('killPoints')" style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 8%; cursor: pointer; user-select: none;">撃破P<br>増加<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('deadTroops')" style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 7%; cursor: pointer; user-select: none;">戦死<br>増加<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('killProgress')" style="padding: 8px 6px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 22%; cursor: pointer; user-select: none;">撃破<br>ノルマ<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('deathProgress')" style="padding: 8px 6px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 22%; cursor: pointer; user-select: none;">戦死<br>ノルマ<br><span style="font-size: 10px;">▼</span></th>
+                            <th onclick="sortTable('achievement')" style="padding: 8px 4px; text-align: center; font-weight: 600; position: sticky; top: 0; z-index: 10; width: 6%; cursor: pointer; user-select: none;">達成<br><span style="font-size: 10px;">▼</span></th>
                         </tr>
                     </thead>
                     <tbody id="kvkListTableBody">
