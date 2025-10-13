@@ -192,29 +192,24 @@ function switchToHashTab() {
         if (hash.startsWith('individual-')) {
             const playerId = hash.substring('individual-'.length);
 
+            // 個人分析タブに切り替え
+            switchTab('individual');
+
             // データロード後に全てのタブの検索ボックスに自動入力
             setTimeout(() => {
-                // KVKノルマタブの検索ボックス
-                const kvkSearch = document.getElementById('kvkSearch');
-                if (kvkSearch) {
-                    kvkSearch.value = playerId;
-                }
-
                 // KVKノルマチェッカータブの検索ボックス
-                const kvkCheckerSearch = document.getElementById('kvkCheckerSearch');
-                if (kvkCheckerSearch) {
-                    kvkCheckerSearch.value = playerId;
+                const kvkPlayerSearch = document.getElementById('kvkPlayerSearch');
+                if (kvkPlayerSearch) {
+                    kvkPlayerSearch.value = playerId;
                 }
 
                 // 個人分析タブの検索ボックス
-                const individualSearch = document.getElementById('individualSearch');
-                if (individualSearch) {
-                    individualSearch.value = playerId;
+                const playerSearch = document.getElementById('playerSearch');
+                if (playerSearch) {
+                    playerSearch.value = playerId;
+                    // 個人分析タブで検索実行
+                    searchPlayer();
                 }
-
-                // 個人分析タブに切り替えて検索実行
-                switchTab('individual');
-                searchIndividual();
             }, 500);
         } else {
             // 通常のタブ切り替え
