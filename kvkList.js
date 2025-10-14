@@ -187,6 +187,10 @@ function initKvkList() {
         const startRecord = kvkRecords[0];
         const latestRecord = kvkRecords[kvkRecords.length - 1];
 
+        // 9/24時点のPowerが45M未満のプレイヤーはスキップ
+        const startPower = parseValue(startRecord.Power);
+        if (startPower < 45000000) return;
+
         const t4Increase = parseValue(latestRecord['T4-Kills']) - parseValue(startRecord['T4-Kills']);
         const t5Increase = parseValue(latestRecord['T5-Kills']) - parseValue(startRecord['T5-Kills']);
         const killPointsIncrease = parseValue(latestRecord['Total Kill Points']) - parseValue(startRecord['Total Kill Points']);
