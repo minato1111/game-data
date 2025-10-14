@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上位300人統計 - ROK Kingdom Data</title>
+    <meta name="description" content="Rise of Kingdoms 上位300人統計グラフ">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏰</text></svg>">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1 style="cursor: pointer;" onclick="window.location.href='home.html'" title="ホームに戻る">⚔️ ROK Kingdom Data</h1>
+        <div class="subtitle">上位300人統計</div>
+        <div class="update-info">
+            CSVファイル最終更新: <span id="updateDate">確認中...</span> |
+            データ件数: <span id="dataCount">-</span>件
+        </div>
+
+        <!-- ナビゲーション -->
+        <nav style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="home.html" style="padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 8px;">← ホームに戻る</a>
+            <a href="dataList.html" style="padding: 10px 20px; background: #27ae60; color: white; text-decoration: none; border-radius: 8px;">データ一覧</a>
+            <a href="growth.html" style="padding: 10px 20px; background: #e74c3c; color: white; text-decoration: none; border-radius: 8px;">成長ランキング</a>
+            <a href="individual.html" style="padding: 10px 20px; background: #f39c12; color: white; text-decoration: none; border-radius: 8px;">個人分析</a>
+        </nav>
+
+        <!-- グラフコンテナ -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h2 class="chart-title">上位300人の統計</h2>
+                <div class="chart-controls">
+                    <select id="overallMetric">
+                        <option value="Power">Power</option>
+                        <option value="T4-Kills">T4-Kills</option>
+                        <option value="T5-Kills">T5-Kills</option>
+                        <option value="Total Kill Points">Total Kill Points</option>
+                        <option value="Dead Troops">Dead Troops</option>
+                        <option value="Troops Power">Troops Power</option>
+                    </select>
+                    <button class="active" onclick="showLineChart()">折れ線グラフ</button>
+                    <button onclick="showBarChart()">棒グラフ</button>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="overallChart"></canvas>
+            </div>
+            <div class="chart-wrapper" style="display: none;">
+                <canvas id="overallBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="topStats.js"></script>
+</body>
+</html>

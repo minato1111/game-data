@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人分析 - ROK Kingdom Data</title>
+    <meta name="description" content="Rise of Kingdoms プレイヤー個人分析">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏰</text></svg>">
+
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1 style="cursor: pointer;" onclick="window.location.href='home.html'" title="ホームに戻る">⚔️ ROK Kingdom Data</h1>
+        <div class="subtitle">個人分析</div>
+        <div class="update-info">
+            CSVファイル最終更新: <span id="updateDate">確認中...</span> |
+            データ件数: <span id="dataCount">-</span>件
+        </div>
+
+        <!-- ナビゲーション -->
+        <nav style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+            <a href="home.html" style="padding: 10px 20px; background: #3498db; color: white; text-decoration: none; border-radius: 8px;">← ホームに戻る</a>
+            <a href="dataList.html" style="padding: 10px 20px; background: #27ae60; color: white; text-decoration: none; border-radius: 8px;">データ一覧</a>
+            <a href="growth.html" style="padding: 10px 20px; background: #e74c3c; color: white; text-decoration: none; border-radius: 8px;">成長ランキング</a>
+            <a href="topStats.html" style="padding: 10px 20px; background: #f39c12; color: white; text-decoration: none; border-radius: 8px;">上位300人統計</a>
+        </nav>
+
+        <!-- 個人分析コンテンツ -->
+        <div class="chart-container">
+            <!-- プレイヤー検索セクション -->
+            <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 30px;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="color: #2c3e50; font-size: 20px; margin-bottom: 10px;">プレイヤー検索</h3>
+                    <p style="color: #7f8c8d; font-size: 14px;">プレイヤー名またはIDを入力して個人分析を確認</p>
+                </div>
+
+                <div style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                    <input type="text" id="playerSearch" placeholder="プレイヤー名またはIDを入力"
+                           style="padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; font-size: 16px; min-width: 300px; transition: all 0.3s;"
+                           onkeypress="if(event.key==='Enter') searchPlayer()">
+                    <button onclick="searchPlayer()"
+                            style="padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                        検索
+                    </button>
+                </div>
+            </div>
+
+            <div id="playerInfo" class="player-info" style="display: none;">
+                <h3 id="playerName">-</h3>
+                <p>ID: <span id="playerId">-</span></p>
+                <p>同盟: <span id="playerAlliance">-</span></p>
+                <p>データ期間: <span id="playerDataRange">-</span></p>
+            </div>
+
+            <div class="chart-controls" style="margin: 20px 0;">
+                <select id="individualMetric">
+                    <option value="Power">Power</option>
+                    <option value="T4-Kills">T4-Kills</option>
+                    <option value="T5-Kills">T5-Kills</option>
+                    <option value="Total Kill Points">Total Kill Points</option>
+                    <option value="Dead Troops">Dead Troops</option>
+                    <option value="Troops Power">Troops Power</option>
+                </select>
+                <button onclick="updateIndividualChart()">更新</button>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="individualChart"></canvas>
+            </div>
+
+            <div id="noPlayerData" class="no-data">
+                <h2>プレイヤーを検索してください</h2>
+                <p>上の検索ボックスにプレイヤー名またはIDを入力してください</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="individual.js"></script>
+</body>
+</html>
