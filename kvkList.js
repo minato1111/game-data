@@ -249,6 +249,12 @@ function sortTable(column) {
         currentSort.direction = 'desc';
     }
 
+    // 列ヘッダークリック時は、セレクトボックスを空にして手動ソートを有効化
+    const sortSelect = document.getElementById('kvkListSort');
+    if (sortSelect) {
+        sortSelect.value = '';
+    }
+
     updateKvkList();
 }
 
@@ -297,9 +303,9 @@ function updateKvkList() {
     });
 
     // ソート処理
-    const sortValue = document.getElementById('kvkListSort')?.value || 'power-desc';
+    const sortValue = document.getElementById('kvkListSort')?.value || '';
 
-    // セレクトボックスのソート値を使用
+    // セレクトボックスのソート値が設定されている場合はそれを使用
     if (sortValue) {
         filteredList.sort((a, b) => {
             switch (sortValue) {
