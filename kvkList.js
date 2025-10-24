@@ -227,7 +227,22 @@ function initKvkList() {
     playerDataMap.forEach((records, playerId) => {
         records.sort((a, b) => new Date(a.Data) - new Date(b.Data));
 
-        // 期間内のレコードをフィルター
+        // 【全期間のデータ】9/24からの累計を取得（ノルマ基準用）
+        const allPeriodRecords = records.filter(r => r.Data >= '2025/09/24');
+        if (allPeriodRecords.length === 0) return;
+
+        const allPeriodStartRecord = allPeriodRecords[0];
+        const allPeriodLatestRecord = allPeriodRecords[allPeriodRecords.length - 1];
+
+        // 9/24時点のPowerが45M未満のプレイヤーはスキップ
+        const startPower = parseValue(allPeriodStartRecord.Power);
+        if (startPower < 45000000) return;
+
+        // 【全期間の増加量】（ノルマ判定用）
+        const allPeriodKillPointsIncrease = parseValue(allPeriodLatestRecord['Total Kill Points']) - parseValue(allPeriodStartRecord['Total Kill Points']);
+        const allPeriodDeadTroopsIncrease = parseValue(allPeriodLatestRecord['Dead Troops']) - parseValue(allPeriodStartRecord['Dead Troops']);
+
+        // 【選択期間のデータ】表示用の増加量を取得
         let kvkRecords = records.filter(r => r.Data >= kvkStartDate);
         if (kvkEndDate) {
             kvkRecords = kvkRecords.filter(r => r.Data <= kvkEndDate);
@@ -237,23 +252,22 @@ function initKvkList() {
         const startRecord = kvkRecords[0];
         const latestRecord = kvkRecords[kvkRecords.length - 1];
 
-        // 9/24時点のPowerが45M未満のプレイヤーはスキップ
-        const startPower = parseValue(startRecord.Power);
-        if (startPower < 45000000) return;
-
+        // 【選択期間の増加量】（表示用）
         const t4Increase = parseValue(latestRecord['T4-Kills']) - parseValue(startRecord['T4-Kills']);
         const t5Increase = parseValue(latestRecord['T5-Kills']) - parseValue(startRecord['T5-Kills']);
         const killPointsIncrease = parseValue(latestRecord['Total Kill Points']) - parseValue(startRecord['Total Kill Points']);
         const deadTroopsIncrease = parseValue(latestRecord['Dead Troops']) - parseValue(startRecord['Dead Troops']);
 
+        // 現在のPowerとノルマ基準
         const currentPower = parseValue(latestRecord.Power);
         const quota = getKvkQuota(currentPower);
 
-        const killProgress = quota.killQuota > 0 ? (killPointsIncrease / quota.killQuota) * 100 : 0;
-        const deathProgress = quota.deathQuota > 0 ? (deadTroopsIncrease / quota.deathQuota) * 100 : 0;
+        // 【重要】ノルマ達成判定は全期間の増加量で計算
+        const killProgress = quota.killQuota > 0 ? (allPeriodKillPointsIncrease / quota.killQuota) * 100 : 0;
+        const deathProgress = quota.deathQuota > 0 ? (allPeriodDeadTroopsIncrease / quota.deathQuota) * 100 : 0;
 
-        const killAchieved = killPointsIncrease >= quota.killQuota;
-        const deathAchieved = deadTroopsIncrease >= quota.deathQuota;
+        const killAchieved = allPeriodKillPointsIncrease >= quota.killQuota;
+        const deathAchieved = allPeriodDeadTroopsIncrease >= quota.deathQuota;
         const bothAchieved = killAchieved && deathAchieved;
 
         kvkListData.push({
@@ -262,16 +276,21 @@ function initKvkList() {
             alliance: latestRecord.Alliance || 'no alliance',
             power: currentPower,
             powerBand: quota.band,
+            // 選択期間の増加量（表示用）
             t4Increase: t4Increase,
             t5Increase: t5Increase,
             killPointsIncrease: killPointsIncrease,
             deadTroopsIncrease: deadTroopsIncrease,
+            // 全期間の増加量（ノルマ計算用）
+            allPeriodKillPointsIncrease: allPeriodKillPointsIncrease,
+            allPeriodDeadTroopsIncrease: allPeriodDeadTroopsIncrease,
+            // ノルマ基準値と達成状況
             killQuota: quota.killQuota,
             deathQuota: quota.deathQuota,
             killProgress: killProgress,
             deathProgress: deathProgress,
-            killRemaining: Math.max(0, quota.killQuota - killPointsIncrease),
-            deathRemaining: Math.max(0, quota.deathQuota - deadTroopsIncrease),
+            killRemaining: Math.max(0, quota.killQuota - allPeriodKillPointsIncrease),
+            deathRemaining: Math.max(0, quota.deathQuota - allPeriodDeadTroopsIncrease),
             killAchieved: killAchieved,
             deathAchieved: deathAchieved,
             bothAchieved: bothAchieved
