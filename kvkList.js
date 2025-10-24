@@ -22,9 +22,9 @@ const PERIOD_CONFIG = {
         endDate: null // nullの場合は最新データまで
     },
     zone5: {
-        label: 'ゾーン5 (10/9～10/13)',
-        startDate: '2025/10/09',
-        endDate: '2025/10/13'
+        label: 'ゾーン5 (10/8～10/12)',
+        startDate: '2025/10/08',
+        endDate: '2025/10/12'
     },
     darkness: {
         label: '暗黒戦 (10/19～10/24)',
