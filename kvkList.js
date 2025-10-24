@@ -10,6 +10,28 @@ const DEBUG_MODE = false;
 let allData = [];
 let kvkListData = [];
 let currentSort = { column: 'power', direction: 'desc' };
+let currentPeriod = 'all'; // 現在選択中の期間
+
+// =====================================
+// 期間設定
+// =====================================
+const PERIOD_CONFIG = {
+    all: {
+        label: '全期間 (9/24～最新)',
+        startDate: '2025/09/24',
+        endDate: null // nullの場合は最新データまで
+    },
+    zone5: {
+        label: 'ゾーン5 (10/9～10/11)',
+        startDate: '2025/10/09',
+        endDate: '2025/10/11'
+    },
+    darkness: {
+        label: '暗黒戦 (10/19～10/24)',
+        startDate: '2025/10/19',
+        endDate: '2025/10/24'
+    }
+};
 
 // =====================================
 // ユーティリティ関数
@@ -153,12 +175,36 @@ async function loadCSVData() {
 }
 
 // =====================================
+// 期間設定関数
+// =====================================
+function setKvkPeriod(period) {
+    console.log('🔄 期間変更:', period);
+    currentPeriod = period;
+
+    // ボタンのアクティブ状態を更新
+    document.querySelectorAll('[id^="periodBtn"]').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    const activeBtn = document.getElementById(`periodBtn${period.charAt(0).toUpperCase() + period.slice(1)}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+    }
+
+    // データを再計算
+    initKvkList();
+}
+
+// =====================================
 // KVKノルマ一覧初期化
 // =====================================
 function initKvkList() {
     console.log('🚀 KVKノルマ一覧初期化開始');
 
-    const kvkStartDate = '2025/09/24';
+    const periodConfig = PERIOD_CONFIG[currentPeriod];
+    const kvkStartDate = periodConfig.startDate;
+    const kvkEndDate = periodConfig.endDate;
+
+    console.log('集計期間:', kvkStartDate, '～', kvkEndDate || '最新');
 
     // プレイヤーごとにグループ化
     const playerDataMap = new Map();
@@ -175,13 +221,17 @@ function initKvkList() {
 
     console.log('プレイヤー数:', playerDataMap.size);
 
-    // 各プレイヤーの9/24からの増加を計算
+    // 各プレイヤーの指定期間の増加を計算
     kvkListData = [];
 
     playerDataMap.forEach((records, playerId) => {
         records.sort((a, b) => new Date(a.Data) - new Date(b.Data));
 
-        const kvkRecords = records.filter(r => r.Data >= kvkStartDate);
+        // 期間内のレコードをフィルター
+        let kvkRecords = records.filter(r => r.Data >= kvkStartDate);
+        if (kvkEndDate) {
+            kvkRecords = kvkRecords.filter(r => r.Data <= kvkEndDate);
+        }
         if (kvkRecords.length === 0) return;
 
         const startRecord = kvkRecords[0];
@@ -232,10 +282,23 @@ function initKvkList() {
 
     // 期間表示を更新
     const periodElem = document.getElementById('kvkListPeriod');
-    if (periodElem && allData.length > 0) {
-        const dates = allData.map(row => row.Data).filter(d => d).sort();
-        const latestDate = dates[dates.length - 1];
-        periodElem.textContent = `9/24 - ${latestDate}`;
+    if (periodElem) {
+        const periodConfig = PERIOD_CONFIG[currentPeriod];
+        if (periodConfig.endDate) {
+            // 終了日が指定されている場合
+            const startFormatted = periodConfig.startDate.substring(5).replace('/', '/');
+            const endFormatted = periodConfig.endDate.substring(5).replace('/', '/');
+            periodElem.textContent = `${startFormatted} - ${endFormatted}`;
+        } else {
+            // 最新データまでの場合
+            const dates = allData.map(row => row.Data).filter(d => d).sort();
+            if (dates.length > 0) {
+                const latestDate = dates[dates.length - 1];
+                const startFormatted = periodConfig.startDate.substring(5).replace('/', '/');
+                const latestFormatted = latestDate.substring(5).replace('/', '/');
+                periodElem.textContent = `${startFormatted} - ${latestFormatted}`;
+            }
+        }
     }
 
     updateKvkList();

@@ -59,6 +59,16 @@
 
             <!-- フィルターセクション -->
             <div class="filter-section" style="margin-bottom: 20px;">
+                <!-- 集計ゾーン選択 -->
+                <div style="margin-bottom: 15px;">
+                    <label style="font-weight: 600; display: block; margin-bottom: 8px;">集計ゾーン:</label>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="preset-btn active" onclick="setKvkPeriod('all')" id="periodBtnAll">全期間 (9/24～最新)</button>
+                        <button class="preset-btn" onclick="setKvkPeriod('zone5')" id="periodBtnZone5">ゾーン5 (10/9～10/11)</button>
+                        <button class="preset-btn" onclick="setKvkPeriod('darkness')" id="periodBtnDarkness">暗黒戦 (10/19～10/24)</button>
+                    </div>
+                </div>
+
                 <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <label style="font-weight: 600;">表示:</label>
