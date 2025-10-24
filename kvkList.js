@@ -27,8 +27,8 @@ const PERIOD_CONFIG = {
         endDate: '2025/10/12'
     },
     darkness: {
-        label: '暗黒戦 (10/19～10/24)',
-        startDate: '2025/10/19',
+        label: '暗黒戦 (10/18～10/24)',
+        startDate: '2025/10/18',
         endDate: '2025/10/24'
     }
 };
