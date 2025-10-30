@@ -243,31 +243,20 @@ function initKvkList() {
         const startPower = parseValue(allPeriodStartRecord.Power);
         if (startPower < 45000000) return;
 
-        // 【全期間の増加量】（ノルマ判定用）
+        // 【全期間の増加量】（ノルマ判定用・表示用共通）
         const allPeriodKillPointsIncrease = parseValue(allPeriodLatestRecord['Total Kill Points']) - parseValue(allPeriodStartRecord['Total Kill Points']);
         const allPeriodDeadTroopsIncrease = parseValue(allPeriodLatestRecord['Dead Troops']) - parseValue(allPeriodStartRecord['Dead Troops']);
+        const allPeriodT4Increase = parseValue(allPeriodLatestRecord['T4-Kills']) - parseValue(allPeriodStartRecord['T4-Kills']);
+        const allPeriodT5Increase = parseValue(allPeriodLatestRecord['T5-Kills']) - parseValue(allPeriodStartRecord['T5-Kills']);
 
-        // 【選択期間のデータ】表示用の増加量を取得
-        let kvkRecords = records.filter(r => r.Data >= kvkStartDate);
-        if (kvkEndDate) {
-            kvkRecords = kvkRecords.filter(r => r.Data <= kvkEndDate);
-        }
-        if (kvkRecords.length === 0) return;
-
-        const startRecord = kvkRecords[0];
-        const latestRecord = kvkRecords[kvkRecords.length - 1];
-
-        // 【選択期間の増加量】（表示用）
-        const t4Increase = parseValue(latestRecord['T4-Kills']) - parseValue(startRecord['T4-Kills']);
-        const t5Increase = parseValue(latestRecord['T5-Kills']) - parseValue(startRecord['T5-Kills']);
-        const killPointsIncrease = parseValue(latestRecord['Total Kill Points']) - parseValue(startRecord['Total Kill Points']);
-        const deadTroopsIncrease = parseValue(latestRecord['Dead Troops']) - parseValue(startRecord['Dead Troops']);
+        // 最新データを取得（名前、同盟、Power用）
+        const latestRecord = allPeriodLatestRecord;
 
         // 現在のPowerとノルマ基準
         const currentPower = parseValue(latestRecord.Power);
         const quota = getKvkQuota(currentPower);
 
-        // 【重要】ノルマ達成判定は全期間の増加量で計算
+        // ノルマ達成判定（全期間の増加量で計算）
         const killProgress = quota.killQuota > 0 ? (allPeriodKillPointsIncrease / quota.killQuota) * 100 : 0;
         const deathProgress = quota.deathQuota > 0 ? (allPeriodDeadTroopsIncrease / quota.deathQuota) * 100 : 0;
 
@@ -281,14 +270,11 @@ function initKvkList() {
             alliance: latestRecord.Alliance || 'no alliance',
             power: currentPower,
             powerBand: quota.band,
-            // 選択期間の増加量（表示用）
-            t4Increase: t4Increase,
-            t5Increase: t5Increase,
-            killPointsIncrease: killPointsIncrease,
-            deadTroopsIncrease: deadTroopsIncrease,
-            // 全期間の増加量（ノルマ計算用）
-            allPeriodKillPointsIncrease: allPeriodKillPointsIncrease,
-            allPeriodDeadTroopsIncrease: allPeriodDeadTroopsIncrease,
+            // 全期間の増加量（表示用・ノルマ計算用共通）
+            t4Increase: allPeriodT4Increase,
+            t5Increase: allPeriodT5Increase,
+            killPointsIncrease: allPeriodKillPointsIncrease,
+            deadTroopsIncrease: allPeriodDeadTroopsIncrease,
             // ノルマ基準値と達成状況
             killQuota: quota.killQuota,
             deathQuota: quota.deathQuota,
@@ -304,24 +290,15 @@ function initKvkList() {
 
     console.log('✅ KVKノルマ一覧データ件数:', kvkListData.length);
 
-    // 期間表示を更新
+    // 期間表示を更新（常に全期間を表示）
     const periodElem = document.getElementById('kvkListPeriod');
     if (periodElem) {
-        const periodConfig = PERIOD_CONFIG[currentPeriod];
-        if (periodConfig.endDate) {
-            // 終了日が指定されている場合
-            const startFormatted = periodConfig.startDate.substring(5).replace('/', '/');
-            const endFormatted = periodConfig.endDate.substring(5).replace('/', '/');
-            periodElem.textContent = `${startFormatted} - ${endFormatted}`;
-        } else {
-            // 最新データまでの場合
-            const dates = allData.map(row => row.Data).filter(d => d).sort();
-            if (dates.length > 0) {
-                const latestDate = dates[dates.length - 1];
-                const startFormatted = periodConfig.startDate.substring(5).replace('/', '/');
-                const latestFormatted = latestDate.substring(5).replace('/', '/');
-                periodElem.textContent = `${startFormatted} - ${latestFormatted}`;
-            }
+        const dates = allData.map(row => row.Data).filter(d => d).sort();
+        if (dates.length > 0) {
+            const latestDate = dates[dates.length - 1];
+            const startFormatted = '9/24';
+            const latestFormatted = latestDate.substring(5).replace('/', '/');
+            periodElem.textContent = `${startFormatted} - ${latestFormatted}`;
         }
     }
 
