@@ -32,9 +32,9 @@ const PERIOD_CONFIG = {
         endDate: '2025/10/24'
     },
     gate7: {
-        label: '関所7戦 (10/29～10/30)',
+        label: '関所7戦 (10/29～10/31)',
         startDate: '2025/10/29',
-        endDate: '2025/10/30'
+        endDate: '2025/10/31'
     }
 };
 
