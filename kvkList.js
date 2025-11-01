@@ -37,9 +37,9 @@ const PERIOD_CONFIG = {
         endDate: '2025/10/31'
     },
     kingsland: {
-        label: 'キングスランド (10/31～最新)',
+        label: 'キングスランド (10/31～11/1)',
         startDate: '2025/10/31',
-        endDate: null // nullの場合は最新データまで
+        endDate: '2025/11/01'
     }
 };
 
