@@ -37,9 +37,9 @@ const PERIOD_CONFIG = {
         endDate: '2025/10/31'
     },
     kingsland: {
-        label: 'キングスランド (10/31～11/1)',
+        label: 'キングスランド (10/31～11/2)',
         startDate: '2025/10/31',
-        endDate: '2025/11/01'
+        endDate: '2025/11/02'
     }
 };
 
