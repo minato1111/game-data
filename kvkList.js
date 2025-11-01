@@ -35,6 +35,11 @@ const PERIOD_CONFIG = {
         label: '関所7戦 (10/29～10/31)',
         startDate: '2025/10/29',
         endDate: '2025/10/31'
+    },
+    kingsland: {
+        label: 'キングスランド (10/31～最新)',
+        startDate: '2025/10/31',
+        endDate: null // nullの場合は最新データまで
     }
 };
 
