@@ -268,8 +268,7 @@ function initKvkList() {
         const killPointsIncrease = parseValue(latestRecord['Total Kill Points']) - parseValue(startRecord['Total Kill Points']);
         const deadTroopsIncrease = parseValue(latestRecord['Dead Troops']) - parseValue(startRecord['Dead Troops']);
 
-        // 現在のPowerとノルマ基準（9/24時点のPowerでノルマ決定）
-        const currentPower = parseValue(latestRecord.Power);
+        // 9/24時点のPowerでノルマ決定
         const quota = getKvkQuota(startPower);  // 9/24時点のPowerでノルマ基準を決定
 
         // 対象外の場合はノルマ判定をスキップ
@@ -293,7 +292,7 @@ function initKvkList() {
             id: playerId,
             name: latestRecord.Name,
             alliance: latestRecord.Alliance || 'no alliance',
-            power: currentPower,
+            power: startPower,  // 9/24時点のPowerを表示
             powerBand: quota.band,
             // 選択期間の増加量（表示用）
             t4Increase: t4Increase,
