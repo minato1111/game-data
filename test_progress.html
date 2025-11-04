@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>プログレスバーテスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-item {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>プログレスバー表示テスト</h1>
+
+    <div class="test-item">
+        <h3>テスト1: 50%</h3>
+        <div id="test1"></div>
+    </div>
+
+    <div class="test-item">
+        <h3>テスト2: 100%</h3>
+        <div id="test2"></div>
+    </div>
+
+    <div class="test-item">
+        <h3>テスト3: 150%</h3>
+        <div id="test3"></div>
+    </div>
+
+    <div class="test-item">
+        <h3>テスト4: 200%</h3>
+        <div id="test4"></div>
+    </div>
+
+    <div class="test-item">
+        <h3>テスト5: 1829.1%（実際のデータ）</h3>
+        <div id="test5"></div>
+    </div>
+
+    <script>
+        function createProgressBar(progress, current, target, color) {
+            const percentage = Math.max(0, progress); // 100%上限を解除、0%未満は0%に
+            const barWidth = Math.min(100, percentage); // バーの幅は100%まで
+            const isAchieved = progress >= 100;
+
+            console.log('createProgressBar呼び出し:', { progress, percentage, barWidth, isAchieved });
+
+            return `
+                <div style="width: 100%;">
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 4px; margin-bottom: 3px;">
+                        <span style="color: ${color}; font-weight: 600; font-size: 13px;">${percentage.toFixed(1)}%</span>
+                    </div>
+                    <div style="background: #e0e0e0; border-radius: 8px; height: 8px; overflow: hidden; position: relative;">
+                        <div style="background: ${isAchieved ? '#27ae60' : color}; height: 100%; width: ${barWidth}%; transition: width 0.3s ease; border-radius: 8px;"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // テスト実行
+        document.getElementById('test1').innerHTML = createProgressBar(50, 50000000, 100000000, '#e74c3c');
+        document.getElementById('test2').innerHTML = createProgressBar(100, 100000000, 100000000, '#e74c3c');
+        document.getElementById('test3').innerHTML = createProgressBar(150, 150000000, 100000000, '#e74c3c');
+        document.getElementById('test4').innerHTML = createProgressBar(200, 200000000, 100000000, '#e74c3c');
+        document.getElementById('test5').innerHTML = createProgressBar(1829.1, 1829100000, 100000000, '#f39c12');
+    </script>
+</body>
+</html>
