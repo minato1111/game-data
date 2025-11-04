@@ -5,6 +5,43 @@ const CSV_FILE_PATH = 'Master_Data.csv';
 const DEBUG_MODE = false;
 
 // =====================================
+// グローバルエラーハンドラー（Chrome拡張機能エラー除外）
+// =====================================
+window.addEventListener('error', function(event) {
+    // Chrome拡張機能のエラーを除外
+    const errorMessage = event.error?.message || event.message || '';
+    if (errorMessage.includes('message channel closed') ||
+        errorMessage.includes('Extension context invalidated') ||
+        errorMessage.includes('A listener indicated an asynchronous response') ||
+        event.filename?.includes('extensions/') ||
+        event.filename?.includes('chrome-extension://')) {
+        if (DEBUG_MODE) console.warn('Chrome拡張機能エラーを無視:', errorMessage);
+        event.preventDefault();
+        return;
+    }
+    console.error('グローバルエラー:', event.error);
+});
+
+// Promise rejection ハンドラー（Chrome拡張機能エラー除外）
+window.addEventListener('unhandledrejection', function(event) {
+    // Chrome拡張機能のエラーを除外
+    const reason = event.reason;
+    const reasonMessage = typeof reason === 'string' ? reason :
+                         (reason?.message || JSON.stringify(reason || ''));
+
+    if (reasonMessage.includes('message channel closed') ||
+        reasonMessage.includes('Extension context invalidated') ||
+        reasonMessage.includes('Could not establish connection') ||
+        reasonMessage.includes('A listener indicated an asynchronous response') ||
+        reasonMessage.includes('Receiving end does not exist')) {
+        if (DEBUG_MODE) console.warn('Chrome拡張機能Promise拒否を無視:', reasonMessage);
+        event.preventDefault();
+        return;
+    }
+    console.error('未処理のPromise拒否:', event.reason);
+});
+
+// =====================================
 // グローバル変数
 // =====================================
 let allData = [];
