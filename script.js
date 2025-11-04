@@ -2362,10 +2362,10 @@ function calculateKvkProgress(latestData, allPlayerData) {
     // 最新データ
     const currentData = latestData;
 
-    // Power帯からノルマを取得（戦死ノルマのみ9/22時点のPowerで計算）
+    // Power帯からノルマを取得（9/24時点のPowerでノルマ基準を決定）
     const currentPower = parseInt((currentData.Power || '0').toString().replace(/,/g, '')) || 0;
     const startPower = parseInt((startData.Power || '0').toString().replace(/,/g, '')) || 0;
-    const norma = getKvkNormaByPower(currentPower, true, startData.Power);
+    const norma = getKvkNormaByPower(startPower, true, startData.Power);
 
     // 開始時と現在の値を取得
     const startKills = parseInt((startData['Total Kill Points'] || '0').toString().replace(/,/g, '')) || 0;
