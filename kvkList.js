@@ -2,7 +2,7 @@
 // 設定値
 // =====================================
 const CSV_FILE_PATH = 'Master_Data.csv';
-const DEBUG_MODE = false;
+const DEBUG_MODE = true; // デバッグ用に一時的にtrue
 
 // =====================================
 // グローバルエラーハンドラー（Chrome拡張機能エラー除外）
@@ -141,6 +141,17 @@ function createProgressBar(progress, current, target, color) {
     const percentage = Math.max(0, progress); // 100%上限を解除、0%未満は0%に
     const barWidth = Math.min(100, percentage); // バーの幅は100%まで
     const isAchieved = progress >= 100;
+
+    // デバッグ: 100%超えをログ出力
+    if (DEBUG_MODE && percentage > 100) {
+        console.log('createProgressBar: 100%超え検出', {
+            progress,
+            percentage,
+            barWidth,
+            current,
+            target
+        });
+    }
 
     return `
         <div style="width: 100%;">
@@ -320,6 +331,14 @@ function initKvkList() {
             // 【重要】ノルマ達成判定は全期間の増加量で計算
             killProgress = quota.killQuota > 0 ? (allPeriodKillPointsIncrease / quota.killQuota) * 100 : 0;
             deathProgress = quota.deathQuota > 0 ? (allPeriodDeadTroopsIncrease / quota.deathQuota) * 100 : 0;
+
+            // デバッグ: 100%超えのプレイヤーをログ出力
+            if (DEBUG_MODE && (killProgress > 100 || deathProgress > 100)) {
+                console.log(`100%超えプレイヤー: ${latestRecord.Name}`, {
+                    killProgress: killProgress.toFixed(1) + '%',
+                    deathProgress: deathProgress.toFixed(1) + '%'
+                });
+            }
 
             killAchieved = allPeriodKillPointsIncrease >= quota.killQuota;
             deathAchieved = allPeriodDeadTroopsIncrease >= quota.deathQuota;
