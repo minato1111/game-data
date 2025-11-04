@@ -101,7 +101,8 @@ function getKvkQuota(power) {
 // プログレスバー作成
 // =====================================
 function createProgressBar(progress, current, target, color) {
-    const percentage = Math.min(100, Math.max(0, progress));
+    const percentage = Math.max(0, progress); // 100%上限を解除、0%未満は0%に
+    const barWidth = Math.min(100, percentage); // バーの幅は100%まで
     const isAchieved = progress >= 100;
 
     return `
@@ -110,7 +111,7 @@ function createProgressBar(progress, current, target, color) {
                 <span style="color: ${color}; font-weight: 600; font-size: 13px;">${percentage.toFixed(1)}%</span>
             </div>
             <div style="background: #e0e0e0; border-radius: 8px; height: 8px; overflow: hidden; position: relative;">
-                <div style="background: ${isAchieved ? '#27ae60' : color}; height: 100%; width: ${percentage}%; transition: width 0.3s ease; border-radius: 8px;"></div>
+                <div style="background: ${isAchieved ? '#27ae60' : color}; height: 100%; width: ${barWidth}%; transition: width 0.3s ease; border-radius: 8px;"></div>
             </div>
         </div>
     `;
