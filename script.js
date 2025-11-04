@@ -3490,7 +3490,7 @@ function initKvkList() {
     console.log('🚀 KVKノルマ一覧初期化開始');
     console.log('allData件数:', allData.length);
 
-    // 9/24から最新データまでの増加量を計算
+    // 9/24から11/4までの増加量を計算
     const kvkStartDate = '2025/09/24';
 
     // プレイヤーごとにグループ化

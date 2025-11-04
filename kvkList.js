@@ -17,9 +17,9 @@ let currentPeriod = 'all'; // 現在選択中の期間
 // =====================================
 const PERIOD_CONFIG = {
     all: {
-        label: '全期間 (9/24～最新)',
+        label: '全期間 (9/24～11/4)',
         startDate: '2025/09/24',
-        endDate: null // nullの場合は最新データまで
+        endDate: '2025/11/04'
     },
     zone5: {
         label: 'ゾーン5 (10/8～10/12)',
@@ -37,9 +37,9 @@ const PERIOD_CONFIG = {
         endDate: '2025/10/31'
     },
     kingsland: {
-        label: 'キングスランド (10/31～11/3)',
+        label: 'キングスランド (10/31～11/4)',
         startDate: '2025/10/31',
-        endDate: '2025/11/03'
+        endDate: '2025/11/04'
     }
 };
 
