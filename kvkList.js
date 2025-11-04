@@ -244,9 +244,9 @@ function initKvkList() {
         const allPeriodStartRecord = allPeriodRecords[0];
         const allPeriodLatestRecord = allPeriodRecords[allPeriodRecords.length - 1];
 
-        // 9/24時点のPowerが45M未満のプレイヤーはスキップ
+        // 9/24時点のPowerが45M未満のプレイヤーは対象外として扱う
         const startPower = parseValue(allPeriodStartRecord.Power);
-        if (startPower < 45000000) return;
+        const isExcluded = startPower < 45000000;
 
         // 【全期間の増加量】（ノルマ判定用）
         const allPeriodKillPointsIncrease = parseValue(allPeriodLatestRecord['Total Kill Points']) - parseValue(allPeriodStartRecord['Total Kill Points']);
@@ -268,17 +268,26 @@ function initKvkList() {
         const killPointsIncrease = parseValue(latestRecord['Total Kill Points']) - parseValue(startRecord['Total Kill Points']);
         const deadTroopsIncrease = parseValue(latestRecord['Dead Troops']) - parseValue(startRecord['Dead Troops']);
 
-        // 現在のPowerとノルマ基準
+        // 現在のPowerとノルマ基準（9/24時点のPowerでノルマ決定）
         const currentPower = parseValue(latestRecord.Power);
-        const quota = getKvkQuota(currentPower);
+        const quota = getKvkQuota(startPower);  // 9/24時点のPowerでノルマ基準を決定
 
-        // 【重要】ノルマ達成判定は全期間の増加量で計算
-        const killProgress = quota.killQuota > 0 ? (allPeriodKillPointsIncrease / quota.killQuota) * 100 : 0;
-        const deathProgress = quota.deathQuota > 0 ? (allPeriodDeadTroopsIncrease / quota.deathQuota) * 100 : 0;
+        // 対象外の場合はノルマ判定をスキップ
+        let killProgress = 0;
+        let deathProgress = 0;
+        let killAchieved = false;
+        let deathAchieved = false;
+        let bothAchieved = false;
 
-        const killAchieved = allPeriodKillPointsIncrease >= quota.killQuota;
-        const deathAchieved = allPeriodDeadTroopsIncrease >= quota.deathQuota;
-        const bothAchieved = killAchieved && deathAchieved;
+        if (!isExcluded) {
+            // 【重要】ノルマ達成判定は全期間の増加量で計算
+            killProgress = quota.killQuota > 0 ? (allPeriodKillPointsIncrease / quota.killQuota) * 100 : 0;
+            deathProgress = quota.deathQuota > 0 ? (allPeriodDeadTroopsIncrease / quota.deathQuota) * 100 : 0;
+
+            killAchieved = allPeriodKillPointsIncrease >= quota.killQuota;
+            deathAchieved = allPeriodDeadTroopsIncrease >= quota.deathQuota;
+            bothAchieved = killAchieved && deathAchieved;
+        }
 
         kvkListData.push({
             id: playerId,
@@ -303,7 +312,8 @@ function initKvkList() {
             deathRemaining: Math.max(0, quota.deathQuota - allPeriodDeadTroopsIncrease),
             killAchieved: killAchieved,
             deathAchieved: deathAchieved,
-            bothAchieved: bothAchieved
+            bothAchieved: bothAchieved,
+            isExcluded: isExcluded  // 対象外フラグを追加
         });
     });
 
@@ -394,6 +404,8 @@ function updateKvkList() {
         if (filterValue === 'kill-achieved') return player.killAchieved;
         if (filterValue === 'death-achieved') return player.deathAchieved;
         if (filterValue === 'not-achieved') return !player.killAchieved || !player.deathAchieved;
+        if (filterValue === 'excluded') return player.isExcluded;
+        if (filterValue === 'exclude-excluded') return !player.isExcluded;
 
         return true;
     });
@@ -481,7 +493,9 @@ function updateKvkList() {
 
     tbody.innerHTML = filteredList.map((player, index) => {
         let achievementBadge = '';
-        if (player.bothAchieved) {
+        if (player.isExcluded) {
+            achievementBadge = '<span style="background: #7f8c8d; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">対象外</span>';
+        } else if (player.bothAchieved) {
             achievementBadge = '<span style="background: #27ae60; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">✓達成</span>';
         } else if (player.killAchieved) {
             achievementBadge = '<span style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">撃破</span>';
@@ -507,10 +521,10 @@ function updateKvkList() {
                 <td style="padding: 12px 8px; text-align: center; font-weight: 600; color: #e74c3c;">${formatNumber(player.killPointsIncrease)}</td>
                 <td style="padding: 12px 8px; text-align: center; font-weight: 600; color: #f39c12;">${formatNumber(player.deadTroopsIncrease)}</td>
                 <td style="padding: 12px 10px;">
-                    ${createProgressBar(player.killProgress, player.killPointsIncrease, player.killQuota, '#e74c3c')}
+                    ${player.isExcluded ? '<div style="text-align: center; color: #7f8c8d; font-size: 12px;">対象外</div>' : createProgressBar(player.killProgress, player.killPointsIncrease, player.killQuota, '#e74c3c')}
                 </td>
                 <td style="padding: 12px 10px;">
-                    ${createProgressBar(player.deathProgress, player.deadTroopsIncrease, player.deathQuota, '#f39c12')}
+                    ${player.isExcluded ? '<div style="text-align: center; color: #7f8c8d; font-size: 12px;">対象外</div>' : createProgressBar(player.deathProgress, player.deadTroopsIncrease, player.deathQuota, '#f39c12')}
                 </td>
                 <td style="padding: 12px 8px; text-align: center;">${achievementBadge}</td>
             </tr>
