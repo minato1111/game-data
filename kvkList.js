@@ -237,8 +237,8 @@ function initKvkList() {
     playerDataMap.forEach((records, playerId) => {
         records.sort((a, b) => new Date(a.Data) - new Date(b.Data));
 
-        // 【全期間のデータ】9/24からの累計を取得（ノルマ基準用）
-        const allPeriodRecords = records.filter(r => r.Data >= '2025/09/24');
+        // 【全期間のデータ】9/24～11/4の累計を取得（ノルマ基準用）
+        const allPeriodRecords = records.filter(r => r.Data >= '2025/09/24' && r.Data <= '2025/11/04');
         if (allPeriodRecords.length === 0) return;
 
         const allPeriodStartRecord = allPeriodRecords[0];
